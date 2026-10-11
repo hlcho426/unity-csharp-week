@@ -201,8 +201,9 @@ function renderBuild(s){
   slot.innerHTML = built.length ? built.map((k,i) =>
     `<button class="chip in ${s.lines?"line":""}" data-i="${i}" ${checked?"disabled":""}>${s.lines ? hl(toks[k]) : esc(toks[k].trim())}</button>`).join("")
     : `<span class="slot-empty">여기에 조립돼요</span>`;
+  // 줄 조립은 들여쓰기까지 보여 줘요. "{"와 "    {"처럼 들여쓰기만 다른 블록을 구분할 수 있게
   bank.innerHTML = s.order.map(k =>
-    `<button class="chip ${built.includes(k)?"used":""}" data-k="${k}" ${built.includes(k)||checked?"disabled":""}>${esc(toks[k].trim())}</button>`).join("");
+    `<button class="chip ${built.includes(k)?"used":""}" data-k="${k}" ${built.includes(k)||checked?"disabled":""}>${esc(s.lines ? toks[k] : toks[k].trim())}</button>`).join("");
   slot.querySelectorAll(".chip").forEach(c => c.onclick = () => { if(checked) return; built.splice(+c.dataset.i,1); renderBuild(s); });
   bank.querySelectorAll(".chip").forEach(c => c.onclick = () => { if(checked) return; built.push(+c.dataset.k); renderBuild(s); });
   document.getElementById("go").disabled = built.length === 0 && !checked;

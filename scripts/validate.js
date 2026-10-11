@@ -12,7 +12,7 @@
  *   - 모르는 필드 이름 (오타 의심. 예: hnit)
  *   - "위 ~"로 시작하는데 보여 줄 코드가 없는 문제
  *   - 객관식 보기가 겹침, alts가 answer와 똑같음
- *   - 줄 조립에서 들여쓰기만 다른 블록 (블록 창에서는 똑같아 보여요)
+ *   - 한 줄 조립에서 앞뒤 공백만 다른 블록 (블록 창에서는 똑같아 보여요)
  *   - Day 번호가 1부터 차례대로가 아님
  */
 const fs = require("fs");
@@ -136,11 +136,12 @@ function checkStep(where, s, prevReads) {
     if (!canAssemble(tokens, sep, arr.join(sep))) err(where, `${name}를 주어진 블록으로 조립할 수 없어요: ${JSON.stringify(arr.join(sep))}`);
     if (name !== "answer" && arr.join(sep) === s.answer.join(sep)) warn(where, `${name}가 answer와 똑같아요`);
   }
-  if (s.lines) {
+  // 한 줄 조립은 블록 창에서 앞뒤 공백을 빼고 보여 줘요 (줄 조립은 들여쓰기까지 보여 줌)
+  if (!s.lines) {
     const seenTrim = new Map();
     for (const t of tokens) {
       const k = t.trim();
-      if (seenTrim.has(k) && seenTrim.get(k) !== t) warn(where, `들여쓰기만 다른 블록이 있어요 ("${k}") — 블록 창에서는 똑같아 보여서 잘못 고르면 오답이 돼요`);
+      if (seenTrim.has(k) && seenTrim.get(k) !== t) warn(where, `앞뒤 공백만 다른 블록이 있어요 ("${k}") — 블록 창에서는 똑같아 보여서 잘못 고르면 오답이 돼요`);
       seenTrim.set(k, t);
     }
   }

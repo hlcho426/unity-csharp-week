@@ -64,6 +64,7 @@ button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 .bank-cap{font-size:13px;color:var(--muted);margin:10px 0 8px!important}
 .bank{display:flex;flex-wrap:wrap;gap:8px}
 .bank.lines{flex-direction:column}
+.bank.lines .chip{white-space:pre-wrap}
 .chip{font-family:"JetBrains Mono",monospace;font-size:14.5px;background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:10px;padding:8px 12px;text-align:left;line-height:1.4}
 .chip.used{visibility:hidden}
 .chip.in{border-color:var(--lagoon)}
