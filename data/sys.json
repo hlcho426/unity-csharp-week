@@ -488,7 +488,7 @@
             "t": "read",
             "h": "한 줄을 담을 그릇",
             "code": "[System.Serializable]\npublic class CharacterRow\n{\n    public string id;\n    public string name;\n    public int hp;\n    public int atk;\n    public float speed;\n}",
-            "body": "<p>표의 칸 하나하나가 변수 하나예요. 다지기 코스에서 배운 '<b>관련된 값을 클래스로 묶기</b>' 그대로예요. 표의 한 줄 = CharacterRow 객체 하나, 표 전체 = <code>List&lt;CharacterRow&gt;</code>.</p>"
+            "body": "<p>표의 칸 하나하나가 변수 하나예요. 심화 Day 1에서 배운 '<b>관련된 값을 클래스로 묶기</b>' 그대로예요. 표의 한 줄 = CharacterRow 객체 하나, 표 전체 = <code>List&lt;CharacterRow&gt;</code>.</p>"
           },
           {
             "t": "q",
@@ -597,7 +597,7 @@
             "t": "read",
             "h": "완성된 로더",
             "code": "public class CharacterTable : MonoBehaviour\n{\n    [SerializeField] TextAsset csv;\n    Dictionary<string, CharacterRow> rows = new Dictionary<string, CharacterRow>();\n\n    void Awake()\n    {\n        string[] lines = csv.text.Split('\\n');\n        for (int i = 1; i < lines.Length; i++)\n        {\n            string line = lines[i].Trim();\n            if (line == \"\") continue;\n\n            string[] c = line.Split(',');\n            if (c.Length < 5)\n            {\n                Debug.LogError((i + 1) + \"번째 줄: 칸이 부족해요\");\n                continue;\n            }\n\n            CharacterRow row = new CharacterRow();\n            row.id = c[0];\n            row.name = c[1];\n            int.TryParse(c[2], out row.hp);\n            int.TryParse(c[3], out row.atk);\n            float.TryParse(c[4], NumberStyles.Float, CultureInfo.InvariantCulture, out row.speed);\n\n            if (rows.ContainsKey(row.id))\n                Debug.LogError(\"중복 ID: \" + row.id);\n            else\n                rows.Add(row.id, row);\n        }\n    }\n\n    public CharacterRow Get(string id)\n    {\n        if (rows.TryGetValue(id, out CharacterRow row)) return row;\n        Debug.LogError(\"없는 캐릭터 ID: \" + id);\n        return null;\n    }\n}",
-            "body": "<p>길어 보이지만 전부 배운 조각이에요. 줄 자르기 → 빈 줄·칸 부족 검사 → 숫자 변환 → <b>중복 ID 검사</b> → Dictionary에 담기. 그리고 <code>Get(\"hero_02\")</code>로 어디서든 바로 꺼내요.</p><p>내 데이터를 Awake에서 준비하는 것도 다지기 Day 6 규칙 그대로예요. (짧게 보이려고 TryParse 실패 경고는 생략했어요. 실제론 앞 단계처럼 확인하는 게 좋아요.)</p>"
+            "body": "<p>길어 보이지만 전부 배운 조각이에요. 줄 자르기 → 빈 줄·칸 부족 검사 → 숫자 변환 → <b>중복 ID 검사</b> → Dictionary에 담기. 그리고 <code>Get(\"hero_02\")</code>로 어디서든 바로 꺼내요.</p><p>내 데이터를 Awake에서 준비하는 것도 다지기 Day 4 규칙 그대로예요. (짧게 보이려고 TryParse 실패 경고는 생략했어요. 실제론 앞 단계처럼 확인하는 게 좋아요.)</p>"
           },
           {
             "t": "q",
@@ -977,7 +977,7 @@
             "q": "Character가 Init(row)에서 row.hp를 직접 깎지 않고 currentHp에 복사하는 이유는?",
             "opts": ["row는 같은 캐릭터들이 공유하는 원본이라서", "row는 읽기 전용 문법이라서", "복사가 더 빨라서", "이유 없음"],
             "a": 0,
-            "hint": "CharacterRow는 클래스예요. 다지기 Day 4를 떠올려 보세요.",
+            "hint": "CharacterRow는 클래스예요. 심화 Day 8을 떠올려 보세요.",
             "ex": "CharacterRow는 참조 형식이라, 같은 ID 캐릭터 두 명이 같은 row를 가리켜요. 원본을 깎으면 다 같이 깎여요."
           }
         ]
@@ -997,7 +997,7 @@
             "t": "read",
             "h": "완성 코드",
             "code": "public class CharacterSpawner : MonoBehaviour\n{\n    [SerializeField] CharacterTable table;\n\n    public IEnumerator Spawn(string id, Vector3 pos)\n    {\n        CharacterRow row = table.Get(id);\n        if (row == null) yield break;\n\n        var h = Addressables.InstantiateAsync(row.prefab, pos, Quaternion.identity);\n        yield return h;\n\n        if (h.Status != AsyncOperationStatus.Succeeded)\n        {\n            Debug.LogError(id + \"의 프리팹 로드 실패: \" + row.prefab);\n            yield break;\n        }\n\n        Character ch = h.Result.GetComponent<Character>();\n        ch.Init(row);\n    }\n}",
-            "body": "<p>코루틴에서 함수를 중간에 끝낼 땐 return 대신 <code>yield break</code>를 써요. 다지기 Day 3의 조기 반환(가드)과 같은 모양이에요. 없는 ID, 로드 실패를 먼저 걸러내고, 성공한 경우만 아래로 내려가요.</p>"
+            "body": "<p>코루틴에서 함수를 중간에 끝낼 땐 return 대신 <code>yield break</code>를 써요. 기초 Day 8의 조기 반환(가드)과 같은 모양이에요. 없는 ID, 로드 실패를 먼저 걸러내고, 성공한 경우만 아래로 내려가요.</p>"
           },
           {
             "t": "build",

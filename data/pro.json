@@ -493,7 +493,7 @@
           {
             "t": "read",
             "h": "for문으로 하던 일을 문장처럼",
-            "code": "// for문으로: 체력 50 이하인 적 찾기\nList<Enemy> weak = new List<Enemy>();\nforeach (Enemy e in enemies)\n{\n    if (e.hp <= 50) weak.Add(e);\n}\n\n// LINQ로\nusing System.Linq;\nList<Enemy> weak2 = enemies.Where(e => e.hp <= 50).ToList();",
+            "code": "// for문으로: 체력 50 이하인 적 찾기\nList<Enemy> weak = new List<Enemy>();\nforeach (Enemy e in enemies)\n{\n    if (e.hp <= 50) weak.Add(e);\n}\n\n// LINQ로 (파일 맨 위에 using System.Linq; 추가)\nList<Enemy> weak2 = enemies.Where(e => e.hp <= 50).ToList();",
             "body": "<p>LINQ는 목록에 '<b>이 조건으로 걸러줘</b>', '<b>이 순서로 정렬해줘</b>'를 람다로 말하는 도구예요. <code>Where(e =&gt; e.hp &lt;= 50)</code>는 '각 적 e에 대해, hp가 50 이하인 것만'이에요.</p><p>마지막 <code>.ToList()</code>는 결과를 다시 List로 만들어달라는 뜻이에요.</p>"
           },
           {
@@ -567,14 +567,14 @@
           {
             "t": "read",
             "h": "지금까지의 변수는 '각자 따로'였어요",
-            "code": "public class Slime : MonoBehaviour\n{\n    int hp = 30;            // 슬라임마다 따로\n    static int count = 0;   // 모든 슬라임이 하나를 같이 씀\n\n    void Start()\n    {\n        count++;\n        Debug.Log(\"슬라임 수: \" + count);\n    }\n}",
+            "code": "public class Slime : MonoBehaviour\n{\n    int hp = 30;                   // 슬라임마다 따로\n    public static int count = 0;   // 모든 슬라임이 하나를 같이 씀\n\n    void Start()\n    {\n        count++;\n        Debug.Log(\"슬라임 수: \" + count);\n    }\n}",
             "body": "<p>슬라임이 세 마리면 hp는 세 개(각자 하나씩)예요. 그런데 <code>static</code>이 붙은 count는 <b>클래스 전체에 딱 하나</b>만 있어요. 세 마리가 같은 count를 보면서 하나씩 더해요.</p><p>비유하면 hp는 각자의 지갑이고, static count는 교실 칠판에 적힌 숫자예요. 누가 고치든 모두가 같은 칠판을 봐요.</p>"
           },
           {
             "t": "read",
             "h": "객체 없이 바로 쓸 수 있어요",
             "code": "Debug.Log(Slime.count);          // 클래스 이름으로 접근\n\nfloat bigger = Mathf.Max(3f, 7f); // static 함수\nfloat dt = Time.deltaTime;        // static 변수",
-            "body": "<p>static은 객체에 속한 게 아니라 <b>클래스에 속해서</b>, <code>클래스이름.변수</code>로 바로 꺼내요. 그래서 우리가 써왔던 <code>Time.deltaTime</code>, <code>Debug.Log</code>, <code>Random.Range</code>도 전부 static이었어요. Time 객체를 new로 만든 적이 없었잖아요.</p>"
+            "body": "<p>static은 객체에 속한 게 아니라 <b>클래스에 속해서</b>, <code>클래스이름.변수</code>로 바로 꺼내요. 그래서 우리가 써왔던 <code>Time.deltaTime</code>, <code>Debug.Log</code>, <code>Random.Range</code>도 전부 static이었어요. Time 객체를 new로 만든 적이 없었잖아요.</p><p>Slime의 count처럼 다른 스크립트에서 꺼내 쓰려면 <code>public static</code>으로 만들어요. public이 없으면 Slime 안에서만 쓸 수 있어요.</p>"
           },
           {
             "t": "q",
@@ -1091,7 +1091,7 @@
           {
             "t": "read",
             "h": "자주 만나는 에러 사전",
-            "body": "<ul class=\"terms\"><li><b>NullReferenceException</b> — 인스펙터 칸 연결 안 함, GetComponent 실패, 이미 null인 걸 사용. <b>가장 흔해요.</b></li><li><b>IndexOutOfRangeException / ArgumentOutOfRangeException</b> — 배열·리스트의 없는 번호를 씀. 0부터 세는지, Length/Count를 넘었는지 확인.</li><li><b>MissingReferenceException</b> — Destroy로 이미 지운 오브젝트를 계속 쓰려 함.</li><li><b>빨간 컴파일 에러</b> (예: error CS1002: ; expected) — 문법 오류. 이게 하나라도 있으면 <b>플레이 버튼이 안 눌려요.</b> CS 뒤 번호로 검색하면 설명이 많이 나와요.</li></ul><p>그리고 콘솔에서 에러 줄을 <b>더블클릭</b>하면 코드 편집기가 열리면서 그 줄로 바로 가요.</p>"
+            "body": "<ul class=\"terms\"><li><b>NullReferenceException</b> — 인스펙터 칸 연결 안 함, GetComponent 실패, 이미 null인 걸 사용. <b>가장 흔해요.</b> (GetComponent로 못 찾은 걸 쓰면 에디터에서는 MissingComponentException으로 떠요.)</li><li><b>IndexOutOfRangeException / ArgumentOutOfRangeException</b> — 배열·리스트의 없는 번호를 씀. 0부터 세는지, Length/Count를 넘었는지 확인.</li><li><b>MissingReferenceException</b> — Destroy로 이미 지운 오브젝트를 계속 쓰려 함.</li><li><b>빨간 컴파일 에러</b> (예: error CS1002: ; expected) — 문법 오류. 이게 하나라도 있으면 <b>플레이 버튼이 안 눌려요.</b> CS 뒤 번호로 검색하면 설명이 많이 나와요.</li></ul><p>그리고 콘솔에서 에러 줄을 <b>더블클릭</b>하면 코드 편집기가 열리면서 그 줄로 바로 가요.</p>"
           },
           {
             "t": "q",
@@ -1118,10 +1118,10 @@
           },
           {
             "t": "q",
-            "q": "코인을 먹고 Destroy한 다음 줄에서 그 코인의 위치를 읽으려다 난 에러는?",
+            "q": "코인을 Destroy한 뒤, 다음 프레임에 그 코인의 위치를 읽으려다 난 에러는?",
             "opts": ["MissingReferenceException", "IndexOutOfRangeException", "CS1002", "에러 안 남"],
             "a": 0,
-            "ex": "이미 지운 오브젝트를 건드렸다는 뜻이에요. 필요한 값은 Destroy 전에 읽어두세요."
+            "ex": "이미 지운 오브젝트를 건드렸다는 뜻이에요. 참고로 Destroy는 이번 프레임이 끝날 때 지워서, 같은 프레임의 바로 다음 줄에서는 아직 에러가 안 나요. 그래도 필요한 값은 Destroy 전에 읽어두는 게 안전해요."
           }
         ]
       },

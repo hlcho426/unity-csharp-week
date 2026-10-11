@@ -81,13 +81,13 @@
           {
             "t": "read",
             "h": "자기 일은 자기가: 메서드",
-            "code": "public class Monster\n{\n    public int hp;\n\n    public void TakeDamage(int amount)\n    {\n        hp -= amount;\n        if (hp < 0) hp = 0;\n    }\n\n    public bool IsDead()\n    {\n        return hp <= 0;\n    }\n}",
+            "code": "public class Monster\n{\n    public string name;\n    public int hp;\n\n    // 생성자 Monster(string name, int hp)는 앞과 같아요\n\n    public void TakeDamage(int amount)\n    {\n        hp -= amount;\n        if (hp < 0) hp = 0;\n    }\n\n    public bool IsDead()\n    {\n        return hp <= 0;\n    }\n}",
             "body": "<p>클래스 안의 함수를 <b>메서드</b>라고 불러요. 몬스터의 체력은 몬스터의 메서드가 다루게 하면, 체력이 음수가 되는 버그 같은 걸 한 곳에서 막을 수 있어요.</p>"
           },
           {
             "t": "q",
             "q": "출력은?",
-            "code": "Monster m = new Monster();\nm.hp = 20;\nm.TakeDamage(50);\nDebug.Log(m.hp);",
+            "code": "Monster m = new Monster(\"슬라임\", 20);\nm.TakeDamage(50);\nDebug.Log(m.hp);",
             "opts": ["0", "-30", "20", "50"],
             "a": 0,
             "ex": "20 - 50 = -30이지만, 메서드 안의 if가 0으로 고정해줘요."
@@ -287,7 +287,7 @@
             "opts": ["StopAllCoroutines();", "StopCoroutine();", "Destroy(coroutine);", "yield break;"],
             "a": 0,
             "mono": true,
-            "ex": "참고로 오브젝트가 Destroy되거나 비활성화되면 그 오브젝트의 코루틴도 같이 멈춰요."
+            "ex": "참고로 오브젝트가 Destroy되거나 SetActive(false)로 꺼지면 그 오브젝트의 코루틴도 같이 멈춰요. (스크립트만 끄는 enabled = false로는 안 멈춰요.)"
           }
         ]
       }
@@ -360,7 +360,7 @@
             "t": "read",
             "h": "Instantiate도 값을 돌려주는 함수예요",
             "code": "GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);\nb.GetComponent<Bullet>().damage = 20;",
-            "body": "<p>void가 아니라서 만든 오브젝트를 <b>돌려줘요</b>. 받아두면 그 총알에만 데미지를 따로 설정할 수 있어요. void 질문 기억나시죠? 이게 '부른 쪽이 받아서 쓰는' 경우예요.</p>"
+            "body": "<p>void가 아니라서 만든 오브젝트를 <b>돌려줘요</b>. 받아두면 그 총알에만 데미지를 따로 설정할 수 있어요. 기초 Day 4에서 배운 return 기억나죠? 이게 '부른 쪽이 받아서 쓰는' 경우예요.</p>"
           },
           {
             "t": "read",
@@ -931,7 +931,7 @@
             "t": "read",
             "h": "완성된 세이브 시스템",
             "code": "using System.IO;\n\nstring path => Application.persistentDataPath + \"/save.json\";\n\npublic void Save(SaveData data)\n{\n    string json = JsonUtility.ToJson(data);\n    File.WriteAllText(path, json);\n}\n\npublic SaveData Load()\n{\n    if (!File.Exists(path))\n        return new SaveData();   // 첫 플레이: 빈 데이터\n\n    string json = File.ReadAllText(path);\n    return JsonUtility.FromJson<SaveData>(json);\n}",
-            "body": "<p><code>persistentDataPath</code>는 PC, 모바일 어디서든 게임이 안전하게 파일을 쓸 수 있는 폴더예요. 위치 저장 질문에서 이야기했던 구조 그대로예요. <b>Save는 일만 하니 void, Load는 꺼내서 돌려주니 SaveData.</b></p><p><code>string path =&gt; ...</code>는 '부를 때마다 이 값을 계산해서 줘'라는 짧은 표현이에요.</p>"
+            "body": "<p><code>persistentDataPath</code>는 PC, 모바일 어디서든 게임이 안전하게 파일을 쓸 수 있는 폴더예요. <b>Save는 일만 하니 void, Load는 꺼내서 돌려주니 SaveData.</b></p><p><code>string path =&gt; ...</code>는 '부를 때마다 이 값을 계산해서 줘'라는 짧은 표현이에요.</p>"
           },
           {
             "t": "q",
@@ -958,14 +958,14 @@
             "q": "Save 함수가 void인 이유는?",
             "opts": ["저장이라는 일만 하고, 부른 쪽이 받을 값이 없어서", "파일은 void로만 쓸 수 있어서", "public이라서", "JSON이라서"],
             "a": 0,
-            "ex": "직접 질문하셨던 바로 그 기준이에요."
+            "ex": "돌려줄 값이 없으면 void, 있으면 그 자료형. 기초 Day 4에서 배운 기준 그대로예요."
           },
           {
             "t": "q",
             "q": "세이브 데이터에 '퀘스트 진행도'를 추가하려면 가장 먼저 고칠 곳은?",
             "opts": ["SaveData 클래스에 변수 추가", "File.WriteAllText", "persistentDataPath", "JsonUtility"],
             "a": 0,
-            "ex": "상자에 칸만 늘리면 저장·불러오기 코드는 그대로 동작해요. 심화 코스 완주, 축하해요! 🎉"
+            "ex": "상자에 칸만 늘리면 저장·불러오기 코드는 그대로 동작해요. 심화 Day 8에서 값과 참조의 원리를 다지면 심화 코스 끝이에요."
           }
         ]
       }
@@ -990,7 +990,7 @@
             "t": "read",
             "h": "값 형식은 통째로 복사",
             "code": "int a = 10;\nint b = a;     // a의 내용 10을 복사\nb = 99;\nDebug.Log(a);  // 10\n\nVector3 p1 = new Vector3(1f, 0f, 0f);\nVector3 p2 = p1;  // 세 숫자를 통째로 복사\np2.x = 5f;\nDebug.Log(p1.x);  // 1",
-            "body": "<p>값 형식은 <code>=</code>를 하면 <b>내용물을 복사</b>해서 새 상자에 넣어요. 그래서 b를 바꿔도 a는 그대로예요. 지난 Day의 '함수에 넘기면 복사된다'도 이 원리였어요.</p><p>Vector3는 new를 쓰지만 클래스가 아니라 <b>struct</b>(구조체)라는 값 형식이에요. 그래서 통째로 복사돼요.</p>"
+            "body": "<p>값 형식은 <code>=</code>를 하면 <b>내용물을 복사</b>해서 새 상자에 넣어요. 그래서 b를 바꿔도 a는 그대로예요. 기초 Day 8의 '함수에 넘기면 복사된다'도 이 원리였어요.</p><p>Vector3는 new를 쓰지만 클래스가 아니라 <b>struct</b>(구조체)라는 값 형식이에요. 그래서 통째로 복사돼요.</p>"
           },
           {
             "t": "q",
@@ -1025,7 +1025,7 @@
             "t": "read",
             "h": "집 주소를 적은 쪽지",
             "code": "Monster a = new Monster();\na.hp = 30;\n\nMonster b = a;   // 주소만 복사\nb.hp = 0;\n\nDebug.Log(a.hp); // 0 !",
-            "body": "<p>참조 형식 변수는 <b>몬스터가 사는 집 주소를 적은 쪽지</b>예요. <code>b = a</code>는 몬스터를 복제하는 게 아니라 <b>쪽지를 복사</b>하는 거예요. 같은 집을 가리키는 쪽지가 두 장이 됐을 뿐, 몬스터는 하나예요.</p><p>그래서 b로 찾아가 체력을 0으로 만들면, a로 찾아가도 체력 0인 그 몬스터를 만나요. Day 1의 'List b = a' 함정도 바로 이것이었어요.</p>"
+            "body": "<p>참조 형식 변수는 <b>몬스터가 사는 집 주소를 적은 쪽지</b>예요. <code>b = a</code>는 몬스터를 복제하는 게 아니라 <b>쪽지를 복사</b>하는 거예요. 같은 집을 가리키는 쪽지가 두 장이 됐을 뿐, 몬스터는 하나예요.</p><p>그래서 b로 찾아가 체력을 0으로 만들면, a로 찾아가도 체력 0인 그 몬스터를 만나요. 다지기 Day 1에서 만날 'List b = a' 함정도 바로 이 원리예요.</p>"
           },
           {
             "t": "read",
@@ -1048,12 +1048,12 @@
             "code": "void Kill(Monster m)\n{\n    m.hp = 0;\n}\n\nMonster slime = new Monster();\nslime.hp = 30;\nKill(slime);\nDebug.Log(slime.hp);",
             "opts": ["0", "30", "에러", "null"],
             "a": 0,
-            "hint": "Day 3의 AddTen(int)과 다른 점: 이번엔 참조 형식이 넘어갔어요.",
+            "hint": "기초 Day 8의 AddTen(int)과 다른 점: 이번엔 참조 형식이 넘어갔어요.",
             "ex": "함수에도 주소가 복사되어 넘어가요. 같은 몬스터를 찾아가 바꾸니 원본이 바뀌어요. int일 때와 결과가 다른 이유예요."
           },
           {
             "t": "q",
-            "q": "Day 3의 AddTen(int)은 원본이 안 바뀌고, Kill(Monster)는 원본이 바뀐 이유는?",
+            "q": "기초 Day 8의 AddTen(int)은 원본이 안 바뀌고, Kill(Monster)는 원본이 바뀐 이유는?",
             "opts": ["int는 값 형식(내용 복사), Monster는 참조 형식(주소 복사)", "Kill이 더 길어서", "Monster가 public이라서", "int는 static이라서"],
             "a": 0,
             "ex": "이 차이만 알아도 '왜 바뀌지? / 왜 안 바뀌지?' 버그의 절반이 풀려요."
@@ -1098,7 +1098,7 @@
             ],
             "a": 0,
             "mono": true,
-            "ex": "position과 같은 원리예요. (최신 유니티 버전에선 이름이 linearVelocity로 바뀌기도 했지만 방법은 같아요.)"
+            "ex": "position과 같은 원리예요. (최신 유니티 버전에선 이름이 linearVelocity로 바뀌기도 했지만 방법은 같아요.) 심화 코스 완주, 축하해요! 🎉"
           }
         ]
       }
