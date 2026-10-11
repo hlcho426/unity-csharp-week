@@ -1,0 +1,1127 @@
+[
+  {
+    "n": 1,
+    "title": "에셋은 언제 메모리에 올라갈까",
+    "lessons": [
+      {
+        "id": "s1l1",
+        "title": "직접 참조의 비밀",
+        "desc": "인스펙터 연결 = 미리 다 불러오기",
+        "recap": [
+          "인스펙터로 연결한 에셋은 씬(또는 그 오브젝트)이 로드될 때 같이 메모리에 올라간다",
+          "작은 게임은 문제없지만, 캐릭터·스테이지가 많아지면 메모리와 로딩 시간이 커진다",
+          "그래서 '필요할 때 불러오고, 다 쓰면 내리는' 방법이 필요하다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "지금까지의 방식",
+            "code": "[SerializeField] GameObject slimePrefab;\n[SerializeField] GameObject goblinPrefab;\n[SerializeField] GameObject dragonPrefab;   // 마지막 스테이지 보스",
+            "body": "<p>지금까지는 프리팹이나 데이터를 인스펙터에 드래그해서 연결했어요. 이걸 <b>직접 참조</b>라고 해요. 간단하고 확실해서 작은 게임엔 최고의 방법이에요.</p><p>그런데 숨은 규칙이 하나 있어요. 유니티는 씬을 불러올 때 <b>그 씬이 참조하는 모든 것</b>을 같이 메모리에 올려요. 연결된 프리팹이 쓰는 모델, 텍스처, 사운드까지 줄줄이요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "어떤 문제가 생기냐면",
+            "body": "<p>스포너에 몬스터 프리팹 100종을 연결해 두면, 1스테이지에서 슬라임만 나와도 <b>드래곤의 고해상도 텍스처까지</b> 처음부터 메모리에 올라와요.</p><ul class=\"terms\"><li><b>로딩이 길어져요</b> — 쓰지도 않을 걸 다 읽으니까요.</li><li><b>메모리가 부족해요</b> — 특히 모바일에서 앱이 강제 종료될 수 있어요.</li><li><b>업데이트가 무거워요</b> — 캐릭터 하나 추가해도 게임 전체를 다시 빌드·배포해야 해요.</li></ul><p>그래서 '<b>필요한 순간에 불러오고, 다 쓰면 내리는</b>' 방법이 필요해요. 유니티에는 그 방법이 두 가지 있어요. Resources와 Addressables. 다음 레슨에서 비교해요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "스포너 인스펙터에 몬스터 프리팹 50종을 연결했어요. 씬을 시작하면?",
+            "opts": ["50종의 모델·텍스처가 전부 메모리에 올라온다", "처음 생성될 때 하나씩 올라온다", "아무것도 안 올라온다", "첫 번째 것만 올라온다"],
+            "a": 0,
+            "hint": "직접 참조는 '씬이 로드될 때 같이' 올라와요.",
+            "ex": "직접 참조는 미리 다 불러와요. 그래서 많을수록 무거워져요."
+          },
+          {
+            "t": "q",
+            "q": "직접 참조가 가장 잘 맞는 경우는?",
+            "opts": ["항상 쓰는 플레이어 프리팹, UI 등 꼭 필요한 소수", "캐릭터 200종의 일러스트", "DLC로 추가될 스테이지", "시즌마다 바뀌는 이벤트 아이템"],
+            "a": 0,
+            "ex": "항상 필요한 건 미리 올려두는 게 오히려 빠르고 간단해요. 많고, 가끔 쓰고, 나중에 바뀌는 것이 문제예요."
+          }
+        ]
+      },
+      {
+        "id": "s1l2",
+        "title": "Resources 폴더",
+        "desc": "가장 간단한 동적 로딩과 그 한계",
+        "recap": [
+          "Resources라는 이름의 폴더에 넣으면 Resources.Load로 경로로 불러올 수 있다",
+          "경로는 Resources 기준, 확장자 없이",
+          "폴더 안의 모든 것이 무조건 빌드에 포함되고 시작 시 목록 처리 비용이 든다",
+          "유니티 공식적으로도 큰 프로젝트에선 비추천 → Addressables"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "이름으로 불러오기",
+            "code": "// 파일 위치: Assets/Resources/Monsters/Slime.prefab\n\nGameObject prefab = Resources.Load<GameObject>(\"Monsters/Slime\");\nInstantiate(prefab, pos, Quaternion.identity);",
+            "body": "<p>프로젝트 어디든 <b>Resources</b>라는 이름의 폴더를 만들고 그 안에 넣으면, 코드에서 <b>경로 글자</b>로 불러올 수 있어요. 인스펙터 연결이 필요 없고, 부르는 순간에 메모리에 올라와요.</p>",
+            "terms": [
+              "경로는 <b>Resources 폴더 안에서부터</b> 써요. Assets/Resources/는 빼요.",
+              "<b>확장자(.prefab)는 빼요.</b>",
+              "못 찾으면 에러 대신 <b>null</b>을 돌려줘요."
+            ]
+          },
+          {
+            "t": "read",
+            "h": "편한데 왜 비추천일까",
+            "body": "<ul class=\"terms\"><li><b>무조건 빌드에 들어가요.</b> 안 쓰는 파일도 Resources에 있으면 게임 용량에 포함돼요.</li><li><b>시작이 느려져요.</b> 게임이 켜질 때 Resources 안의 목록을 정리하는 작업을 해서, 파일이 많을수록 앱 시작이 느려져요.</li><li><b>나중에 교체가 안 돼요.</b> 게임 안에 구워져 있어서, 캐릭터 하나 고치려 해도 앱 전체를 다시 배포해야 해요.</li><li><b>경로 오타는 실행해봐야 알아요.</b> 폴더 이름만 바꿔도 조용히 null이 돼요.</li></ul><p>그래서 유니티도 작은 프로토타입이나 아주 적은 양에만 권장하고, 본격적인 프로젝트에는 <b>Addressables</b>를 권해요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "Assets/Resources/Items/Potion.asset 을 불러오는 코드는?",
+            "opts": [
+              "Resources.Load<ItemData>(\"Items/Potion\")",
+              "Resources.Load<ItemData>(\"Assets/Resources/Items/Potion.asset\")",
+              "Resources.Load<ItemData>(\"Potion.asset\")",
+              "Resources.Load(\"Resources/Items/Potion\")"
+            ],
+            "a": 0,
+            "mono": true,
+            "hint": "Resources 폴더 안에서부터, 확장자 없이.",
+            "ex": "Resources 기준 경로 + 확장자 없음. 자주 틀리는 두 가지예요."
+          },
+          {
+            "t": "q",
+            "q": "Resources 폴더 이름을 Resource로 바꾸면?",
+            "opts": ["Load가 null을 돌려준다 (조용히 실패)", "자동으로 고쳐진다", "컴파일 에러", "더 빨라진다"],
+            "a": 0,
+            "ex": "폴더 이름이 정확히 Resources여야 해요. 에러 없이 null이라 이어지는 줄에서 NullReference로 터져요."
+          },
+          {
+            "t": "q",
+            "q": "Resources의 단점이 아닌 것은?",
+            "opts": ["코드 한 줄로 불러올 수 있다", "안 쓰는 파일도 빌드에 포함된다", "파일이 많으면 앱 시작이 느려진다", "게임 출시 후 교체가 어렵다"],
+            "a": 0,
+            "ex": "간편함은 장점이에요. 그래서 처음엔 매력적이지만 커질수록 발목을 잡아요."
+          }
+        ]
+      },
+      {
+        "id": "s1l3",
+        "title": "동기와 비동기",
+        "desc": "왜 Addressables는 기다려야 할까",
+        "recap": [
+          "동기 = 끝날 때까지 게임이 멈춰 기다림",
+          "비동기 = 요청만 해두고 게임은 계속, 끝나면 알려줌",
+          "큰 파일, 네트워크 다운로드는 비동기여야 화면이 안 멈춘다",
+          "Addressables는 기본이 비동기"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "식당에 비유하면",
+            "body": "<p><b>동기</b>는 카운터에서 주문하고 음식이 나올 때까지 <b>그 자리에 서서</b> 기다리는 거예요. 뒤에 줄 선 사람들(게임의 다른 일)도 전부 멈춰요.</p><p><b>비동기</b>는 주문하고 <b>진동벨</b>을 받아서 자리에 앉는 거예요. 그동안 다른 일을 하다가, 벨이 울리면 음식을 받으러 가요.</p><p><code>Resources.Load</code>는 동기예요. 파일이 크면 그 줄에서 게임이 잠깐 멈춰서 화면이 툭 끊겨요. 서버에서 받아오는 거라면 몇 초씩 멈출 수도 있죠. 그래서 Addressables는 <b>기본이 비동기</b>예요. 함수 이름에 Async가 붙어 있어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "이미 비동기를 써봤어요",
+            "code": "IEnumerator Explode()\n{\n    yield return new WaitForSeconds(3f);\n    Destroy(gameObject);\n}",
+            "body": "<p>코루틴의 '기다리는 동안 게임은 계속 돌고, 때가 되면 이어서 실행'이 바로 비동기 감각이에요. Addressables의 로딩도 코루틴으로 기다릴 수 있어서, 이미 배운 것과 같은 모양으로 쓸 수 있어요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "비동기 로딩의 가장 큰 장점은?",
+            "opts": ["불러오는 동안 화면과 게임이 멈추지 않는다", "파일이 작아진다", "코드가 짧아진다", "항상 더 빨리 끝난다"],
+            "a": 0,
+            "ex": "총 시간이 줄어드는 게 아니라, 기다리는 동안 다른 일을 할 수 있는 거예요. 로딩 화면 애니메이션이 부드럽게 도는 이유예요."
+          },
+          {
+            "t": "q",
+            "q": "유니티 API에서 이름 끝에 Async가 붙은 함수는 보통?",
+            "opts": ["결과가 바로 오지 않고, 나중에 완료된다", "즉시 결과를 돌려준다", "에디터에서만 동작한다", "static 함수다"],
+            "a": 0,
+            "ex": "Async = 비동기. 결과를 받으려면 기다리는 코드가 필요해요. 다음 Day에서 그 방법을 배워요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 2,
+    "title": "Addressables 기초",
+    "lessons": [
+      {
+        "id": "s2l1",
+        "title": "Addressables의 구조",
+        "desc": "주소, 그룹, 라벨",
+        "recap": [
+          "Address(주소) = 에셋에 붙이는 이름표 문자열",
+          "Group(그룹) = 함께 묶여 저장·로드되는 단위 (빌드 시 번들 파일이 됨)",
+          "Label(라벨) = 여러 에셋에 붙이는 태그, 한꺼번에 불러올 때",
+          "에셋 위치·폴더가 바뀌어도 주소는 그대로"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "Addressables의 핵심 아이디어",
+            "body": "<p>Addressables(어드레서블)는 이름 그대로 '<b>주소로 찾을 수 있는</b>' 에셋이에요. 에셋마다 주소(이름표)를 붙여두고, 코드에서는 그 주소로 '이거 불러와줘'라고 요청해요.</p><p>택배 시스템과 비슷해요. 물건이 어느 창고(내 컴퓨터, 게임 안, 인터넷 서버)에 있는지 신경 쓰지 않고 <b>주소만 알려주면</b> 알아서 찾아서 배달해줘요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "세 가지 용어",
+            "body": "<ul class=\"terms\"><li><b>Address(주소)</b> — 에셋 하나의 이름표. 예: <code>\"Monster/Slime\"</code>. 인스펙터 상단의 Addressable 체크박스를 켜면 생기고, 원하는 이름으로 바꿀 수 있어요. 파일을 다른 폴더로 옮겨도 주소는 그대로라 코드가 안 깨져요.</li><li><b>Group(그룹)</b> — 에셋들을 묶는 상자. 빌드하면 그룹이 <b>번들(bundle)</b> 파일로 만들어져요. 같은 그룹은 함께 저장되니까, '1스테이지 에셋', '캐릭터 일러스트'처럼 <b>같이 쓰이는 것끼리</b> 묶어요.</li><li><b>Label(라벨)</b> — 여러 에셋에 붙이는 태그. 예: 모든 몬스터 아이콘에 <code>\"MonsterIcon\"</code> 라벨을 붙이면 한 번에 전부 불러올 수 있어요.</li></ul><p>설치는 Package Manager에서 <b>Addressables</b> 패키지를 추가하고, Window → Asset Management → Addressables → Groups 창에서 관리해요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "에디터에서 테스트할 때 알아둘 것",
+            "body": "<p>Groups 창의 <b>Play Mode Script</b>에서 'Use Asset Database'를 고르면, 빌드 없이 에디터에서 바로 테스트할 수 있어요. 개발 중엔 이게 제일 편해요.</p><p>다만 실제 게임(빌드)에서는 번들 파일이 있어야 하니까, 게임을 빌드하기 전에 Groups 창에서 <b>Addressables 빌드</b>를 해야 해요. (최근 버전은 플레이어 빌드 때 같이 빌드하는 옵션도 있어요.) 에디터에선 되는데 빌드하면 안 되는 문제의 대표 원인이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "'1스테이지에서만 쓰는 배경, 몬스터, 음악'을 함께 관리하려면?",
+            "opts": ["같은 Group으로 묶는다", "같은 Address를 붙인다", "Resources에 넣는다", "모두 직접 참조한다"],
+            "a": 0,
+            "hint": "함께 저장되고 함께 불려오는 단위가 무엇이었죠?",
+            "ex": "같이 쓰이는 것끼리 같은 그룹. 그래야 1스테이지 진입 시 한 묶음으로 효율적으로 불러와요."
+          },
+          {
+            "t": "q",
+            "q": "모든 캐릭터 초상화를 한꺼번에 불러오고 싶을 때 붙이는 것은?",
+            "opts": ["Label", "Group 이름", "Address 번호", "Tag (게임 오브젝트 태그)"],
+            "a": 0,
+            "ex": "Label은 여러 에셋에 같은 태그를 붙여 한 번에 찾는 용도예요. 게임 오브젝트 Tag와는 다른 기능이에요."
+          },
+          {
+            "t": "q",
+            "q": "에디터에선 잘 되는데 빌드한 게임에서 Addressables 로딩이 실패해요. 가장 먼저 확인할 것은?",
+            "opts": ["Addressables 빌드(번들 생성)를 했는지", "Time.deltaTime", "카메라 설정", "스크립트 이름"],
+            "a": 0,
+            "ex": "에디터의 Use Asset Database 모드는 번들 없이도 동작해서, 빌드를 깜빡하기 쉬워요."
+          }
+        ]
+      },
+      {
+        "id": "s2l2",
+        "title": "불러오고 기다리기",
+        "desc": "LoadAssetAsync, handle, Completed",
+        "recap": [
+          "Addressables.LoadAssetAsync<T>(주소) → handle(진동벨)을 돌려줌",
+          "기다리는 법 1: handle.Completed += 함수",
+          "기다리는 법 2: 코루틴에서 yield return handle",
+          "결과는 handle.Result, 성공 여부는 handle.Status"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "진동벨 받기",
+            "code": "using UnityEngine.AddressableAssets;\nusing UnityEngine.ResourceManagement.AsyncOperations;\n\nAsyncOperationHandle<GameObject> handle =\n    Addressables.LoadAssetAsync<GameObject>(\"Monster/Slime\");",
+            "body": "<p><code>LoadAssetAsync</code>는 결과를 바로 주지 않고 <b>handle</b>(핸들)을 돌려줘요. 식당 진동벨이에요. 이 벨로 '다 됐나?', '결과는?'을 확인하고, 나중에 '이제 필요 없어요'라고 반납할 때도 써요.</p><p>자료형 이름이 길어 보이지만 '<b>GameObject를 불러오는 작업의 핸들</b>'이라고 읽으면 돼요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "기다리는 법 1: 다 되면 불러줘 (이벤트)",
+            "code": "void Start()\n{\n    var handle = Addressables.LoadAssetAsync<GameObject>(\"Monster/Slime\");\n    handle.Completed += OnLoaded;\n}\n\nvoid OnLoaded(AsyncOperationHandle<GameObject> h)\n{\n    if (h.Status == AsyncOperationStatus.Succeeded)\n    {\n        Instantiate(h.Result, Vector3.zero, Quaternion.identity);\n    }\n    else\n    {\n        Debug.LogError(\"슬라임 로드 실패\");\n    }\n}",
+            "body": "<p>심화 코스의 이벤트와 같아요. <code>Completed += 함수</code>로 '다 되면 이 함수 불러줘'라고 맡겨요. 로딩이 끝나면 OnLoaded가 불리고, 결과는 <code>h.Result</code>에 들어 있어요.</p><p>주소 오타나 빌드 누락으로 <b>실패할 수도 있으니</b> Status를 확인하는 습관이 중요해요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "기다리는 법 2: 코루틴으로",
+            "code": "IEnumerator Spawn()\n{\n    var handle = Addressables.LoadAssetAsync<GameObject>(\"Monster/Slime\");\n    yield return handle;   // 다 될 때까지 기다림\n\n    if (handle.Status == AsyncOperationStatus.Succeeded)\n        Instantiate(handle.Result, Vector3.zero, Quaternion.identity);\n}",
+            "body": "<p>핸들은 <code>yield return</code>으로 기다릴 수 있어요. WaitForSeconds 대신 '<b>로딩 끝날 때까지</b>' 기다리는 거예요. 위에서 아래로 순서대로 읽혀서 처음엔 이쪽이 이해하기 쉬워요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "LoadAssetAsync를 부른 바로 다음 줄에서 handle.Result를 쓰면?",
+            "opts": ["아직 로딩이 안 끝나 null일 수 있다", "항상 결과가 들어 있다", "에러로 컴파일 안 됨", "자동으로 기다려준다"],
+            "a": 0,
+            "hint": "비동기 = 진동벨을 받았을 뿐, 음식은 아직이에요.",
+            "ex": "기다리지 않고 꺼내면 아직 비어 있어요. Completed나 yield return으로 기다려야 해요."
+          },
+          {
+            "t": "build",
+            "q": "코루틴에서 로딩이 끝날 때까지 기다리는 줄을 조립하세요",
+            "answer": ["yield", "return", "handle;"],
+            "extra": ["WaitForSeconds", "handle.Result;"],
+            "ex": "yield return handle; — 핸들 자체를 기다려요."
+          },
+          {
+            "t": "q",
+            "q": "로딩 성공 여부를 확인하는 조건은?",
+            "opts": ["h.Status == AsyncOperationStatus.Succeeded", "h.Result == true", "h.IsDone == false", "h != null"],
+            "a": 0,
+            "mono": true,
+            "ex": "IsDone은 '끝났나'일 뿐, 성공했는지는 Status로 봐요."
+          }
+        ]
+      },
+      {
+        "id": "s2l3",
+        "title": "다 쓰면 반납하기",
+        "desc": "Release와 참조 카운트",
+        "recap": [
+          "Load 할 때마다 '사용 중' 카운트 +1, Release 하면 -1",
+          "카운트가 0이 되면 메모리에서 내린다",
+          "Release를 안 하면 계속 메모리에 남는다 (메모리 누수)",
+          "InstantiateAsync로 만든 건 ReleaseInstance로 지운다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "도서관 대출과 같아요",
+            "code": "var handle = Addressables.LoadAssetAsync<GameObject>(\"Monster/Slime\");\n// ... 사용 ...\nAddressables.Release(handle);   // 반납",
+            "body": "<p>Addressables는 에셋을 몇 명이 빌려갔는지 <b>세고 있어요</b>(참조 카운트). Load 할 때마다 +1, Release 할 때마다 -1. 아무도 안 빌린 상태(0)가 되면 메모리에서 내려요.</p><p>그래서 <b>빌렸으면 반납</b>해야 해요. 반납을 안 하면 아무도 안 쓰는데도 계속 메모리를 차지해요. 이걸 <b>메모리 누수</b>라고 해요. 스테이지를 오갈 때마다 쌓이면 결국 앱이 꺼져요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "언제 반납하나",
+            "code": "AsyncOperationHandle<GameObject> slimeHandle;\n\nIEnumerator Start()\n{\n    slimeHandle = Addressables.LoadAssetAsync<GameObject>(\"Monster/Slime\");\n    yield return slimeHandle;\n}\n\nvoid OnDestroy()\n{\n    if (slimeHandle.IsValid())\n        Addressables.Release(slimeHandle);\n}",
+            "body": "<p>핸들을 클래스 칸에 보관해 두고, 이 스크립트가 사라질 때(OnDestroy) 반납하는 게 기본 패턴이에요. 심화 코스의 '구독했으면 해지까지 한 세트'와 같은 감각이에요. <b>Load와 Release는 한 쌍.</b></p><p>참고로 Start를 <code>IEnumerator Start()</code>로 쓰면 Start 자체가 코루틴이 돼요. 유니티가 지원하는 편리한 문법이에요.</p><p>주의: 프리팹을 반납해서 메모리에서 내려가면, 그걸로 이미 만들어둔 오브젝트의 텍스처·재질이 깨질 수 있어요(분홍색). 그래서 <b>그 프리팹으로 만든 것들이 다 사라진 뒤</b>에 반납해요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "만들기까지 한 번에: InstantiateAsync",
+            "code": "var h = Addressables.InstantiateAsync(\"Monster/Slime\", pos, Quaternion.identity);\nyield return h;\nGameObject slime = h.Result;\n\n// 지울 때는 Destroy 대신\nAddressables.ReleaseInstance(slime);",
+            "body": "<p>불러오기 + Instantiate를 한 번에 해주는 함수예요. 오브젝트 하나마다 카운트가 관리돼서, 지울 때 <code>ReleaseInstance</code>를 쓰면 카운트까지 정리돼요. 마지막 하나가 지워지면 프리팹도 자동으로 내려가요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "스테이지를 나갈 때 Release를 안 하고, 그 스테이지를 10번 오가면?",
+            "opts": ["안 쓰는 에셋이 메모리에 남아 쌓일 수 있다", "자동으로 정리된다", "에러가 난다", "더 빨라진다"],
+            "a": 0,
+            "ex": "참조 카운트가 0이 안 되니까 계속 남아요. 메모리 누수의 전형이에요."
+          },
+          {
+            "t": "build",
+            "q": "보관해둔 handle을 반납하는 줄을 조립하세요",
+            "answer": ["Addressables.Release(", "handle", ");"],
+            "join": "",
+            "extra": ["Destroy(", "handle.Result"],
+            "ex": "Addressables.Release(handle);"
+          },
+          {
+            "t": "q",
+            "q": "InstantiateAsync로 만든 몬스터를 지울 때 알맞은 것은?",
+            "opts": [
+              "Addressables.ReleaseInstance(monster);",
+              "Destroy(monster); 만",
+              "Addressables.Release(monster.name);",
+              "아무것도 안 해도 됨"
+            ],
+            "a": 0,
+            "mono": true,
+            "hint": "만든 방법과 지우는 방법을 짝지어야 카운트가 맞아요.",
+            "ex": "InstantiateAsync ↔ ReleaseInstance가 한 쌍이에요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 3,
+    "title": "Addressables 실전",
+    "lessons": [
+      {
+        "id": "s3l1",
+        "title": "AssetReference",
+        "desc": "인스펙터에서 고르고, 필요할 때 로드",
+        "recap": [
+          "AssetReference는 '나중에 불러올 에셋'을 인스펙터에서 고르는 칸",
+          "주소 문자열 오타 걱정이 없다",
+          "직접 참조와 달리 씬 로드 때 미리 올라오지 않는다",
+          "ref.LoadAssetAsync<T>() / ref.ReleaseAsset()"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "주소 문자열의 불안함",
+            "code": "Addressables.LoadAssetAsync<GameObject>(\"Monster/Slmie\");   // 오타!",
+            "body": "<p>주소는 글자라서, 오타가 나면 실행해봐야 알아요. Animator 파라미터, Resources 경로와 같은 문제죠. 그래서 Addressables에는 <b>인스펙터에서 고르는 방법</b>도 있어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "AssetReference",
+            "code": "[SerializeField] AssetReferenceGameObject bossRef;\n\nIEnumerator SpawnBoss()\n{\n    var h = bossRef.LoadAssetAsync<GameObject>();\n    yield return h;\n    Instantiate(h.Result, spawnPoint.position, Quaternion.identity);\n}\n\nvoid OnDestroy()\n{\n    bossRef.ReleaseAsset();\n}",
+            "body": "<p><code>AssetReferenceGameObject</code> 칸은 인스펙터에서 Addressable 에셋을 드래그해 고를 수 있어요. 겉보기엔 직접 참조와 비슷한데 결정적인 차이가 있어요.</p><ul class=\"terms\"><li><b>직접 참조</b>: 씬 로드 때 보스 모델까지 바로 메모리에 올라옴</li><li><b>AssetReference</b>: '어떤 에셋인지'만 기억하고, <b>LoadAssetAsync를 부를 때</b> 비로소 올라옴</li></ul><p>그림을 거는 것과 그림이 걸린 위치를 적어둔 메모의 차이예요. 이미지용 <code>AssetReferenceSprite</code>, 아무 타입이나 되는 <code>AssetReferenceT&lt;T&gt;</code>도 있어요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "AssetReference가 직접 참조보다 나은 점은?",
+            "opts": ["실제로 로드할 때까지 메모리에 안 올라온다", "코드가 필요 없다", "항상 더 빠르다", "Release가 필요 없다"],
+            "a": 0,
+            "ex": "선택은 인스펙터에서 편하게, 로드는 필요한 순간에."
+          },
+          {
+            "t": "q",
+            "q": "AssetReference가 주소 문자열보다 나은 점은?",
+            "opts": ["인스펙터에서 골라서 오타가 없다", "메모리를 안 쓴다", "비동기가 아니다", "빌드가 필요 없다"],
+            "a": 0,
+            "ex": "글자 오타 걱정 없이, 에셋을 옮기거나 주소를 바꿔도 연결이 유지돼요."
+          },
+          {
+            "t": "build",
+            "q": "bossRef로 불러온 에셋을 반납하는 줄을 조립하세요",
+            "answer": ["bossRef", ".ReleaseAsset", "();"],
+            "join": "",
+            "extra": ["Addressables", ".Destroy"],
+            "ex": "bossRef.ReleaseAsset(); — AssetReference는 자기 자신으로 반납할 수 있어요."
+          }
+        ]
+      },
+      {
+        "id": "s3l2",
+        "title": "라벨로 한꺼번에",
+        "desc": "LoadAssetsAsync",
+        "recap": [
+          "LoadAssetsAsync<T>(라벨, 콜백) — 라벨이 붙은 것 전부",
+          "결과는 IList<T> (목록)",
+          "콜백은 하나씩 로드될 때마다 불린다 (null이면 생략)",
+          "목록 전체가 핸들 하나 → Release도 한 번"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "아이콘 전부 불러오기",
+            "code": "AsyncOperationHandle<IList<Sprite>> iconHandle;\n\nIEnumerator LoadIcons()\n{\n    iconHandle = Addressables.LoadAssetsAsync<Sprite>(\"MonsterIcon\", null);\n    yield return iconHandle;\n\n    foreach (Sprite icon in iconHandle.Result)\n    {\n        Debug.Log(\"로드: \" + icon.name);\n    }\n}",
+            "body": "<p>함수 이름이 Asset<b>s</b>로 복수형이에요. 라벨 \"MonsterIcon\"이 붙은 스프라이트를 <b>전부</b> 불러와서, 결과로 <b>목록(IList)</b>을 줘요. IList는 'List처럼 쓸 수 있는 목록'이라고 보면 돼요. foreach로 돌 수 있어요.</p><p>두 번째 칸은 '하나씩 로드될 때마다 불러줄 함수'인데, 필요 없으면 null을 넣어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "목록을 Dictionary로 정리하기",
+            "code": "Dictionary<string, Sprite> icons = new Dictionary<string, Sprite>();\n\nforeach (Sprite icon in iconHandle.Result)\n{\n    icons[icon.name] = icon;\n}\n\n// 나중에\nportrait.sprite = icons[\"Slime\"];",
+            "body": "<p>다지기 코스의 Dictionary가 여기서 등장해요. 불러온 목록을 이름으로 정리해 두면, 몬스터 이름만으로 아이콘을 바로 꺼낼 수 있어요. '<b>한꺼번에 불러와서 이름표로 정리</b>'는 실무에서 정말 자주 쓰는 조합이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "라벨 \"Stage1\"이 붙은 GameObject를 전부 불러오는 함수는?",
+            "opts": [
+              "Addressables.LoadAssetsAsync<GameObject>(\"Stage1\", null)",
+              "Addressables.LoadAssetAsync<GameObject>(\"Stage1\")",
+              "Resources.LoadAll(\"Stage1\")",
+              "Addressables.Load(\"Stage1\")"
+            ],
+            "a": 0,
+            "mono": true,
+            "hint": "여러 개면 이름도 복수형이에요.",
+            "ex": "LoadAssets(복수)Async + 라벨. 단수형에 라벨을 넣으면 하나만 와요."
+          },
+          {
+            "t": "q",
+            "q": "iconHandle로 아이콘 30개를 불러왔어요. 반납은?",
+            "opts": ["Addressables.Release(iconHandle); 한 번", "아이콘마다 30번 Release", "반납 불필요", "icons.Clear()로 충분"],
+            "a": 0,
+            "ex": "핸들 하나로 빌렸으니 핸들 하나로 반납해요. Dictionary를 비우는 건 내 목록만 지울 뿐 메모리 반납이 아니에요."
+          }
+        ]
+      },
+      {
+        "id": "s3l3",
+        "title": "그룹 전략과 원격 배포",
+        "desc": "Local, Remote, 카탈로그",
+        "recap": [
+          "Local 그룹 = 게임 안에 포함 / Remote 그룹 = 서버에서 다운로드",
+          "Remote를 쓰면 앱 재배포 없이 콘텐츠를 추가·교체할 수 있다",
+          "카탈로그 = 어떤 주소가 어느 번들에 있는지 적힌 목록",
+          "그룹은 '함께 쓰이는 것'과 '함께 바뀌는 것' 기준으로"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "Addressables의 진짜 힘",
+            "body": "<p>그룹마다 '어디에 둘지'를 정할 수 있어요.</p><ul class=\"terms\"><li><b>Local</b> — 게임 설치 파일 안에 포함. 처음부터 필요한 것 (타이틀, 튜토리얼, 기본 캐릭터).</li><li><b>Remote</b> — 인터넷 서버(CDN)에 올려두고 필요할 때 다운로드. 이벤트 캐릭터, 추가 스테이지, 시즌 콘텐츠.</li></ul><p>Remote의 핵심은 <b>앱을 다시 배포하지 않고도</b> 서버의 파일만 바꿔서 콘텐츠를 추가하거나 고칠 수 있다는 거예요. 모바일 게임이 '추가 데이터 다운로드'를 하는 게 이 방식이에요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "카탈로그",
+            "body": "<p>게임은 '이 주소는 어느 번들 파일에 있고, 그 파일은 어디서 받으면 되는지'를 적은 <b>카탈로그(catalog)</b>라는 목록을 갖고 있어요. 원격 콘텐츠를 업데이트하면 새 카탈로그를 서버에 올리고, 게임이 시작할 때 '카탈로그 바뀌었나?' 확인해서 새 내용을 받아요.</p><p>지금은 개념만 알아두면 충분해요. 1인 개발이라면 처음엔 <b>전부 Local</b>로 시작하고, 출시 후 업데이트가 필요해질 때 Remote를 고려해도 늦지 않아요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "그룹 나누는 기준",
+            "body": "<ul class=\"terms\"><li><b>함께 쓰이는 것끼리</b> — 3스테이지 배경·몬스터·음악. 같이 불러오고 같이 내려요.</li><li><b>함께 바뀌는 것끼리</b> — 자주 업데이트되는 이벤트 에셋은 따로. 그래야 업데이트할 때 바뀐 묶음만 다시 받아요.</li><li><b>너무 크게 한 덩어리로 만들지 않기</b> — 거대 그룹 하나면 아이콘 하나 쓰려고 전부 받아야 할 수 있어요.</li></ul>"
+          },
+          {
+            "t": "q",
+            "q": "앱 재설치 없이 이벤트 캐릭터를 추가하고 싶다면 그 캐릭터 그룹은?",
+            "opts": ["Remote", "Local", "Resources", "직접 참조"],
+            "a": 0,
+            "ex": "서버의 번들과 카탈로그만 업데이트하면 돼요."
+          },
+          {
+            "t": "q",
+            "q": "카탈로그의 역할은?",
+            "opts": ["주소가 어느 번들에 있고 어디서 받는지 알려주는 목록", "에셋 자체를 담은 파일", "세이브 데이터", "라벨 목록만 저장"],
+            "a": 0,
+            "ex": "주소록이에요. 주소로 요청하면 카탈로그를 보고 번들을 찾아요."
+          },
+          {
+            "t": "q",
+            "q": "튜토리얼 스테이지와 매주 바뀌는 이벤트 배너를 같은 그룹에 넣으면 생기는 문제는?",
+            "opts": ["배너만 바꿔도 튜토리얼까지 묶인 번들 전체를 다시 받아야 한다", "튜토리얼이 안 열린다", "라벨이 사라진다", "문제 없음"],
+            "a": 0,
+            "hint": "'함께 바뀌는 것끼리' 기준을 떠올려 보세요.",
+            "ex": "자주 바뀌는 건 따로 떼어야 업데이트가 가벼워요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 4,
+    "title": "외부 테이블 읽기: CSV",
+    "lessons": [
+      {
+        "id": "s4l1",
+        "title": "CSV와 TextAsset",
+        "desc": "표를 글자로",
+        "recap": [
+          "CSV = 쉼표로 칸을 나눈 표 (엑셀·구글 시트에서 내보내기)",
+          "유니티에 넣으면 TextAsset, .text로 전체 글자를 읽는다",
+          "첫 줄은 보통 헤더(칸 이름)",
+          "한 줄 = 캐릭터 하나 → 클래스 하나"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "기획 테이블을 게임으로",
+            "code": "id,name,hp,atk,speed\nhero_01,루나,120,15,5.5\nhero_02,솔,90,22,6.0\nhero_03,테라,200,10,4.2",
+            "body": "<p>캐릭터 수치를 엑셀이나 구글 시트로 관리하는 경우가 많죠. 그 표를 <b>CSV</b>(Comma-Separated Values)로 내보내면 위처럼 <b>쉼표로 칸을 구분한 글자 파일</b>이 돼요. 엑셀은 '다른 이름으로 저장 → CSV', 구글 시트는 '파일 → 다운로드 → CSV'로 만들 수 있어요.</p><p>첫 줄은 칸 이름(헤더), 그다음부터 한 줄이 캐릭터 하나예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "유니티로 가져오기",
+            "code": "[SerializeField] TextAsset characterCsv;\n\nvoid Start()\n{\n    string all = characterCsv.text;\n    Debug.Log(all);\n}",
+            "body": "<p>.csv나 .txt, .json 파일을 프로젝트에 넣으면 유니티는 <b>TextAsset</b>으로 인식해요. 인스펙터 칸에 드래그해서 연결하고, <code>.text</code>로 파일 전체 내용을 글자 하나로 받아요.</p><p>이제 할 일은 이 긴 글자를 <b>줄로 자르고, 쉼표로 자르고, 숫자로 바꿔서</b> 클래스에 담는 거예요. 이 과정을 <b>파싱(parsing)</b>이라고 해요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "한 줄을 담을 그릇",
+            "code": "[System.Serializable]\npublic class CharacterRow\n{\n    public string id;\n    public string name;\n    public int hp;\n    public int atk;\n    public float speed;\n}",
+            "body": "<p>표의 칸 하나하나가 변수 하나예요. 다지기 코스에서 배운 '<b>관련된 값을 클래스로 묶기</b>' 그대로예요. 표의 한 줄 = CharacterRow 객체 하나, 표 전체 = <code>List&lt;CharacterRow&gt;</code>.</p>"
+          },
+          {
+            "t": "q",
+            "q": "CSV 파일을 인스펙터 칸에 연결하려면 칸의 자료형은?",
+            "opts": ["TextAsset", "string", "CharacterRow", "GameObject"],
+            "a": 0,
+            "mono": true,
+            "ex": "유니티가 텍스트 파일을 TextAsset으로 가져와요. 그 안의 글자는 .text."
+          },
+          {
+            "t": "q",
+            "q": "위 CSV에서 '솔'의 atk는?",
+            "opts": ["22", "90", "6.0", "15"],
+            "a": 0,
+            "hint": "헤더 순서: id, name, hp, atk, speed",
+            "ex": "hero_02,솔,90,22,6.0 → 네 번째 칸이 atk."
+          },
+          {
+            "t": "q",
+            "q": "표의 한 줄을 담기에 가장 알맞은 것은?",
+            "opts": ["CharacterRow 클래스의 객체 하나", "string 하나", "int 배열", "Dictionary 하나"],
+            "a": 0,
+            "ex": "칸마다 자료형이 다르니 클래스로 묶어요."
+          }
+        ]
+      },
+      {
+        "id": "s4l2",
+        "title": "자르고 바꾸기",
+        "desc": "Split, Trim, int.Parse",
+        "recap": [
+          "text.Split('\\n') 줄로, line.Split(',') 칸으로",
+          "Trim()으로 앞뒤 공백·\\r 제거",
+          "int.Parse / float.Parse로 글자 → 숫자",
+          "float은 CultureInfo.InvariantCulture로 (나라별 소수점 문제)",
+          "빈 줄과 헤더(0번 줄)는 건너뛴다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "줄로 자르고, 칸으로 자르기",
+            "code": "string[] lines = characterCsv.text.Split('\\n');\n\nfor (int i = 1; i < lines.Length; i++)      // 0번은 헤더라 1부터\n{\n    string line = lines[i].Trim();\n    if (line == \"\") continue;                // 빈 줄 건너뛰기\n\n    string[] cols = line.Split(',');\n    // cols[0] = \"hero_01\", cols[1] = \"루나\", cols[2] = \"120\" ...\n}",
+            "body": "<p><code>Split</code>은 '<b>이 글자를 기준으로 잘라서 배열로</b> 줘'예요. 작은따옴표 <code>'\\n'</code>은 글자 하나(char)라는 뜻이고, <code>\\n</code>은 줄바꿈 기호예요.</p>",
+            "terms": [
+              "<code>i = 1</code>부터 — 0번 줄은 헤더(칸 이름)라서 건너뛰어요.",
+              "<code>Trim()</code> — 앞뒤 공백 제거. 윈도우에서 만든 파일은 줄 끝에 보이지 않는 <code>\\r</code>이 붙어 있어서 꼭 필요해요.",
+              "<code>continue</code> — 이번 바퀴는 건너뛰고 다음 줄로. 파일 끝의 빈 줄 때문에 자주 필요해요."
+            ]
+          },
+          {
+            "t": "read",
+            "h": "글자를 숫자로",
+            "code": "using System.Globalization;\n\nCharacterRow row = new CharacterRow();\nrow.id    = cols[0];\nrow.name  = cols[1];\nrow.hp    = int.Parse(cols[2]);\nrow.atk   = int.Parse(cols[3]);\nrow.speed = float.Parse(cols[4], CultureInfo.InvariantCulture);",
+            "body": "<p>잘라낸 칸은 전부 <b>글자</b>예요. \"120\"은 숫자 120이 아니라 글자 '1', '2', '0'이에요. 그래서 <code>int.Parse</code>로 숫자로 바꿔야 계산할 수 있어요.</p><p>float에 붙은 <code>CultureInfo.InvariantCulture</code>는 함정 방지예요. 독일, 프랑스 등 일부 나라 설정의 컴퓨터는 소수점을 쉼표로 써서, \"5.5\"를 제대로 못 읽거나 55로 읽을 수 있어요. '나라 설정과 상관없이 점(.)을 소수점으로 읽어'라는 뜻이에요. 해외 출시를 생각하면 꼭 붙이세요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "\"120\" + \"30\" 의 결과는? (둘 다 string)",
+            "opts": ["\"12030\"", "150", "\"150\"", "에러"],
+            "a": 0,
+            "hint": "글자끼리 + 는 이어 붙이기였죠.",
+            "ex": "그래서 숫자 계산 전에 int.Parse가 꼭 필요해요."
+          },
+          {
+            "t": "q",
+            "q": "Trim()을 빼먹으면 생길 수 있는 문제는?",
+            "opts": ["마지막 칸에 보이지 않는 \\r이 남아 파싱이 실패하거나 ID가 안 맞는다", "줄이 안 잘린다", "헤더가 사라진다", "아무 문제 없다"],
+            "a": 0,
+            "ex": "\"5.5\\r\"은 숫자로 못 바꿔서 FormatException이 나거나, id 비교가 이유 없이 실패해요. 눈에 안 보여서 찾기 어려운 버그예요."
+          },
+          {
+            "t": "build",
+            "q": "한 줄을 쉼표로 잘라 cols에 담는 코드를 조립하세요",
+            "join": "",
+            "answer": ["string[] ", "cols", " = ", "line.Split(','", ");"],
+            "extra": ["string ", "line.Trim("],
+            "ex": "string[] cols = line.Split(','); — 결과가 여러 칸이라 string 배열이에요."
+          },
+          {
+            "t": "q",
+            "q": "cols[2]가 \"abc\"일 때 int.Parse(cols[2])는?",
+            "opts": ["FormatException 에러", "0", "null", "\"abc\""],
+            "a": 0,
+            "ex": "숫자가 아닌 글자는 바꿀 수 없어요. 기획 데이터 오타 하나로 게임이 멈출 수 있어서, 다음 레슨에서 안전하게 읽는 법을 봐요."
+          }
+        ]
+      },
+      {
+        "id": "s4l3",
+        "title": "테이블 로더 완성",
+        "desc": "TryParse, 검증, Dictionary",
+        "recap": [
+          "int.TryParse로 실패해도 멈추지 않고, 몇 번째 줄이 틀렸는지 알려주기",
+          "로드한 목록을 Dictionary<id, row>로 정리",
+          "중복 ID 같은 데이터 오류는 로드할 때 바로 경고",
+          "칸 개수가 모자란 줄도 검사"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "실패해도 멈추지 않게: TryParse",
+            "code": "if (!int.TryParse(cols[2], out int hp))\n{\n    Debug.LogError(i + 1 + \"번째 줄: hp가 숫자가 아님 → \" + cols[2]);\n    continue;\n}\nrow.hp = hp;",
+            "body": "<p>다지기 코스의 TryGetValue, 실전 코스의 TryGetComponent와 같은 'Try' 패밀리예요. '<b>바꿔봐서, 되면 hp에 담고 true</b>'. 실패하면 에러 대신 false를 줘서, 우리가 <b>몇 번째 줄이 틀렸는지</b> 친절하게 알려줄 수 있어요.</p><p>기획 테이블은 사람이 직접 입력하니까 오타가 반드시 생겨요. '게임이 그냥 멈춤'보다 '15번째 줄 hp가 이상해요'가 훨씬 고치기 쉽죠.</p>"
+          },
+          {
+            "t": "read",
+            "h": "완성된 로더",
+            "code": "public class CharacterTable : MonoBehaviour\n{\n    [SerializeField] TextAsset csv;\n    Dictionary<string, CharacterRow> rows = new Dictionary<string, CharacterRow>();\n\n    void Awake()\n    {\n        string[] lines = csv.text.Split('\\n');\n        for (int i = 1; i < lines.Length; i++)\n        {\n            string line = lines[i].Trim();\n            if (line == \"\") continue;\n\n            string[] c = line.Split(',');\n            if (c.Length < 5)\n            {\n                Debug.LogError((i + 1) + \"번째 줄: 칸이 부족해요\");\n                continue;\n            }\n\n            CharacterRow row = new CharacterRow();\n            row.id = c[0];\n            row.name = c[1];\n            int.TryParse(c[2], out row.hp);\n            int.TryParse(c[3], out row.atk);\n            float.TryParse(c[4], NumberStyles.Float, CultureInfo.InvariantCulture, out row.speed);\n\n            if (rows.ContainsKey(row.id))\n                Debug.LogError(\"중복 ID: \" + row.id);\n            else\n                rows.Add(row.id, row);\n        }\n    }\n\n    public CharacterRow Get(string id)\n    {\n        if (rows.TryGetValue(id, out CharacterRow row)) return row;\n        Debug.LogError(\"없는 캐릭터 ID: \" + id);\n        return null;\n    }\n}",
+            "body": "<p>길어 보이지만 전부 배운 조각이에요. 줄 자르기 → 빈 줄·칸 부족 검사 → 숫자 변환 → <b>중복 ID 검사</b> → Dictionary에 담기. 그리고 <code>Get(\"hero_02\")</code>로 어디서든 바로 꺼내요.</p><p>내 데이터를 Awake에서 준비하는 것도 다지기 Day 6 규칙 그대로예요. (짧게 보이려고 TryParse 실패 경고는 생략했어요. 실제론 앞 단계처럼 확인하는 게 좋아요.)</p>"
+          },
+          {
+            "t": "q",
+            "q": "테이블에 hero_02가 실수로 두 번 들어가 있으면 이 로더는?",
+            "opts": ["'중복 ID' 에러를 찍고 두 번째 줄은 건너뛴다", "두 번째 값으로 덮어쓴다", "게임이 멈춘다", "아무 표시 없이 둘 다 저장"],
+            "a": 0,
+            "ex": "rows.Add 전에 ContainsKey로 검사했어요. 조용히 덮어쓰면 '왜 수치가 다르지?' 버그가 숨어요."
+          },
+          {
+            "t": "q",
+            "q": "Get(\"hero_99\")처럼 없는 ID를 요청하면?",
+            "opts": ["에러 로그를 찍고 null을 돌려준다", "KeyNotFoundException으로 멈춘다", "첫 번째 캐릭터를 돌려준다", "빈 CharacterRow를 만든다"],
+            "a": 0,
+            "ex": "TryGetValue 덕분에 멈추지 않고, 무엇이 없는지 알려줘요. 호출한 쪽은 null 확인을 해야 해요."
+          },
+          {
+            "t": "build",
+            "q": "hp 칸을 안전하게 숫자로 바꾸는 조건을 조립하세요",
+            "join": "",
+            "answer": ["if (!", "int.TryParse(", "c[2], ", "out int hp", "))"],
+            "extra": ["int.Parse(", "in int hp"],
+            "hint": "실패했을 때(!) 처리하려는 조건이에요.",
+            "ex": "if (!int.TryParse(c[2], out int hp)) — 실패하면 경고 후 continue."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 5,
+    "title": "외부 테이블 읽기: JSON",
+    "lessons": [
+      {
+        "id": "s5l1",
+        "title": "JSON 테이블",
+        "desc": "구조가 있는 데이터",
+        "recap": [
+          "JSON은 중첩된 구조(목록 안의 목록)를 표현하기 좋다",
+          "JsonUtility는 최상위가 배열인 JSON을 직접 못 읽는다 → 감싸는 클래스",
+          "필드 이름이 JSON 키와 정확히 같아야 한다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "CSV로 어려운 데이터",
+            "code": "{\n  \"items\": [\n    { \"id\": \"hero_01\", \"name\": \"루나\", \"hp\": 120, \"skills\": [\"slash\", \"guard\"] },\n    { \"id\": \"hero_02\", \"name\": \"솔\",   \"hp\": 90,  \"skills\": [\"fireball\"] }\n  ]\n}",
+            "body": "<p>캐릭터마다 스킬 개수가 다르면 CSV로는 칸을 맞추기 어려워요. JSON은 <b>목록 안에 목록</b>처럼 구조가 있는 데이터를 자연스럽게 표현해요. 심화 코스 세이브 시스템에서 써본 그 형식이에요.</p><p>읽는 법: <code>{ }</code>는 객체(클래스 하나), <code>[ ]</code>는 목록, <code>\"키\": 값</code>은 변수 이름과 값이에요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "JsonUtility로 읽기",
+            "code": "[System.Serializable]\npublic class CharacterRow\n{\n    public string id;\n    public string name;\n    public int hp;\n    public List<string> skills;\n}\n\n[System.Serializable]\npublic class CharacterList\n{\n    public List<CharacterRow> items;\n}\n\nCharacterList data = JsonUtility.FromJson<CharacterList>(jsonFile.text);\nforeach (CharacterRow row in data.items) { /* ... */ }",
+            "body": "<p>JSON의 구조를 그대로 클래스로 옮겨요. <b>변수 이름이 JSON의 키와 똑같아야</b> 값이 들어가요. 대소문자도요.</p><p>왜 CharacterList라는 감싸는 클래스가 있을까요? 유니티의 JsonUtility는 <b>맨 바깥이 [ ] 배열인 JSON을 바로 못 읽어요.</b> 그래서 JSON을 <code>{ \"items\": [ ... ] }</code>처럼 한 번 감싸고, 그 모양대로 클래스를 하나 더 만들어요. 많이들 걸리는 함정이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "JSON 키가 \"hp\"인데 클래스 변수 이름이 HP면?",
+            "opts": ["값이 안 들어가 0으로 남는다", "자동으로 맞춰진다", "에러로 멈춘다", "문자열로 들어간다"],
+            "a": 0,
+            "ex": "이름이 정확히 같아야 해요. 에러 없이 조용히 0이라 찾기 어려워요."
+          },
+          {
+            "t": "q",
+            "q": "JSON이 [ {...}, {...} ] 처럼 배열로 시작하면 JsonUtility로 읽으려면?",
+            "opts": ["{ \"items\": [...] } 로 감싸고 감싸는 클래스를 만든다", "List<CharacterRow>로 바로 FromJson", "string으로 읽는다", "읽을 수 없다"],
+            "a": 0,
+            "ex": "JsonUtility의 제약이에요. 다음 레슨의 Newtonsoft Json은 배열도 바로 읽어요."
+          },
+          {
+            "t": "q",
+            "q": "JSON의 \"skills\": [\"slash\", \"guard\"] 를 담을 변수는?",
+            "opts": [
+              "public List<string> skills;",
+              "public string skills;",
+              "public int skills;",
+              "public Dictionary<string,string> skills;"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "글자들의 목록이니까 List<string> (또는 string[])."
+          }
+        ]
+      },
+      {
+        "id": "s5l2",
+        "title": "Newtonsoft Json",
+        "desc": "더 유연한 JSON 도구",
+        "recap": [
+          "패키지 com.unity.nuget.newtonsoft-json 설치",
+          "JsonConvert.DeserializeObject<T>(글자)",
+          "배열, Dictionary도 바로 읽을 수 있다",
+          "간단하면 JsonUtility(빠름), 복잡하면 Newtonsoft"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "JsonUtility의 한계",
+            "body": "<p>JsonUtility는 빠르고 가볍지만 제약이 있어요.</p><ul class=\"terms\"><li>맨 바깥 배열을 못 읽음 (지난 레슨)</li><li><b>Dictionary를 못 읽고 못 씀</b> (심화 코스 세이브에서 봤죠)</li><li>public 변수나 [SerializeField]만 다룸</li></ul><p>이럴 때 업계에서 가장 많이 쓰는 <b>Newtonsoft Json</b>(Json.NET)을 써요. 유니티가 공식 패키지로 제공해서 Package Manager에서 이름으로 추가할 수 있어요: <code>com.unity.nuget.newtonsoft-json</code></p>"
+          },
+          {
+            "t": "read",
+            "h": "사용법",
+            "code": "using Newtonsoft.Json;\n\n// 배열 JSON을 바로 List로\nList<CharacterRow> rows =\n    JsonConvert.DeserializeObject<List<CharacterRow>>(jsonFile.text);\n\n// Dictionary도 OK\nDictionary<string, int> prices =\n    JsonConvert.DeserializeObject<Dictionary<string, int>>(priceJson.text);\n\n// 반대로 글자로 만들기\nstring json = JsonConvert.SerializeObject(rows);",
+            "body": "<p>Deserialize = 글자 → 객체 (JsonUtility.FromJson과 같은 역할), Serialize = 객체 → 글자 (ToJson). 꺾쇠 안에 '<b>무엇으로 만들지</b>'를 써요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "[ {...}, {...} ] 배열 JSON을 감싸는 클래스 없이 읽는 코드는?",
+            "opts": [
+              "JsonConvert.DeserializeObject<List<CharacterRow>>(text)",
+              "JsonUtility.FromJson<List<CharacterRow>>(text)",
+              "JsonConvert.SerializeObject(text)",
+              "JsonUtility.ToJson(text)"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "Newtonsoft는 바깥이 배열이어도 바로 읽어요."
+          },
+          {
+            "t": "q",
+            "q": "Dictionary가 들어 있는 세이브 데이터를 저장하려면?",
+            "opts": ["Newtonsoft의 JsonConvert.SerializeObject", "JsonUtility.ToJson", "PlayerPrefs.SetString만", "불가능"],
+            "a": 0,
+            "ex": "JsonUtility는 Dictionary를 무시해요. Newtonsoft는 그대로 저장돼요."
+          },
+          {
+            "t": "q",
+            "q": "Deserialize의 뜻은?",
+            "opts": ["글자(JSON) → 객체", "객체 → 글자(JSON)", "파일 삭제", "암호화"],
+            "a": 0,
+            "ex": "Serialize(직렬화)는 객체를 저장 가능한 글자로, Deserialize는 그 반대."
+          }
+        ]
+      },
+      {
+        "id": "s5l3",
+        "title": "CSV? JSON? 고르기",
+        "desc": "기획 데이터 형식 정하기",
+        "recap": ["사람이 표로 편집 → CSV (엑셀·시트)", "구조가 복잡(목록 안 목록) → JSON", "세이브 데이터 → JSON", "형식보다 중요한 것: ID 규칙과 로드 시 검증"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "상황별 선택",
+            "body": "<ul class=\"terms\"><li><b>CSV</b> — 기획자가 엑셀·구글 시트에서 <b>표로 보며 수정</b>하는 데이터. 캐릭터 스탯, 아이템 가격, 레벨별 경험치. 한 줄에 한 항목, 칸이 일정할 때.</li><li><b>JSON</b> — <b>구조가 중첩</b>된 데이터. 대화 트리, 스킬 효과 목록, 퀘스트 단계. 그리고 세이브 데이터.</li></ul><p>흔한 조합: 스탯은 CSV, 스킬 효과 같은 복잡한 건 JSON, CSV의 한 칸에 \"slash|guard\"처럼 구분자로 목록을 넣고 <code>Split('|')</code>로 자르는 방법도 자주 써요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "형식보다 중요한 것",
+            "body": "<p>어떤 형식이든 테이블이 커지면 아래가 더 중요해져요.</p><ul class=\"terms\"><li><b>ID 규칙</b> — 이름 대신 바뀌지 않는 ID(hero_01)로 서로 연결. 이름은 번역되거나 바뀌니까요.</li><li><b>로드 시 검증</b> — 중복 ID, 빈 칸, 없는 ID 참조(스킬 테이블에 없는 스킬을 캐릭터가 가짐)를 <b>로드할 때 바로</b> 경고.</li><li><b>한 곳에서만 읽기</b> — 테이블은 DataManager 같은 곳에서 한 번 읽고, 다른 스크립트는 Get(id)로 받아쓰기.</li></ul>"
+          },
+          {
+            "t": "q",
+            "q": "레벨 1~100의 필요 경험치 표에 알맞은 형식은?",
+            "opts": ["CSV", "JSON", "PlayerPrefs", "코드에 직접"],
+            "a": 0,
+            "ex": "칸이 일정한 표이고, 기획자가 수치를 자주 조정하니 CSV가 편해요."
+          },
+          {
+            "t": "q",
+            "q": "NPC 대화 선택지(선택지마다 다음 대화가 갈라짐)에 알맞은 형식은?",
+            "opts": ["JSON", "CSV", "int 배열", "PlayerPrefs"],
+            "a": 0,
+            "ex": "갈래가 나뉘는 트리 구조라 중첩이 자연스러운 JSON이 맞아요."
+          },
+          {
+            "t": "q",
+            "q": "캐릭터 테이블에서 스킬을 연결할 때 무엇으로 연결하는 게 좋을까요?",
+            "opts": ["스킬 ID (예: skill_fireball)", "스킬 이름 (예: 파이어볼)", "스킬 테이블의 줄 번호", "스킬 아이콘 파일명"],
+            "a": 0,
+            "hint": "번역되거나 순서가 바뀌어도 변하지 않는 게 무엇일까요?",
+            "ex": "이름은 번역·수정되고, 줄 번호는 정렬하면 바뀌어요. 변하지 않는 ID로 연결해야 안전해요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 6,
+    "title": "에디터 도구로 데이터 파이프라인",
+    "lessons": [
+      {
+        "id": "s6l1",
+        "title": "런타임 로드 vs 에디터 변환",
+        "desc": "테이블을 언제 읽을까",
+        "recap": [
+          "런타임 로드: 게임 실행 중에 CSV를 파싱 (간단, 매번 비용)",
+          "에디터 변환: 개발 중에 CSV → ScriptableObject로 미리 변환 (게임은 SO만 읽음)",
+          "에디터 변환은 오류를 빌드 전에 잡고, 인스펙터로 확인 가능"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "두 가지 길",
+            "body": "<p>지금까지 만든 로더는 <b>게임이 실행될 때</b> CSV를 읽어서 파싱해요(런타임 로드). 간단하고 좋지만, 게임을 켤 때마다 파싱하고, 데이터 오류도 <b>게임을 실행해봐야</b> 알아요.</p><p>다른 길은 <b>개발 중에 미리 변환</b>하는 거예요. 메뉴 버튼 하나로 CSV를 읽어서 심화 코스에서 배운 <b>ScriptableObject 에셋</b>으로 만들어 두면, 게임은 이미 정리된 SO만 읽어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "에디터 변환의 장점",
+            "body": "<ul class=\"terms\"><li><b>인스펙터로 확인</b> — 변환된 SO를 클릭해서 수치가 제대로 들어갔는지 눈으로 봐요.</li><li><b>다른 에셋과 연결</b> — 변환할 때 아이콘 스프라이트, 프리팹을 찾아서 연결해 둘 수 있어요. 런타임 CSV는 글자뿐이죠.</li><li><b>오류를 빨리</b> — 변환 버튼을 누르는 순간 중복 ID, 없는 아이콘을 알려줘요.</li><li><b>게임은 가벼움</b> — 실행 중 파싱이 없어요.</li></ul><p>단점은 '테이블 수정 → 변환 버튼 누르기' 단계가 하나 늘어난다는 것. 그래서 개발 중 자주 바꾸는 수치는 런타임 로드로 시작했다가, 구조가 잡히면 에디터 변환으로 옮기는 경우도 많아요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "'캐릭터 아이콘 스프라이트까지 데이터에 연결해두고 싶다'에 더 알맞은 방식은?",
+            "opts": ["에디터에서 CSV → ScriptableObject 변환", "런타임에 CSV만 파싱", "PlayerPrefs", "코드에 하드코딩"],
+            "a": 0,
+            "ex": "변환할 때 에셋을 찾아 SO 칸에 연결할 수 있어요."
+          },
+          {
+            "t": "q",
+            "q": "에디터 변환 방식에서 게임 실행 중 읽는 것은?",
+            "opts": ["변환된 ScriptableObject 에셋", "CSV 원본", "엑셀 파일", "구글 시트"],
+            "a": 0,
+            "ex": "CSV는 개발 도구용 원본이고, 게임은 결과물만 써요."
+          }
+        ]
+      },
+      {
+        "id": "s6l2",
+        "title": "메뉴 버튼 만들기",
+        "desc": "Editor 폴더, MenuItem",
+        "recap": [
+          "UnityEditor를 쓰는 코드는 Editor 폴더에 (빌드에서 빠짐)",
+          "[MenuItem(\"메뉴/이름\")] + static 함수 = 상단 메뉴 버튼",
+          "에디터 코드는 게임 실행이 아니라 개발 도구"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "유니티에 내 메뉴 추가하기",
+            "code": "// 파일 위치: Assets/Editor/CharacterImporter.cs\nusing UnityEditor;\nusing UnityEngine;\n\npublic static class CharacterImporter\n{\n    [MenuItem(\"Tools/캐릭터 테이블 가져오기\")]\n    static void Import()\n    {\n        Debug.Log(\"가져오기 시작!\");\n    }\n}",
+            "body": "<p>이 코드를 저장하면 유니티 상단 메뉴에 <b>Tools → 캐릭터 테이블 가져오기</b>가 생겨요. 누르면 Import 함수가 실행돼요. 게임을 실행하지 않아도요!</p>",
+            "terms": [
+              "<code>using UnityEditor;</code> — 에디터 기능을 쓰겠다는 선언",
+              "<code>[MenuItem(\"경로\")]</code> — 이 함수를 메뉴 버튼으로",
+              "<code>static</code> — 메뉴는 객체 없이 부르니까 static이어야 해요 (실전 Day 4)"
+            ]
+          },
+          {
+            "t": "read",
+            "h": "Editor 폴더가 중요한 이유",
+            "body": "<p><code>UnityEditor</code>는 유니티 에디터에만 있고, <b>완성된 게임(빌드)에는 없어요.</b> 그래서 에디터 코드가 일반 폴더에 있으면 빌드할 때 '그런 거 없는데?' 에러가 나요.</p><p>이름이 정확히 <b>Editor</b>인 폴더에 넣으면 유니티가 '이건 개발 도구구나' 하고 빌드에서 빼줘요. Resources처럼 이름에 의미가 있는 특별한 폴더예요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "using UnityEditor가 있는 스크립트를 Assets/Scripts에 두고 게임을 빌드하면?",
+            "opts": ["빌드 에러", "정상 빌드", "에디터 메뉴가 게임에 나온다", "자동으로 Editor로 옮겨진다"],
+            "a": 0,
+            "ex": "빌드엔 UnityEditor가 없어서 에러예요. Editor 폴더에 두거나 #if UNITY_EDITOR로 감싸요."
+          },
+          {
+            "t": "build",
+            "q": "상단 메뉴 'Tools/데이터 갱신' 버튼을 만드는 줄을 조립하세요",
+            "join": "",
+            "answer": ["[MenuItem(", "\"Tools/데이터 갱신\"", ")]"],
+            "extra": ["[SerializeField(", "\"데이터 갱신\""],
+            "ex": "[MenuItem(\"Tools/데이터 갱신\")] — 슬래시로 메뉴 단계를 나눠요."
+          },
+          {
+            "t": "q",
+            "q": "MenuItem이 붙는 함수가 static이어야 하는 이유는?",
+            "opts": ["메뉴는 특정 객체 없이 클래스에서 바로 부르기 때문", "빠르게 하려고", "public이 아니라서", "게임 중에만 쓰려고"],
+            "a": 0,
+            "ex": "씬에 아무 오브젝트가 없어도 눌러야 하니까요."
+          }
+        ]
+      },
+      {
+        "id": "s6l3",
+        "title": "CSV → ScriptableObject 변환기",
+        "desc": "AssetDatabase",
+        "recap": [
+          "ScriptableObject.CreateInstance<T>()로 SO 객체 생성 (new 아님)",
+          "AssetDatabase.LoadAssetAtPath로 기존 에셋 찾기",
+          "AssetDatabase.CreateAsset으로 새 파일 저장",
+          "수정한 SO는 EditorUtility.SetDirty 후 AssetDatabase.SaveAssets"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "변환기 전체",
+            "code": "[MenuItem(\"Tools/캐릭터 테이블 가져오기\")]\nstatic void Import()\n{\n    TextAsset csv = AssetDatabase.LoadAssetAtPath<TextAsset>(\"Assets/Tables/Characters.csv\");\n    string[] lines = csv.text.Split('\\n');\n\n    for (int i = 1; i < lines.Length; i++)\n    {\n        string line = lines[i].Trim();\n        if (line == \"\") continue;\n        string[] c = line.Split(',');\n\n        string path = \"Assets/Data/Characters/\" + c[0] + \".asset\";\n        CharacterData data = AssetDatabase.LoadAssetAtPath<CharacterData>(path);\n\n        if (data == null)\n        {\n            data = ScriptableObject.CreateInstance<CharacterData>();\n            AssetDatabase.CreateAsset(data, path);\n        }\n\n        data.id = c[0];\n        data.displayName = c[1];\n        data.maxHp = int.Parse(c[2]);\n        data.icon = AssetDatabase.LoadAssetAtPath<Sprite>(\"Assets/Art/Icons/\" + c[0] + \".png\");\n\n        EditorUtility.SetDirty(data);\n    }\n\n    AssetDatabase.SaveAssets();\n    Debug.Log(\"캐릭터 테이블 가져오기 완료\");\n}",
+            "body": "<p>천천히 흐름만 보세요.</p>",
+            "terms": [
+              "<code>AssetDatabase.LoadAssetAtPath</code> — 에디터에서 <b>프로젝트 경로</b>로 에셋을 찾아요. (Resources와 달리 Assets/부터, 확장자 포함)",
+              "<b>있으면 갱신, 없으면 생성</b> — 다지기 Day 2 AddItem과 같은 패턴! 기존 에셋을 지우고 새로 만들면, 그걸 참조하던 프리팹 연결이 끊기니까 꼭 이렇게 해요.",
+              "<code>CreateInstance</code> — SO는 new가 아니라 이걸로 만들어요. (MonoBehaviour를 new로 안 만드는 것과 비슷한 규칙)",
+              "<code>icon = ...</code> — ID 이름 규칙으로 아이콘을 찾아 연결. 지난 레슨에서 말한 '에셋 연결'이 이거예요.",
+              "<code>SetDirty</code> + <code>SaveAssets</code> — '이거 바뀌었어, 저장해줘'. 안 하면 유니티를 껐다 켜면 변경이 사라질 수 있어요."
+            ]
+          },
+          {
+            "t": "q",
+            "q": "갱신할 때 기존 에셋을 지우고 새로 만들면 생기는 문제는?",
+            "opts": ["그 에셋을 참조하던 프리팹·씬의 연결이 끊긴다", "파일이 커진다", "속도가 느려진다", "문제 없음"],
+            "a": 0,
+            "hint": "유니티는 에셋을 경로가 아니라 고유 ID로 연결해요. 새로 만들면 새 ID예요.",
+            "ex": "그래서 '있으면 값만 갱신, 없으면 생성'이 정석이에요."
+          },
+          {
+            "t": "q",
+            "q": "ScriptableObject 객체를 코드로 만드는 올바른 방법은?",
+            "opts": [
+              "ScriptableObject.CreateInstance<CharacterData>()",
+              "new CharacterData()",
+              "Instantiate(CharacterData)",
+              "AddComponent<CharacterData>()"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "SO는 CreateInstance로 만들어요. new로 만들면 유니티가 경고해요."
+          },
+          {
+            "t": "build",
+            "q": "수정한 data를 저장 대상으로 표시하는 줄을 조립하세요",
+            "join": "",
+            "answer": ["EditorUtility", ".SetDirty(", "data", ");"],
+            "extra": ["AssetDatabase", ".Save("],
+            "ex": "EditorUtility.SetDirty(data); 그리고 마지막에 AssetDatabase.SaveAssets(); 로 한꺼번에 저장."
+          },
+          {
+            "t": "q",
+            "q": "AssetDatabase.LoadAssetAtPath의 경로 형식은?",
+            "opts": [
+              "\"Assets/Tables/Characters.csv\" (Assets부터, 확장자 포함)",
+              "\"Tables/Characters\" (확장자 없이)",
+              "\"Characters\"",
+              "\"C:/Project/Assets/...\""
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "Resources.Load와 규칙이 반대라 헷갈리기 쉬워요. AssetDatabase는 프로젝트 기준 전체 경로 + 확장자."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 7,
+    "title": "통합: 테이블로 캐릭터 만들기",
+    "lessons": [
+      {
+        "id": "s7l1",
+        "title": "설계: 누가 무엇을 하나",
+        "desc": "DataManager, Spawner, Character",
+        "recap": [
+          "DataManager — 테이블을 한 번 읽고 Get(id)로 제공",
+          "테이블에는 프리팹·아이콘의 Addressables 주소를 적는다",
+          "Spawner — ID를 받아 데이터 조회 → Addressables 로드 → 생성 → 초기화",
+          "Character — Init(data)로 받은 수치를 자기 변수에 복사"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "목표",
+            "body": "<p>📄 <b>기획</b>: 캐릭터 테이블(CSV)에 ID, 이름, 체력, 공격력, 프리팹 주소, 아이콘 주소가 있다. 스테이지 데이터가 '이 스테이지엔 hero_02, hero_05 등장'이라고 하면 그 캐릭터들이 테이블 수치대로 나타난다. 캐릭터가 200종이라 필요한 것만 메모리에 올린다.</p><p>지금까지 배운 거의 모든 걸 조합하는 설계예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "테이블에 주소를 적어요",
+            "code": "id,name,hp,atk,prefab,icon\nhero_01,루나,120,15,Char/Luna,Icon/Luna\nhero_02,솔,90,22,Char/Sol,Icon/Sol",
+            "body": "<p>테이블에 프리팹 자체를 넣을 순 없으니, <b>Addressables 주소</b>를 글자로 적어요. 그러면 기획자가 표에서 '이 캐릭터는 이 모델'을 정할 수 있고, 실제 로드는 필요할 때 Addressables가 해줘요. 테이블(데이터)과 에셋(그림·모델)이 <b>주소라는 끈</b>으로 연결되는 구조예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "역할 나누기",
+            "body": "<ul class=\"terms\"><li><b>CharacterTable</b> (Day 4) — CSV를 읽어 Dictionary에 담고 Get(id) 제공. 실전 코스 기준으로는 싱글톤이 어울리는 몇 안 되는 경우예요 (게임에 하나, 여러 곳에서 필요).</li><li><b>CharacterSpawner</b> — ID를 받아서: 테이블에서 행 조회 → 프리팹 주소로 InstantiateAsync → 생성된 캐릭터에 Init(row)</li><li><b>Character</b> — Init(row)로 받은 체력·공격력을 <b>자기 변수에 복사</b>. 테이블 원본은 건드리지 않아요 (심화 Day 6 원칙)</li></ul>"
+          },
+          {
+            "t": "q",
+            "q": "테이블에 프리팹을 연결하는 가장 알맞은 방법은?",
+            "opts": ["Addressables 주소를 글자로 적는다", "프리팹 파일을 CSV에 넣는다", "프리팹 이름을 Resources 경로로 적는다", "코드에 if (id == ...) 로 연결"],
+            "a": 0,
+            "ex": "주소 문자열은 CSV에 들어갈 수 있고, 로드는 필요할 때 Addressables가 해요."
+          },
+          {
+            "t": "q",
+            "q": "Character가 Init(row)에서 row.hp를 직접 깎지 않고 currentHp에 복사하는 이유는?",
+            "opts": ["row는 같은 캐릭터들이 공유하는 원본이라서", "row는 읽기 전용 문법이라서", "복사가 더 빨라서", "이유 없음"],
+            "a": 0,
+            "hint": "CharacterRow는 클래스예요. 다지기 Day 4를 떠올려 보세요.",
+            "ex": "CharacterRow는 참조 형식이라, 같은 ID 캐릭터 두 명이 같은 row를 가리켜요. 원본을 깎으면 다 같이 깎여요."
+          }
+        ]
+      },
+      {
+        "id": "s7l2",
+        "title": "스포너 조립",
+        "desc": "조회 → 로드 → 생성 → 초기화",
+        "recap": [
+          "테이블 조회 실패(null)는 먼저 걸러낸다",
+          "InstantiateAsync + yield return으로 기다린다",
+          "성공 확인 후 GetComponent로 Init",
+          "지울 땐 ReleaseInstance"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "완성 코드",
+            "code": "public class CharacterSpawner : MonoBehaviour\n{\n    [SerializeField] CharacterTable table;\n\n    public IEnumerator Spawn(string id, Vector3 pos)\n    {\n        CharacterRow row = table.Get(id);\n        if (row == null) yield break;\n\n        var h = Addressables.InstantiateAsync(row.prefab, pos, Quaternion.identity);\n        yield return h;\n\n        if (h.Status != AsyncOperationStatus.Succeeded)\n        {\n            Debug.LogError(id + \"의 프리팹 로드 실패: \" + row.prefab);\n            yield break;\n        }\n\n        Character ch = h.Result.GetComponent<Character>();\n        ch.Init(row);\n    }\n}",
+            "body": "<p>코루틴에서 함수를 중간에 끝낼 땐 return 대신 <code>yield break</code>를 써요. 다지기 Day 3의 조기 반환(가드)과 같은 모양이에요. 없는 ID, 로드 실패를 먼저 걸러내고, 성공한 경우만 아래로 내려가요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "Spawn 코루틴의 핵심 흐름을 순서대로 조립하세요",
+            "lines": true,
+            "answer": [
+              "CharacterRow row = table.Get(id);",
+              "if (row == null) yield break;",
+              "var h = Addressables.InstantiateAsync(row.prefab, pos, Quaternion.identity);",
+              "yield return h;",
+              "h.Result.GetComponent<Character>().Init(row);"
+            ],
+            "extra": ["Instantiate(row.prefab, pos, Quaternion.identity);", "if (row == null) return;"],
+            "hint": "조회 → 가드 → 로드 요청 → 기다리기 → 초기화. 코루틴 안에서 끝내는 건 yield break.",
+            "ex": "row.prefab은 주소 글자라 일반 Instantiate에는 못 넣어요. 그리고 코루틴에선 return 대신 yield break."
+          },
+          {
+            "t": "q",
+            "q": "테이블에 프리팹 주소를 \"Char/Lunaa\"로 오타 냈어요. 이 스포너는?",
+            "opts": ["Status가 실패라 어떤 ID의 어떤 주소가 문제인지 에러로 알려준다", "NullReference로 멈춘다", "다른 캐릭터를 생성한다", "아무 일도 없이 조용히 넘어간다"],
+            "a": 0,
+            "ex": "실패 처리에 ID와 주소를 같이 찍어둔 덕분에 테이블의 어느 줄을 고칠지 바로 알아요."
+          },
+          {
+            "t": "q",
+            "q": "코루틴에서 함수를 중간에 끝내는 것은?",
+            "opts": ["yield break;", "return;", "break;", "yield return null;"],
+            "a": 0,
+            "mono": true,
+            "ex": "IEnumerator 함수에서는 return; 을 쓸 수 없어요. yield break가 그 역할이에요."
+          }
+        ]
+      },
+      {
+        "id": "s7l3",
+        "title": "캐릭터 초기화와 정리",
+        "desc": "Init, 아이콘, 반납",
+        "recap": [
+          "Init은 원본 수치를 자기 변수로 복사",
+          "아이콘도 주소로 LoadAssetAsync → 핸들 보관",
+          "사라질 때 아이콘 핸들 Release",
+          "전체 흐름: 테이블 → 주소 → 로드 → 복사 → 반납"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "Character",
+            "code": "public class Character : MonoBehaviour\n{\n    [SerializeField] Image portrait;\n\n    string id;\n    int currentHp;\n    int atk;\n    AsyncOperationHandle<Sprite> iconHandle;\n\n    public void Init(CharacterRow row)\n    {\n        id = row.id;\n        currentHp = row.hp;\n        atk = row.atk;\n        StartCoroutine(LoadIcon(row.icon));\n    }\n\n    IEnumerator LoadIcon(string address)\n    {\n        iconHandle = Addressables.LoadAssetAsync<Sprite>(address);\n        yield return iconHandle;\n        if (iconHandle.Status == AsyncOperationStatus.Succeeded)\n            portrait.sprite = iconHandle.Result;\n    }\n\n    void OnDestroy()\n    {\n        if (iconHandle.IsValid())\n            Addressables.Release(iconHandle);\n    }\n}",
+            "body": "<p>Init에서 수치를 <b>복사</b>하고, 아이콘은 주소로 따로 불러와요. 핸들을 보관해 두었다가 캐릭터가 사라질 때 반납해요. Load와 Release가 한 쌍, 구독과 해지가 한 쌍, 같은 원칙이죠.</p><p>(캐릭터 오브젝트 자체를 지울 때는 InstantiateAsync로 만들었으니 Destroy 대신 <code>Addressables.ReleaseInstance(gameObject)</code>를 써요.)</p>"
+          },
+          {
+            "t": "build",
+            "q": "Init에서 원본 수치를 자기 변수에 복사하는 부분을 조립하세요",
+            "lines": true,
+            "answer": [
+              "public void Init(CharacterRow row)",
+              "{",
+              "    id = row.id;",
+              "    currentHp = row.hp;",
+              "    atk = row.atk;",
+              "}"
+            ],
+            "alts": [
+              [
+                "public void Init(CharacterRow row)",
+                "{",
+                "    id = row.id;",
+                "    atk = row.atk;",
+                "    currentHp = row.hp;",
+                "}"
+              ],
+              [
+                "public void Init(CharacterRow row)",
+                "{",
+                "    currentHp = row.hp;",
+                "    id = row.id;",
+                "    atk = row.atk;",
+                "}"
+              ],
+              [
+                "public void Init(CharacterRow row)",
+                "{",
+                "    currentHp = row.hp;",
+                "    atk = row.atk;",
+                "    id = row.id;",
+                "}"
+              ],
+              [
+                "public void Init(CharacterRow row)",
+                "{",
+                "    atk = row.atk;",
+                "    id = row.id;",
+                "    currentHp = row.hp;",
+                "}"
+              ],
+              [
+                "public void Init(CharacterRow row)",
+                "{",
+                "    atk = row.atk;",
+                "    currentHp = row.hp;",
+                "    id = row.id;",
+                "}"
+              ]
+            ],
+            "extra": ["    row.hp = currentHp;", "    row.hp -= 10;"],
+            "hint": "왼쪽이 내 변수, 오른쪽이 원본. 원본을 바꾸는 줄은 함정이에요.",
+            "ex": "복사 세 줄의 순서는 상관없어요. 중요한 건 방향: 내 변수 = 원본."
+          },
+          {
+            "t": "q",
+            "q": "OnDestroy에서 iconHandle을 Release하지 않으면?",
+            "opts": ["캐릭터가 사라져도 아이콘 이미지가 메모리에 남는다", "아이콘이 안 보인다", "에러로 멈춘다", "캐릭터가 안 사라진다"],
+            "a": 0,
+            "ex": "Load만 하고 Release를 안 하면 카운트가 남아요. 200종 캐릭터를 오가다 보면 쌓여요."
+          },
+          {
+            "t": "q",
+            "q": "이 구조에서 기획자가 '솔의 공격력을 22 → 25로'를 반영하려면?",
+            "opts": ["CSV에서 숫자만 수정", "Character 코드 수정", "프리팹 수정", "Addressables 그룹 재구성"],
+            "a": 0,
+            "ex": "데이터는 테이블에, 에셋은 Addressables에, 로직은 코드에. 셋이 분리되어 있으면 각자 자기 일만 고치면 돼요. 시스템 코스 완주, 정말 축하해요! 🎉"
+          }
+        ]
+      }
+    ]
+  }
+]

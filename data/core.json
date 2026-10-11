@@ -1,0 +1,856 @@
+[
+  {
+    "n": 1,
+    "title": "List 완전 정복",
+    "lessons": [
+      {
+        "id": "c1l1",
+        "title": "List는 어떻게 생겼을까",
+        "desc": "원리부터 천천히",
+        "recap": ["List<T> = T 자료형을 담는 늘어나는 목록", "List는 클래스라서 new로 만들어야 한다 (안 하면 null)", "안에서는 배열을 쓰다가, 꽉 차면 더 큰 배열로 옮겨 담는다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "배열의 한계부터",
+            "code": "string[] bag = new string[3];  // 칸 3개짜리 가방\nbag[0] = \"포션\";\nbag[1] = \"열쇠\";\nbag[2] = \"검\";\nbag[3] = \"방패\";  // 에러! 칸이 없어요",
+            "body": "<p>배열은 만들 때 <b>칸 수가 정해지고 바꿀 수 없어요.</b> 사물함 3칸을 샀으면 4번째 물건은 못 넣죠.</p><p>그런데 게임의 가방은 아이템을 주우면 늘고, 쓰면 줄어요. 몇 개가 될지 미리 알 수 없어요. 그래서 '알아서 늘었다 줄었다 하는 배열'이 필요했고, 그게 <b>List</b>예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "List의 속사정",
+            "body": "<p>사실 List도 안에서는 <b>배열을 쓰고 있어요.</b> 다만 똑똑하게 관리해 줄 뿐이에요.</p><ul class=\"terms\"><li>처음엔 적당한 크기의 배열을 몰래 준비해요.</li><li>Add로 넣다가 꽉 차면, <b>두 배 크기의 새 배열</b>을 만들고 기존 물건을 전부 옮겨 담아요.</li><li>우리는 그 과정을 신경 쓸 필요 없이 그냥 Add만 하면 돼요.</li></ul><p>그래서 'List = 이사를 대신 해주는 배열'이라고 생각하면 정확해요. 이 덕분에 List는 편하고, 배열은 조금 더 가벼운 거예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "List<string>을 읽는 법",
+            "code": "List<string> bag = new List<string>();\n//   ↑ 담을 것의 자료형\n\nList<int> scores = new List<int>();\nList<Enemy> enemies = new List<Enemy>();\nList<Vector3> path = new List<Vector3>();",
+            "body": "<p>꺾쇠 <code>&lt; &gt;</code> 안은 '<b>무엇을 담는 List인지</b>'예요. <code>List&lt;string&gt;</code>은 '글자를 담는 목록', <code>List&lt;Enemy&gt;</code>는 '적을 담는 목록'이라고 읽어요. 한 List에는 그 자료형만 담을 수 있어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "왜 new를 써야 할까?",
+            "code": "List<string> bag;           // 가방을 넣을 '자리'만 있음 (null)\nbag.Add(\"포션\");            // 에러! 가방이 없어요\n\nList<string> bag2 = new List<string>();  // 실제 가방을 만들어서 넣음\nbag2.Add(\"포션\");          // OK",
+            "body": "<p>List는 int 같은 숫자가 아니라 <b>클래스</b>예요. 그래서 WaitForSeconds 때처럼 <code>new</code>로 실물을 만들어야 해요.</p><p>첫 줄처럼 변수만 만들면 '가방을 놓을 자리'만 생기고 가방은 없어요(null). 거기에 물건을 넣으려 하면 NullReferenceException이 나요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "List<float> speeds 에 담을 수 있는 것은?",
+            "opts": ["3.5f", "\"빠름\"", "true", "new Enemy()"],
+            "a": 0,
+            "mono": true,
+            "hint": "꺾쇠 안의 자료형만 담을 수 있어요.",
+            "ex": "float을 담는 List라서 소수만 들어가요."
+          },
+          {
+            "t": "q",
+            "q": "이 코드를 실행하면?",
+            "code": "List<int> scores;\nscores.Add(100);",
+            "opts": ["NullReferenceException (List를 new 안 함)", "scores에 100이 들어간다", "scores[0]이 0이 된다", "컴파일 에러: Add가 없음"],
+            "a": 0,
+            "hint": "변수만 만들고 실물(new)을 안 만들었어요.",
+            "ex": "자리만 있고 List는 없어요. = new List<int>(); 가 필요해요. (참고: 함수 안 변수라면 유니티가 '값을 안 넣었다'는 컴파일 에러로 먼저 알려주기도 해요.)"
+          },
+          {
+            "t": "build",
+            "q": "int를 담는 List scores를 만들어보세요",
+            "answer": ["List<int>", "scores", "=", "new List<int>();"],
+            "extra": ["int[]", "new int[];"],
+            "ex": "자료형(List<int>) → 이름 → = → new로 실물 만들기. 변수 만들기와 같은 모양이에요."
+          },
+          {
+            "t": "q",
+            "q": "List가 꽉 차면 무슨 일이 일어날까요?",
+            "opts": ["더 큰 배열을 만들어 옮겨 담는다 (자동)", "에러가 난다", "오래된 것부터 지운다", "더 이상 Add가 안 된다"],
+            "a": 0,
+            "ex": "이사를 대신 해줘요. 그래서 우리는 크기 걱정 없이 Add만 하면 돼요."
+          }
+        ]
+      },
+      {
+        "id": "c1l2",
+        "title": "List 기능 하나씩",
+        "desc": "Add, Insert, Remove, Contains, IndexOf",
+        "recap": [
+          "Add 맨 뒤에 / Insert(번호, 값) 그 자리에",
+          "Remove(값) 처음 찾은 하나 삭제 / RemoveAt(번호) 그 칸 삭제",
+          "Contains 있나? (bool) / IndexOf 몇 번? (없으면 -1)",
+          "삭제하면 뒤의 칸들이 앞으로 당겨진다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "넣기: Add와 Insert",
+            "code": "List<string> bag = new List<string>();\nbag.Add(\"포션\");        // [포션]\nbag.Add(\"검\");          // [포션, 검]\nbag.Insert(0, \"열쇠\");   // [열쇠, 포션, 검]\nbag.Insert(2, \"방패\");   // [열쇠, 포션, 방패, 검]",
+            "body": "<p><code>Add</code>는 항상 <b>맨 뒤</b>에 넣어요. <code>Insert(번호, 값)</code>는 <b>그 번호 자리</b>에 끼워 넣고, 원래 있던 것들은 한 칸씩 뒤로 밀려요. 줄 서 있는 사람들 사이에 끼어드는 것과 같아요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "결과 순서는?",
+            "code": "List<string> q = new List<string>();\nq.Add(\"A\");\nq.Add(\"B\");\nq.Insert(1, \"X\");",
+            "opts": ["A, X, B", "X, A, B", "A, B, X", "B, X, A"],
+            "a": 0,
+            "hint": "[A, B]에서 1번 자리(두 번째)에 X를 끼워요.",
+            "ex": "1번 자리는 B가 있던 곳. X가 들어가고 B는 뒤로 밀려요."
+          },
+          {
+            "t": "read",
+            "h": "빼기: Remove와 RemoveAt",
+            "code": "// [열쇠, 포션, 방패, 포션]\nbag.Remove(\"포션\");   // [열쇠, 방패, 포션]  ← 처음 찾은 하나만\nbag.RemoveAt(0);      // [방패, 포션]        ← 0번 칸 삭제",
+            "body": "<p><code>Remove(값)</code>는 '<b>이것</b>을 빼줘'. 앞에서부터 찾아서 <b>처음 만난 하나만</b> 빼요. 포션이 두 개면 하나는 남아요.</p><p><code>RemoveAt(번호)</code>는 '<b>이 칸</b>을 빼줘'. 뭐가 들었든 그 칸을 빼요.</p><p>빼고 나면 뒤에 있던 것들이 <b>앞으로 당겨져요.</b> 번호가 바뀐다는 뜻이라 중요해요. (다음 레슨의 함정과 연결돼요.)</p>"
+          },
+          {
+            "t": "q",
+            "q": "결과는?",
+            "code": "// nums = [5, 3, 5, 8]\nnums.Remove(5);",
+            "opts": ["[3, 5, 8]", "[3, 8]", "[5, 3, 8]", "[5, 5, 8]"],
+            "a": 0,
+            "hint": "Remove(값)는 처음 찾은 하나만 빼요.",
+            "ex": "앞의 5 하나만 빠져요. 모든 5를 빼려면 RemoveAll(n => n == 5)를 써요."
+          },
+          {
+            "t": "q",
+            "q": "결과는?",
+            "code": "// nums = [5, 3, 5, 8]\nnums.RemoveAt(1);",
+            "opts": ["[5, 5, 8]", "[3, 5, 8]", "[5, 3, 8]", "[5, 3, 5]"],
+            "a": 0,
+            "hint": "RemoveAt(1)은 '1번 칸', 즉 두 번째 칸이에요.",
+            "ex": "1번 칸의 3이 빠지고 뒤가 당겨져요."
+          },
+          {
+            "t": "read",
+            "h": "찾기: Contains, IndexOf, Count",
+            "code": "// bag = [방패, 포션]\nbag.Contains(\"포션\")   // true  (있나?)\nbag.Contains(\"열쇠\")   // false\nbag.IndexOf(\"포션\")    // 1     (몇 번 칸?)\nbag.IndexOf(\"열쇠\")    // -1    (없으면 -1)\nbag.Count              // 2     (몇 개?)\nbag.Clear();           // 전부 비우기",
+            "body": "<p><code>IndexOf</code>가 없을 때 <b>-1</b>을 돌려주는 이유는, 0부터 시작하는 번호 중에 절대 나올 수 없는 숫자라서 '없음' 표시로 딱이기 때문이에요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "bag의 맨 앞(0번)에 \"열쇠\"를 끼워 넣으세요",
+            "join": "",
+            "answer": ["bag.Insert(", "0, ", "\"열쇠\"", ");"],
+            "extra": ["bag.Add(", "1, "],
+            "ex": "Insert(번호, 값). 맨 앞은 0번이에요."
+          },
+          {
+            "t": "q",
+            "q": "'열쇠가 있으면 문 열기' 조건은?",
+            "opts": ["if (bag.Contains(\"열쇠\"))", "if (bag.IndexOf(\"열쇠\"))", "if (bag[\"열쇠\"])", "if (bag.Count(\"열쇠\"))"],
+            "a": 0,
+            "mono": true,
+            "ex": "Contains는 bool이라 if에 바로 들어가요. IndexOf는 int라 if에 바로 못 넣어요 (>= 0 비교가 필요)."
+          },
+          {
+            "t": "build",
+            "q": "포션이 몇 번 칸에 있는지 찾아 index에 담으세요",
+            "answer": ["int", "index", "=", "bag.IndexOf(\"포션\");"],
+            "extra": ["bool", "bag.Contains(\"포션\");"],
+            "ex": "IndexOf는 번호(int)를 돌려줘요. 없으면 -1."
+          }
+        ]
+      },
+      {
+        "id": "c1l3",
+        "title": "List 함정과 실전",
+        "desc": "돌면서 지우기, 같은 List 공유",
+        "recap": ["foreach로 도는 중에 Remove하면 에러", "지울 땐 뒤에서부터 for, 또는 RemoveAll", "List 변수끼리 = 하면 복사가 아니라 같은 List를 가리킨다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "가장 유명한 함정",
+            "code": "foreach (Enemy e in enemies)\n{\n    if (e.hp <= 0)\n        enemies.Remove(e);   // 에러!\n}",
+            "body": "<p>죽은 적을 목록에서 빼려는 자연스러운 코드인데, <b>InvalidOperationException</b> 에러가 나요.</p><p>이유: foreach는 '지금 몇 번째를 보고 있는지' 기억하면서 도는데, 도중에 하나를 빼면 뒤의 칸이 당겨져서 순서가 엉망이 돼요. 그래서 C#은 '도는 중에 목록을 바꾸지 마!'라고 막아요. 줄 선 사람들을 앞에서부터 세는데 중간에 누가 빠지면 세던 번호가 꼬이는 것과 같아요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "해결 1: 뒤에서부터 세기",
+            "code": "for (int i = enemies.Count - 1; i >= 0; i--)\n{\n    if (enemies[i].hp <= 0)\n        enemies.RemoveAt(i);\n}",
+            "body": "<p><b>맨 뒤부터</b> 앞으로 오면서 지우면, 빠진 칸 뒤의 것들(이미 확인한 것들)만 당겨지니까 앞으로 확인할 것들의 번호는 그대로예요.</p>",
+            "terms": [
+              "<code>i = enemies.Count - 1</code> — 마지막 칸에서 시작",
+              "<code>i >= 0</code> — 0번까지",
+              "<code>i--</code> — 한 칸씩 앞으로"
+            ]
+          },
+          {
+            "t": "read",
+            "h": "해결 2: RemoveAll 한 줄",
+            "code": "enemies.RemoveAll(e => e.hp <= 0);",
+            "body": "<p>실전 코스의 람다예요. '<b>e를 받아서 hp가 0 이하면 지워</b>'. 안전하게 한 번에 처리해줘요. 짧아서 실무에서 정말 많이 써요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "뒤에서부터 돌며 죽은 적을 지우는 코드를 조립하세요",
+            "lines": true,
+            "answer": [
+              "for (int i = enemies.Count - 1; i >= 0; i--)",
+              "{",
+              "    if (enemies[i].hp <= 0)",
+              "        enemies.RemoveAt(i);",
+              "}"
+            ],
+            "extra": ["for (int i = 0; i < enemies.Count; i++)", "        enemies.Remove(i);"],
+            "hint": "마지막 칸(Count - 1)에서 시작해서 i--로 내려와요. 번호로 지우는 건 RemoveAt.",
+            "ex": "뒤에서부터 + RemoveAt(i). 이 모양은 그대로 외워둬도 좋아요."
+          },
+          {
+            "t": "read",
+            "h": "또 하나의 함정: = 는 복사가 아니에요",
+            "code": "List<string> a = new List<string>();\na.Add(\"검\");\n\nList<string> b = a;   // 복사? 아니에요!\nb.Add(\"방패\");\n\nDebug.Log(a.Count);   // 2",
+            "body": "<p><code>b = a</code>는 새 List를 만드는 게 아니라, <b>a가 가리키는 그 List를 b도 가리키게</b> 하는 거예요. 가방은 하나고 이름표만 두 개예요. 그래서 b에 넣으면 a에서도 보여요.</p><p>진짜 복사본이 필요하면 <code>new List&lt;string&gt;(a)</code>처럼 새로 만들어야 해요. (이 원리는 Day 4에서 자세히 다뤄요.)</p>"
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "List<int> a = new List<int> { 1, 2 };\nList<int> b = a;\nb.Clear();\nDebug.Log(a.Count);",
+            "opts": ["0", "2", "1", "에러"],
+            "a": 0,
+            "hint": "a와 b는 가방이 두 개인가요, 이름표가 두 개인가요?",
+            "ex": "같은 List라서 b를 비우면 a도 비어요."
+          },
+          {
+            "t": "q",
+            "q": "죽은 적을 한 줄로 안전하게 지우는 코드는?",
+            "opts": [
+              "enemies.RemoveAll(e => e.hp <= 0);",
+              "enemies.Remove(e.hp <= 0);",
+              "enemies.Clear(e => e.hp <= 0);",
+              "foreach + Remove"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "RemoveAll + 람다 조건."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 2,
+    "title": "Dictionary — 이름표로 찾기",
+    "lessons": [
+      {
+        "id": "c2l1",
+        "title": "Dictionary의 원리",
+        "desc": "키와 값",
+        "recap": [
+          "Dictionary<키, 값> — 키(이름표)로 값을 찾는 상자",
+          "dict[키] = 값 으로 넣기·바꾸기, dict[키] 로 꺼내기",
+          "없는 키를 꺼내면 KeyNotFoundException",
+          "List는 번호로, Dictionary는 이름표로"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "List로는 불편한 경우",
+            "code": "// 아이템 개수를 List로 관리하면...\nList<string> names = new List<string> { \"포션\", \"열쇠\", \"화살\" };\nList<int> counts = new List<int> { 3, 1, 20 };\n\n// 화살이 몇 개지?\nint i = names.IndexOf(\"화살\");\nint arrows = counts[i];",
+            "body": "<p>이름과 개수를 따로 관리하니 번거롭고, 하나를 지울 때 두 List를 똑같이 지워야 해서 실수하기 쉬워요. 그리고 IndexOf는 처음부터 하나씩 비교하며 찾아서, 아이템이 수천 개면 느려져요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "사전처럼 찾기: Dictionary",
+            "code": "Dictionary<string, int> stock = new Dictionary<string, int>();\n\nstock[\"포션\"] = 3;\nstock[\"열쇠\"] = 1;\nstock[\"화살\"] = 20;\n\nDebug.Log(stock[\"화살\"]);   // 20\nstock[\"화살\"] -= 1;          // 19",
+            "body": "<p><code>Dictionary&lt;키, 값&gt;</code>는 <b>이름표(키)를 붙여서 값을 보관하는 상자</b>예요. 국어사전에서 '사과'를 찾으면 뜻이 나오듯, '화살'이라는 키로 20이라는 값을 바로 꺼내요.</p><p>List는 <b>몇 번째</b>로 찾고, Dictionary는 <b>이름표</b>로 찾아요. 그리고 Dictionary는 처음부터 훑지 않고 이름표 위치를 바로 계산해서 찾기 때문에, 아이템이 아무리 많아도 빨라요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "꺾쇠 두 칸 읽기",
+            "code": "Dictionary<string, int>       // 글자 이름표 → 숫자\nDictionary<string, ItemData>  // 아이템 ID → 아이템 데이터\nDictionary<int, string>       // 스테이지 번호 → 스테이지 이름",
+            "body": "<p>앞이 <b>키(이름표)</b>, 뒤가 <b>값(내용)</b>이에요. 키는 <b>겹치면 안 되고</b>, 값은 겹쳐도 돼요. 사전에 같은 단어가 두 번 나오지 않는 것처럼요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "Dictionary<string, float> 에서 키와 값은?",
+            "opts": ["키: string, 값: float", "키: float, 값: string", "둘 다 string", "둘 다 float"],
+            "a": 0,
+            "ex": "앞이 키, 뒤가 값."
+          },
+          {
+            "t": "q",
+            "q": "결과는?",
+            "code": "stock[\"포션\"] = 3;\nstock[\"포션\"] = 5;\nDebug.Log(stock[\"포션\"]);",
+            "opts": ["5", "3", "8", "에러"],
+            "a": 0,
+            "hint": "같은 키에 다시 넣으면 새로 생길까요, 바뀔까요?",
+            "ex": "키는 하나뿐이라 값이 덮어써져요."
+          },
+          {
+            "t": "q",
+            "q": "stock에 \"방패\" 키가 없는데 stock[\"방패\"]를 읽으면?",
+            "opts": ["KeyNotFoundException 에러", "0이 나온다", "null이 나온다", "자동으로 만들어진다"],
+            "a": 0,
+            "ex": "읽을 때 없는 키는 에러예요. 다음 레슨에서 안전하게 읽는 법을 배워요. (넣을 때 [키] = 값 은 없으면 새로 만들어줘요.)"
+          },
+          {
+            "t": "build",
+            "q": "wallet의 \"코인\" 키에 100을 넣으세요",
+            "join": "",
+            "answer": ["wallet", "[\"코인\"]", " = ", "100;"],
+            "extra": [".Add", "(\"코인\")"],
+            "ex": "dict[키] = 값; 없으면 새로 생기고, 있으면 바뀌어요."
+          }
+        ]
+      },
+      {
+        "id": "c2l2",
+        "title": "Dictionary 안전하게 쓰기",
+        "desc": "ContainsKey, TryGetValue, foreach",
+        "recap": [
+          "ContainsKey(키) — 그 이름표가 있나? (bool)",
+          "TryGetValue(키, out 값) — 있으면 꺼내고 true",
+          "Add(키, 값)는 이미 있으면 에러, [키] = 값 은 덮어쓰기",
+          "foreach로 돌면 pair.Key, pair.Value"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "있는지 먼저 확인하기",
+            "code": "if (stock.ContainsKey(\"방패\"))\n{\n    Debug.Log(stock[\"방패\"]);\n}\nelse\n{\n    Debug.Log(\"방패 없음\");\n}",
+            "body": "<p><code>ContainsKey</code>로 이름표가 있는지 먼저 묻고 꺼내면 에러가 안 나요. List의 Contains와 같은 역할이에요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "확인 + 꺼내기를 한 번에: TryGetValue",
+            "code": "if (stock.TryGetValue(\"방패\", out int count))\n{\n    Debug.Log(\"방패 \" + count + \"개\");\n}",
+            "body": "<p>실전 코스의 TryGetComponent와 똑같은 모양이에요. '<b>찾아봐서, 있으면 count에 담고 true</b>'. 찾기를 한 번만 해서 ContainsKey + 꺼내기보다 효율적이에요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "Add와 [ ]의 차이",
+            "code": "stock.Add(\"포션\", 3);   // 새로 추가\nstock.Add(\"포션\", 5);   // 에러! 이미 있는 키\n\nstock[\"포션\"] = 5;      // OK: 있으면 덮어쓰기, 없으면 추가",
+            "body": "<p><code>Add</code>는 '새로 추가'만 해서 중복이면 에러를 내요. 실수로 같은 ID를 두 번 등록하는 걸 잡아줄 때 유용해요. <code>[키] = 값</code>은 있든 없든 그 값으로 만들어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "전부 둘러보기",
+            "code": "foreach (KeyValuePair<string, int> pair in stock)\n{\n    Debug.Log(pair.Key + \": \" + pair.Value);\n}\n\n// 줄여서\nforeach (var pair in stock)\n{\n    Debug.Log(pair.Key + \": \" + pair.Value);\n}",
+            "body": "<p>Dictionary를 foreach로 돌면 <b>키와 값이 짝으로</b> 나와요. <code>var</code>는 '자료형은 오른쪽 보고 알아서 정해줘'라는 뜻으로, 긴 자료형 이름을 줄일 때 써요.</p><p>주의: Dictionary는 넣은 순서가 보장되지 않는다고 생각하세요. 순서가 중요하면 List를 써요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "결과는?",
+            "code": "var d = new Dictionary<string, int>();\nd.Add(\"A\", 1);\nd[\"A\"] = 2;\nd.Add(\"A\", 3);",
+            "opts": ["마지막 줄에서 에러", "A는 3", "A는 2", "A는 6"],
+            "a": 0,
+            "hint": "Add는 이미 있는 키에 쓰면?",
+            "ex": "[ ]로 바꾸는 건 OK, Add로 중복 추가는 ArgumentException 에러예요."
+          },
+          {
+            "t": "build",
+            "q": "\"열쇠\"가 있으면 개수를 n에 꺼내는 조건문을 조립하세요",
+            "join": "",
+            "answer": ["if (", "stock.TryGetValue(", "\"열쇠\", ", "out int n", "))"],
+            "extra": ["stock.ContainsKey(", "in int n"],
+            "ex": "if (stock.TryGetValue(\"열쇠\", out int n)) — 있으면 n에 개수가 담겨요."
+          },
+          {
+            "t": "q",
+            "q": "foreach (var pair in stock) 안에서 개수를 꺼내는 것은?",
+            "opts": ["pair.Value", "pair.Key", "pair[1]", "stock.Value"],
+            "a": 0,
+            "mono": true,
+            "ex": "Key는 이름표, Value는 내용."
+          }
+        ]
+      },
+      {
+        "id": "c2l3",
+        "title": "인벤토리 만들기",
+        "desc": "List와 Dictionary 고르기",
+        "recap": [
+          "개수 관리 인벤토리 = Dictionary<아이템ID, 개수>",
+          "순서·중복이 중요하면 List, 이름표로 빨리 찾아야 하면 Dictionary",
+          "유니티 인스펙터는 Dictionary를 기본으로 보여주지 않는다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "아이템 추가 함수",
+            "code": "Dictionary<string, int> stock = new Dictionary<string, int>();\n\nvoid AddItem(string id, int amount)\n{\n    if (stock.ContainsKey(id))\n        stock[id] += amount;\n    else\n        stock[id] = amount;\n}",
+            "body": "<p>이미 있는 아이템이면 개수를 더하고, 처음 얻은 아이템이면 새로 등록해요. 없는 키에 <code>+=</code>를 하면 '없는 걸 읽어서 더하기'가 되어 에러가 나니까 이렇게 나눠요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "AddItem 함수를 조립하세요",
+            "lines": true,
+            "answer": [
+              "void AddItem(string id, int amount)",
+              "{",
+              "    if (stock.ContainsKey(id))",
+              "        stock[id] += amount;",
+              "    else",
+              "        stock[id] = amount;",
+              "}"
+            ],
+            "extra": ["    if (stock[id] == null)", "        stock.Remove(id);"],
+            "hint": "있으면(ContainsKey) 더하고(+=), 아니면(else) 새로 넣어요(=).",
+            "ex": "이 '있으면 더하기, 없으면 새로' 패턴은 점수, 업적 카운트 등 여기저기서 써요."
+          },
+          {
+            "t": "read",
+            "h": "List? Dictionary? 고르는 법",
+            "body": "<ul class=\"terms\"><li><b>List</b>: 순서가 중요하다 (퀘스트 진행 순서, 대화 대사, 경로 지점), 같은 게 여러 개 있어도 된다, 번호로 접근한다</li><li><b>Dictionary</b>: '이 ID의 것'을 빨리 찾아야 한다 (아이템 ID → 데이터, 플레이어 ID → 점수), 키가 겹치면 안 된다</li></ul><p>그리고 실무 팁 하나. 유니티 인스펙터는 <b>Dictionary를 기본으로 보여주지 않아요.</b> 그래서 기획 데이터는 인스펙터에서 List로 입력받고, 게임 시작할 때 Dictionary로 옮겨 담아 빠르게 찾는 방식을 자주 써요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "NPC 대사 10줄을 순서대로 보여주려면?",
+            "opts": ["List<string>", "Dictionary<string, string>", "string 하나", "bool"],
+            "a": 0,
+            "ex": "순서가 핵심이라 List."
+          },
+          {
+            "t": "q",
+            "q": "아이템 ID(\"potion_01\")로 아이템 데이터를 바로 찾으려면?",
+            "opts": ["Dictionary<string, ItemData>", "List<ItemData>를 처음부터 비교", "string[]", "Dictionary<ItemData, string>"],
+            "a": 0,
+            "mono": true,
+            "hint": "무엇으로 찾고(키), 무엇을 얻나요(값)?",
+            "ex": "ID로 찾으니 키는 string, 얻는 건 데이터."
+          },
+          {
+            "t": "q",
+            "q": "stock에 \"포션\"이 없을 때 이 코드는?",
+            "code": "stock[\"포션\"] += 1;",
+            "opts": ["KeyNotFoundException", "포션이 1이 된다", "포션이 0이 된다", "아무 일도 없다"],
+            "a": 0,
+            "ex": "+= 는 먼저 읽어야 해서 없는 키면 에러예요. 그래서 AddItem처럼 나눠요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 3,
+    "title": "null 완전 정복",
+    "lessons": [
+      {
+        "id": "c5l1",
+        "title": "null은 정확히 뭘까",
+        "desc": "주소 없는 쪽지",
+        "recap": ["null = 참조 형식 변수가 아무것도 가리키지 않는 상태", "값 형식(int, float, Vector3)은 null이 될 수 없다", "클래스 칸의 참조 변수는 처음에 null로 시작"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "주소 없는 쪽지",
+            "body": "<p>Day 4에서 참조 형식 변수는 '주소를 적은 쪽지'라고 했어요. <b>null</b>은 그 쪽지가 <b>비어 있는 상태</b>예요. 찾아갈 곳이 없죠.</p><p>빈 쪽지를 들고 '이 집 사람에게 데미지를 줘!'라고 하면 갈 곳이 없어서 에러가 나요. 그게 <b>NullReferenceException</b>이에요. 'null인 참조를 썼다'는 뜻 그대로예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "누가 null이 될 수 있나",
+            "code": "int hp;          // 0  (값 형식: 기본값 0)\nfloat speed;     // 0\nbool isDead;     // false\nVector3 pos;     // (0, 0, 0)\n\nPlayer player;           // null (참조 형식)\nList<int> list;          // null\nGameObject prefab;       // null",
+            "body": "<p>클래스 칸에 값을 안 넣고 만들면, 값 형식은 0이나 false 같은 <b>기본값</b>으로 시작하고, 참조 형식은 <b>null</b>로 시작해요. 값 형식은 '내용물 자체'라 비어 있을 수가 없거든요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "클래스 칸에 int score; 만 쓰고 바로 Debug.Log(score)하면?",
+            "opts": ["0", "null", "에러", "-1"],
+            "a": 0,
+            "ex": "int는 값 형식이라 기본값 0."
+          },
+          {
+            "t": "q",
+            "q": "클래스 칸에 List<int> scores; 만 쓰고 scores.Add(1) 하면?",
+            "opts": ["NullReferenceException", "scores에 1이 들어간다", "0이 들어간다", "컴파일 에러"],
+            "a": 0,
+            "ex": "List는 참조 형식이라 null로 시작해요. new가 필요해요."
+          },
+          {
+            "t": "q",
+            "q": "null이 될 수 없는 것은?",
+            "opts": ["Vector3", "GameObject", "Player", "List<Vector3>"],
+            "a": 0,
+            "ex": "Vector3는 값 형식(struct)이에요."
+          }
+        ]
+      },
+      {
+        "id": "c5l2",
+        "title": "null이 생기는 다섯 곳",
+        "desc": "원인을 알면 반은 고친 것",
+        "recap": [
+          "1. 인스펙터 칸 연결 안 함",
+          "2. GetComponent로 찾았는데 없음",
+          "3. FirstOrDefault, TryGet 실패 등 '못 찾음'",
+          "4. new를 안 함",
+          "5. Destroy된 오브젝트"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "NullReference가 뜨면 이 목록부터",
+            "code": "[SerializeField] GameObject prefab;      // 1. 인스펙터 연결 안 함\n\nRigidbody rb = GetComponent<Rigidbody>(); // 2. Rigidbody가 안 붙어 있음\n\nEnemy boss = enemies.FirstOrDefault(e => e.isBoss); // 3. 보스 없음\n\nList<int> list;                           // 4. new 안 함\n\nDestroy(target); /* 이후 target 사용 */   // 5. 지워진 오브젝트",
+            "body": "<p>에러 줄을 보고, 그 줄에서 <b>점(.) 앞에 있는 것</b> 중 null일 수 있는 것을 찾아요. 예를 들어 <code>player.TakeDamage(10)</code>에서 에러면 player가 null이에요. 그리고 위 다섯 가지 중 무엇 때문인지 확인하면 돼요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "에러 줄이 enemyText.text = \"적: \" + count; 예요. null인 것은?",
+            "opts": ["enemyText", "count", "\"적: \"", "text"],
+            "a": 0,
+            "hint": "점(.) 앞에 있는 것을 보세요. count는 int예요.",
+            "ex": "enemyText가 null이에요. 인스펙터에서 텍스트 연결을 확인하세요."
+          },
+          {
+            "t": "q",
+            "q": "anim.SetTrigger(\"Hit\"); 에서 NullReference. anim은 Awake에서 GetComponent<Animator>()로 가져왔어요. 원인은?",
+            "opts": ["그 오브젝트에 Animator 컴포넌트가 없다", "트리거 이름 오타", "Awake 대신 Start", "SetTrigger는 static"],
+            "a": 0,
+            "ex": "GetComponent가 못 찾으면 null을 돌려줘요. (트리거 이름 오타는 에러 없이 조용히 실패하는 쪽이에요.)"
+          },
+          {
+            "t": "q",
+            "q": "Animator가 자식 오브젝트(캐릭터 모델)에 붙어 있다면 무엇을 쓸까요?",
+            "opts": ["GetComponentInChildren<Animator>()", "GetComponent<Animator>()", "new Animator()", "FindAnimator()"],
+            "a": 0,
+            "mono": true,
+            "ex": "GetComponent는 '나 자신'에서만 찾아요. 모델이 자식에 있는 경우가 흔해서 이 함수도 자주 써요."
+          }
+        ]
+      },
+      {
+        "id": "c5l3",
+        "title": "null 방어 코드",
+        "desc": "확인하고 쓰기",
+        "recap": [
+          "if (x == null) return; — 가드로 막기",
+          "if (x != null) { ... } — 있을 때만 실행",
+          "유니티 오브젝트는 ?. 대신 == null 비교가 안전",
+          "방어만 하지 말고 '왜 null인지'도 고치기"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "기본 방어 두 가지",
+            "code": "// 1. 가드: 없으면 빠져나가기\nvoid Attack()\n{\n    if (target == null) return;\n    target.TakeDamage(10);\n}\n\n// 2. 있을 때만 실행\nif (target != null)\n{\n    target.TakeDamage(10);\n}",
+            "body": "<p>둘 다 같은 일을 해요. Day 3의 조기 반환 모양이 읽기 쉬워서 함수 맨 위에 자주 써요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "유니티만의 특별한 점",
+            "code": "Destroy(enemy.gameObject);\n// 다음 프레임에...\nif (enemy == null)       // true! 유니티가 '없음'으로 알려줌\n\nenemy?.TakeDamage(10);   // 주의: 이건 지워진 걸 못 알아챌 수 있어요",
+            "body": "<p>유니티는 Destroy된 오브젝트를 <code>== null</code>로 비교하면 '<b>없음(true)</b>'이라고 알려주게 특별히 만들어 뒀어요. 그런데 C#의 <code>?.</code>는 이 특별 처리를 거치지 않아서, 지워진 오브젝트를 알아채지 못할 수 있어요.</p><p>그래서 규칙 하나: <b>유니티 오브젝트(GameObject, 컴포넌트)는 == null / != null로 확인하기.</b> 심화 코스의 <code>OnDied?.Invoke()</code>처럼 이벤트(Action)에는 ?. 를 써도 괜찮아요. 그건 유니티 오브젝트가 아니니까요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "방어 코드의 함정",
+            "body": "<p>null 확인을 여기저기 붙이면 에러는 사라지지만, <b>'왜 null인지'가 숨어버릴 수 있어요.</b> 예를 들어 플레이어 연결을 깜빡했는데 null 체크 때문에 에러 없이 '함정이 안 아프네?'로만 보이면 원인 찾기가 더 어려워요.</p><p>그래서 '<b>반드시 있어야 하는 것</b>'(인스펙터 연결 등)은 null 체크로 덮지 말고 에러를 보고 고치고, '<b>없을 수도 있는 것</b>'(닿은 상대에게 Player가 있나?)에만 방어 코드를 쓰는 게 좋아요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "target이 없으면 바로 빠져나가는 가드를 조립하세요",
+            "answer": ["if", "(target", "==", "null)", "return;"],
+            "extra": ["!=", "break;"],
+            "ex": "if (target == null) return;"
+          },
+          {
+            "t": "q",
+            "q": "Destroy된 적을 확인하는 가장 안전한 방법은?",
+            "opts": ["if (enemy != null)", "enemy?.TakeDamage(10)", "enemy ?? other", "확인할 방법 없음"],
+            "a": 0,
+            "mono": true,
+            "ex": "유니티 오브젝트는 == / != null 비교가 유니티의 특별 처리를 거쳐서 안전해요."
+          },
+          {
+            "t": "q",
+            "q": "null 방어 코드를 쓰기 가장 알맞은 곳은?",
+            "opts": [
+              "OnTriggerEnter에서 닿은 상대의 Player 컴포넌트 확인",
+              "인스펙터에 꼭 연결해야 하는 체력바 칸",
+              "Start에서 반드시 있어야 하는 Rigidbody",
+              "모든 줄마다"
+            ],
+            "a": 0,
+            "ex": "닿은 상대는 플레이어일 수도 아닐 수도 있으니 확인이 필요해요. 반드시 있어야 하는 건 에러로 빨리 알아채는 게 나아요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 4,
+    "title": "유니티 실행 순서",
+    "lessons": [
+      {
+        "id": "c6l1",
+        "title": "생명주기 한눈에",
+        "desc": "Awake부터 OnDestroy까지",
+        "recap": [
+          "Awake → OnEnable → Start → (반복: FixedUpdate → Update → LateUpdate) → OnDisable → OnDestroy",
+          "Awake·Start는 한 번, Update류는 반복",
+          "OnEnable·OnDisable은 켜고 끌 때마다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "스크립트의 일생",
+            "code": "void Awake()      { }  // 1. 태어남 (한 번)\nvoid OnEnable()   { }  // 2. 켜짐 (켜질 때마다)\nvoid Start()      { }  // 3. 첫 프레임 직전 (한 번)\n\nvoid FixedUpdate(){ }  // 4. 물리 계산마다 (일정 간격)\nvoid Update()     { }  // 5. 매 프레임\nvoid LateUpdate() { }  // 6. 매 프레임, Update 다 끝난 뒤\n\nvoid OnDisable()  { }  // 7. 꺼짐 (꺼질 때마다)\nvoid OnDestroy()  { }  // 8. 사라짐 (한 번)",
+            "body": "<p>유니티가 알아서 불러주는 함수들을 순서대로 놓으면 이래요. 사람으로 치면 <b>태어나고(Awake), 눈 뜨고(OnEnable), 준비하고(Start), 하루하루 살다가(Update류), 잠들고(OnDisable), 떠나요(OnDestroy).</b></p><p>OnEnable/OnDisable은 오브젝트를 <code>SetActive(false/true)</code>로 껐다 켤 때마다 다시 불려요. 그래서 이벤트 구독/해지를 여기서 했던 거예요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "실행되는 순서대로 조립하세요",
+            "lines": true,
+            "answer": ["Awake()", "OnEnable()", "Start()", "Update()", "OnDisable()", "OnDestroy()"],
+            "hint": "태어나고 → 켜지고 → 준비 → 매일 → 꺼지고 → 사라짐",
+            "ex": "이 순서만 기억해도 '왜 아직 null이지?' 같은 순서 버그를 많이 피할 수 있어요."
+          },
+          {
+            "t": "q",
+            "q": "오브젝트를 SetActive(false) 했다가 다시 true로 켜면 다시 불리는 것은?",
+            "opts": ["OnEnable", "Awake", "Start", "OnDestroy"],
+            "a": 0,
+            "hint": "한 번만 불리는 것과 켤 때마다 불리는 것을 구분해 보세요.",
+            "ex": "Awake와 Start는 평생 한 번. OnEnable은 켜질 때마다예요."
+          },
+          {
+            "t": "q",
+            "q": "오브젝트 풀링(껐다 켜서 재사용)하는 총알의 '발사 초기화'(속도, 위치 설정)를 넣기 좋은 곳은?",
+            "opts": ["OnEnable", "Awake", "Start", "OnDestroy"],
+            "a": 0,
+            "ex": "재사용할 때마다 초기화가 필요하니 켜질 때마다 불리는 OnEnable이 맞아요. Start는 처음 한 번만 불려요."
+          }
+        ]
+      },
+      {
+        "id": "c6l2",
+        "title": "Update, FixedUpdate, LateUpdate",
+        "desc": "어디에 무엇을",
+        "recap": [
+          "Update — 입력, 일반 로직 (매 프레임)",
+          "FixedUpdate — Rigidbody 물리 (일정 간격, 기본 0.02초)",
+          "LateUpdate — 카메라 따라가기 (모든 이동이 끝난 뒤)"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "왜 Update가 여러 개일까",
+            "body": "<p><b>Update</b>는 화면이 그려질 때마다예요. 빠른 컴퓨터는 1초에 144번, 느린 컴퓨터는 30번일 수도 있어요.</p><p><b>FixedUpdate</b>는 프레임과 상관없이 <b>일정한 간격</b>(기본 1초에 50번)으로 불려요. 물리 계산은 간격이 일정해야 결과가 안정적이라, Rigidbody에 힘을 주는 건 여기서 해요.</p><p><b>LateUpdate</b>는 모든 오브젝트의 Update가 끝난 다음에 불려요. 카메라가 플레이어를 따라갈 때, 플레이어가 이번 프레임에 다 움직인 다음 따라가야 덜덜 떨리지 않아요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "입력은 Update, 물리는 FixedUpdate",
+            "code": "bool jumpRequested;\n\nvoid Update()\n{\n    if (Input.GetKeyDown(KeyCode.Space))\n        jumpRequested = true;     // 입력은 여기서 기억만\n}\n\nvoid FixedUpdate()\n{\n    if (jumpRequested)\n    {\n        rb.AddForce(Vector3.up * 6f, ForceMode.Impulse);\n        jumpRequested = false;    // 물리는 여기서 처리\n    }\n}",
+            "body": "<p>'눌린 순간'(GetKeyDown)은 그 프레임에만 true라서, FixedUpdate에서 검사하면 타이밍이 안 맞아 <b>입력을 놓칠 수 있어요.</b> 그래서 입력은 Update에서 bool로 기억해두고, FixedUpdate에서 물리를 처리해요. 사실 ForceMode.Impulse 한 번짜리 점프는 Update에서 해도 대부분 괜찮지만, 계속 힘을 주는 이동은 FixedUpdate가 정석이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "Rigidbody로 매 순간 앞으로 힘을 주는 자동차 이동은 어디에?",
+            "opts": ["FixedUpdate", "Update", "LateUpdate", "Start"],
+            "a": 0,
+            "ex": "계속 주는 물리 힘은 FixedUpdate."
+          },
+          {
+            "t": "q",
+            "q": "카메라가 플레이어를 따라가는 코드는 어디에?",
+            "opts": ["LateUpdate", "Update", "FixedUpdate", "Awake"],
+            "a": 0,
+            "hint": "플레이어가 '다 움직인 다음'에 따라가야 해요.",
+            "ex": "Update 순서는 오브젝트마다 보장되지 않아서, 카메라가 먼저 움직이면 한 프레임 늦게 따라가 떨려요."
+          },
+          {
+            "t": "q",
+            "q": "FixedUpdate에서 Input.GetKeyDown을 검사하면 생길 수 있는 문제는?",
+            "opts": ["눌렀는데 가끔 반응하지 않는다", "두 번씩 반응한다", "에러가 난다", "문제 없다"],
+            "a": 0,
+            "ex": "GetKeyDown이 true인 프레임에 FixedUpdate가 안 불리면 놓쳐요."
+          }
+        ]
+      },
+      {
+        "id": "c6l3",
+        "title": "Awake와 Start, 누구 먼저?",
+        "desc": "여러 스크립트 사이의 순서",
+        "recap": [
+          "모든 오브젝트의 Awake가 끝난 뒤에 Start들이 시작된다",
+          "내 것 준비(GetComponent, 내 변수)는 Awake",
+          "다른 오브젝트에 접근하는 건 Start",
+          "Awake끼리, Start끼리의 순서는 보장되지 않는다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "문제 상황",
+            "code": "// GameManager.cs\nvoid Start()  { Instance = this; }\n\n// Coin.cs\nvoid Start()  { GameManager.Instance.Register(this); }  // 가끔 NullReference!",
+            "body": "<p>Coin의 Start가 GameManager의 Start보다 <b>먼저</b> 불리면 Instance가 아직 null이에요. 그런데 Start끼리 누가 먼저인지는 <b>보장되지 않아서</b>, 어떨 땐 되고 어떨 땐 안 되는 가장 짜증나는 버그가 돼요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "규칙 하나로 해결",
+            "body": "<p>유니티는 씬이 시작되면 <b>모든 오브젝트의 Awake를 먼저 다 부르고</b>, 그다음에 Start들을 불러요. 그래서 이 규칙을 지키면 돼요.</p><ul class=\"terms\"><li><b>Awake</b>: 나 자신의 준비. GetComponent, 내 변수 초기화, 싱글톤 Instance = this.</li><li><b>Start</b>: 다른 오브젝트에 접근. 다른 매니저에 등록, 다른 스크립트의 값 읽기.</li></ul><p>그래서 실전 코스의 싱글톤도 Instance를 Awake에서 설정했던 거예요. 그러면 다른 누구의 Start에서든 Instance가 준비되어 있어요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "위 버그를 고치려면?",
+            "opts": [
+              "GameManager의 Instance = this 를 Awake로 옮긴다",
+              "Coin의 Start를 Awake로 옮긴다",
+              "둘 다 Update로 옮긴다",
+              "Instance를 private으로"
+            ],
+            "a": 0,
+            "hint": "'모든 Awake → 모든 Start' 순서를 이용하세요.",
+            "ex": "Instance가 Awake에서 준비되면, 어떤 Start에서 접근해도 안전해요. (Coin까지 Awake로 옮기면 다시 Awake끼리 순서 문제가 생겨요.)"
+          },
+          {
+            "t": "q",
+            "q": "GetComponent<Rigidbody>()로 내 rb를 가져오는 줄에 가장 알맞은 곳은?",
+            "opts": ["Awake", "Start", "Update", "OnDestroy"],
+            "a": 0,
+            "ex": "나 자신의 준비는 Awake. 그래야 다른 스크립트가 Start에서 내 rb를 써도 안전해요."
+          },
+          {
+            "t": "q",
+            "q": "UI가 시작할 때 플레이어의 현재 체력을 읽어 표시하려면?",
+            "opts": ["Start", "Awake", "OnDestroy", "생성자"],
+            "a": 0,
+            "ex": "다른 오브젝트의 값을 읽는 건 Start. 플레이어가 Awake에서 체력을 준비했다면 확실히 읽을 수 있어요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 5,
+    "title": "블록으로 스크립트 조립",
+    "lessons": [
+      {
+        "id": "c7l1",
+        "title": "코인 줍기 조립",
+        "desc": "트리거와 태그",
+        "recap": ["OnTriggerEnter(Collider other) 안에서 CompareTag로 확인", "같은 결과를 내는 여러 순서가 있을 수 있다", "조립하며 '왜 이 순서인지' 말로 설명해보기"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "조립 전에 설계부터 말로",
+            "body": "<p>코드를 짜기 전에 우리말로 먼저 적어보는 습관이 정말 좋아요.</p><ul class=\"terms\"><li>무언가에 닿았을 때 (OnTriggerEnter)</li><li>그게 코인이라면 (CompareTag)</li><li>코인 수를 하나 늘리고 (coin++)</li><li>코인을 없앤다 (Destroy)</li></ul><p>이 네 줄이 그대로 코드가 돼요. 기획서를 쓰듯 순서를 정하면, 코드는 그걸 번역하는 일이에요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "코인에 닿으면 개수를 세고 없애는 함수를 조립하세요",
+            "lines": true,
+            "answer": [
+              "void OnTriggerEnter(Collider other)",
+              "{",
+              "    if (other.CompareTag(\"Coin\"))",
+              "    {",
+              "        coin++;",
+              "        Destroy(other.gameObject);",
+              "    }",
+              "}"
+            ],
+            "alts": [
+              [
+                "void OnTriggerEnter(Collider other)",
+                "{",
+                "    if (other.CompareTag(\"Coin\"))",
+                "    {",
+                "        Destroy(other.gameObject);",
+                "        coin++;",
+                "    }",
+                "}"
+              ]
+            ],
+            "extra": ["void OnTriggerEnter(Collision other)", "        Destroy(other);"],
+            "hint": "함수 선언 → 여는 중괄호 → 태그 확인 → 블록 안에서 두 가지 일 → 닫기.",
+            "ex": "Collision은 OnCollisionEnter용, Destroy(other)는 콜라이더만 지워요. 함정 블록을 잘 피했나요?"
+          },
+          {
+            "t": "build",
+            "q": "코인 수를 화면에 표시하는 줄을 조립하세요",
+            "join": "",
+            "answer": ["coinText", ".text", " = ", "\"코인: \"", " + ", "coin;"],
+            "extra": [".Log", "Debug"],
+            "ex": "coinText.text = \"코인: \" + coin;"
+          }
+        ]
+      },
+      {
+        "id": "c7l2",
+        "title": "스포너 조립",
+        "desc": "코루틴과 Instantiate",
+        "recap": ["while (true) 안에는 반드시 yield", "Instantiate(원본, 위치, 회전)", "StartCoroutine으로 시작"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "말로 먼저",
+            "body": "<ul class=\"terms\"><li>시작하면 생성 반복을 켠다 (Start에서 StartCoroutine)</li><li>계속 반복하면서 (while true)</li><li>적을 하나 만들고 (Instantiate)</li><li>2초 기다린다 (yield return new WaitForSeconds)</li></ul>"
+          },
+          {
+            "t": "build",
+            "q": "2초마다 적을 만드는 코루틴을 조립하세요",
+            "lines": true,
+            "answer": [
+              "IEnumerator SpawnLoop()",
+              "{",
+              "    while (true)",
+              "    {",
+              "        Instantiate(enemyPrefab, RandomPos(), Quaternion.identity);",
+              "        yield return new WaitForSeconds(2f);",
+              "    }",
+              "}"
+            ],
+            "alts": [
+              [
+                "IEnumerator SpawnLoop()",
+                "{",
+                "    while (true)",
+                "    {",
+                "        yield return new WaitForSeconds(2f);",
+                "        Instantiate(enemyPrefab, RandomPos(), Quaternion.identity);",
+                "    }",
+                "}"
+              ]
+            ],
+            "extra": ["void SpawnLoop()", "        WaitForSeconds(2f);"],
+            "hint": "코루틴은 void가 아니라 IEnumerator. 기다리는 줄은 yield return new ...",
+            "ex": "만들고 기다리기, 기다리고 만들기 둘 다 정답이에요. 첫 적이 바로 나오느냐 2초 뒤에 나오느냐의 차이예요."
+          },
+          {
+            "t": "build",
+            "q": "Start에서 위 코루틴을 시작하는 줄을 조립하세요",
+            "answer": ["StartCoroutine(", "SpawnLoop()", ");"],
+            "join": "",
+            "extra": ["SpawnLoop;", "Invoke("],
+            "ex": "StartCoroutine(SpawnLoop()); 괄호가 두 겹이에요."
+          }
+        ]
+      },
+      {
+        "id": "c7l3",
+        "title": "체력과 UI 조립",
+        "desc": "이벤트로 연결",
+        "recap": ["값을 바꾼 뒤에 Invoke (순서 중요!)", "UI는 OnEnable 구독 / OnDisable 해지", "(float)으로 바꿔서 나누기"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "말로 먼저",
+            "body": "<ul class=\"terms\"><li><b>플레이어</b>: 데미지를 받으면 체력을 깎고, '체력 바뀌었어'라고 방송한다</li><li><b>체력바 UI</b>: 켜질 때 방송을 구독하고, 꺼질 때 해지한다. 방송이 오면 비율로 체력바를 채운다</li></ul><p>두 스크립트가 서로의 내부를 몰라도 되는 구조예요.</p>"
+          },
+          {
+            "t": "build",
+            "q": "플레이어의 TakeDamage를 조립하세요",
+            "lines": true,
+            "answer": ["public void TakeDamage(int amount)", "{", "    hp -= amount;", "    OnHpChanged?.Invoke(hp, maxHp);", "}"],
+            "extra": ["    OnHpChanged = hp;", "    return hp;"],
+            "hint": "방송은 체력을 깎은 '뒤에' 해야 새 값이 전달돼요.",
+            "ex": "순서가 바뀌면 UI는 깎이기 전 체력을 받아요. 한 박자 늦는 체력바 버그의 원인이에요."
+          },
+          {
+            "t": "build",
+            "q": "UI가 체력 방송을 구독하는 줄을 조립하세요",
+            "answer": ["player.OnHpChanged", "+=", "Refresh;"],
+            "extra": ["-=", "Refresh();"],
+            "hint": "구독은 +=, 맡길 땐 괄호 없이 이름만.",
+            "ex": "player.OnHpChanged += Refresh; 해지는 OnDisable에서 -= 로."
+          },
+          {
+            "t": "build",
+            "q": "체력바 비율을 계산하는 줄을 조립하세요",
+            "join": "",
+            "answer": ["hpBar.value", " = ", "(float)", "hp", " / ", "maxHp;"],
+            "extra": ["(int)", " * "],
+            "hint": "int끼리 나누기 함정을 피하려면 나누기 전에 무엇을 붙이죠?",
+            "ex": "hpBar.value = (float)hp / maxHp; 다지기 코스 완주, 정말 축하해요! 🎉"
+          }
+        ]
+      }
+    ]
+  }
+]

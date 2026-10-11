@@ -1,0 +1,9 @@
+{
+  "name": "unity-csharp-week",
+  "private": true,
+  "description": "폰으로 하루 20분, 유니티 C#을 기초부터 배우는 학습 앱",
+  "scripts": {
+    "start": "npx --yes serve .",
+    "validate": "node scripts/validate.js"
+  }
+}

@@ -1,0 +1,1354 @@
+[
+  {
+    "n": 1,
+    "title": "스크립트와 변수",
+    "lessons": [
+      {
+        "id": "d1l1",
+        "title": "유니티 스크립트의 생김새",
+        "desc": "Start, Update, Debug.Log",
+        "recap": [
+          "스크립트 = 게임 오브젝트에 붙이는 C# 클래스",
+          "Start는 시작할 때 한 번, Update는 매 프레임",
+          "Debug.Log로 콘솔에 글자를 찍어 확인한다",
+          "문장 끝에는 세미콜론(;)"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "유니티에서 새 스크립트를 만들면 이렇게 생겼어요",
+            "code": "using UnityEngine;\n\npublic class Player : MonoBehaviour\n{\n    void Start()\n    {\n\n    }\n\n    void Update()\n    {\n\n    }\n}",
+            "body": "<p>처음엔 외계어 같지만, 지금 알아야 할 건 네 가지뿐이에요.</p>",
+            "terms": [
+              "<code>Player</code> — 스크립트 이름. 파일 이름(Player.cs)과 같아야 해요.",
+              "<code>MonoBehaviour</code> — 이걸 붙여야 게임 오브젝트에 스크립트를 달 수 있어요.",
+              "<code>Start()</code> — 게임이 시작될 때 딱 한 번 실행.",
+              "<code>Update()</code> — 매 프레임마다 계속 실행."
+            ]
+          },
+          {
+            "t": "q",
+            "q": "게임이 시작될 때 딱 한 번만 실행되는 곳은?",
+            "opts": ["Start()", "Update()", "class Player", "using UnityEngine"],
+            "a": 0,
+            "mono": true,
+            "ex": "Start는 한 번, Update는 매 프레임. 초기 설정은 Start에 넣어요."
+          },
+          {
+            "t": "read",
+            "h": "화면에 글자 찍어보기: Debug.Log",
+            "code": "void Start()\n{\n    Debug.Log(\"안녕, 선라이트!\");\n}",
+            "body": "<p><code>Debug.Log(...)</code>는 유니티 콘솔 창에 글자를 출력해요. 코드가 제대로 도는지 확인할 때 개발자들이 제일 많이 쓰는 도구예요.</p><p>문장 끝의 <code>;</code>(세미콜론)은 \"이 명령 끝\"이라는 마침표, <code>{ }</code>(중괄호)는 코드 묶음이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "게임이 1초에 60프레임으로 돌아요. 이 코드는 1초에 몇 번 출력될까요?",
+            "code": "void Update()\n{\n    Debug.Log(\"안녕\");\n}",
+            "opts": ["1번", "약 60번", "0번", "무한히 한 번에"],
+            "a": 1,
+            "ex": "Update는 매 프레임 실행되니까 60fps면 1초에 약 60번이에요. 그래서 Update 안의 Debug.Log는 콘솔을 금방 도배해요."
+          },
+          {
+            "t": "q",
+            "q": "이 줄에서 빠진 것은?",
+            "code": "Debug.Log(\"시작\")",
+            "opts": ["세미콜론 ;", "중괄호 { }", "따옴표 \" \"", "괄호 ( )"],
+            "a": 0,
+            "ex": "C#은 문장 끝에 ; 가 꼭 있어야 해요. 빠지면 유니티가 빨간 에러를 띄워요. 초보 에러 1순위!"
+          },
+          {
+            "t": "q",
+            "q": "스크립트 파일 이름이 PlayerMove.cs 라면, 클래스 이름은?",
+            "opts": ["public class PlayerMove", "public class Player", "public class Move", "아무 이름이나 OK"],
+            "a": 0,
+            "mono": true,
+            "ex": "유니티는 파일 이름과 클래스 이름이 같아야 스크립트를 오브젝트에 붙일 수 있어요."
+          }
+        ]
+      },
+      {
+        "id": "d1l2",
+        "title": "변수 — 값을 담는 상자",
+        "desc": "int, float, bool, string",
+        "recap": ["변수 만들기: 자료형 이름 = 값;", "int 정수 / float 소수(뒤에 f) / bool 참·거짓 / string 글자", "= 는 '같다'가 아니라 '오른쪽 값을 왼쪽에 넣는다'"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "게임에는 기억해야 할 숫자가 많아요",
+            "code": "int hp = 100;",
+            "body": "<p>체력, 속도, 점수… 이런 값을 담아두는 상자가 <b>변수</b>예요. 읽는 법은 이래요.</p>",
+            "terms": [
+              "<code>int</code> — 상자의 종류(자료형). 정수를 담아요.",
+              "<code>hp</code> — 상자 이름. 내가 정해요.",
+              "<code>= 100</code> — 처음 넣을 값.",
+              "<code>;</code> — 끝!"
+            ]
+          },
+          {
+            "t": "read",
+            "h": "자주 쓰는 상자 네 종류",
+            "code": "int    coin  = 30;        // 정수\nfloat  speed = 3.5f;      // 소수 (뒤에 f!)\nbool   isAlive = true;    // 참/거짓\nstring nickname = \"Sun\";  // 글자 (따옴표)",
+            "body": "<p><code>//</code> 뒤는 <b>주석</b>이에요. 컴퓨터는 무시하고, 사람이 읽으라고 쓰는 메모예요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "이동 속도 3.5를 담는 올바른 코드는?",
+            "opts": ["float speed = 3.5f;", "int speed = 3.5;", "bool speed = 3.5;", "string speed = 3.5;"],
+            "a": 0,
+            "mono": true,
+            "ex": "소수는 float, 그리고 숫자 뒤에 f를 붙여요. int는 소수점을 담을 수 없어요."
+          },
+          {
+            "t": "q",
+            "q": "\"플레이어가 땅에 닿아 있는가?\"를 담기 좋은 자료형은?",
+            "opts": ["bool", "int", "float", "string"],
+            "a": 0,
+            "mono": true,
+            "ex": "예/아니오 두 가지뿐인 정보는 bool (true / false)이에요. isGrounded 같은 이름을 자주 써요."
+          },
+          {
+            "t": "read",
+            "h": "= 는 '같다'가 아니에요",
+            "code": "int hp = 100;\nhp = hp - 30;",
+            "body": "<p>수학과 달리 <code>=</code>는 <b>오른쪽 계산 결과를 왼쪽 상자에 넣는다</b>는 뜻이에요. 그래서 두 번째 줄은 \"지금 hp에서 30을 뺀 값을 다시 hp에 넣어라\"예요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "콘솔에 무엇이 출력될까요?",
+            "code": "int hp = 100;\nhp = hp - 30;\nDebug.Log(hp);",
+            "opts": ["70", "100", "130", "hp"],
+            "a": 0,
+            "ex": "100에서 30을 빼서 다시 hp에 넣었으니 70이에요. 따옴표 없이 hp를 넣었으니 글자 \"hp\"가 아니라 상자 안의 값이 찍혀요."
+          },
+          {
+            "t": "q",
+            "q": "에러가 나는 줄은?",
+            "code": "int coin = 30;\nfloat speed = 3.5;\nbool isAlive = true;",
+            "opts": ["1번째 줄", "2번째 줄", "3번째 줄", "에러 없음"],
+            "a": 1,
+            "ex": "float 값에는 f가 붙어야 해요: 3.5f. 유니티 초보가 가장 자주 만나는 에러 중 하나예요."
+          }
+        ]
+      },
+      {
+        "id": "d1l3",
+        "title": "계산하고, 인스펙터에 꺼내기",
+        "desc": "연산자와 public",
+        "recap": [
+          "+= -= 는 '더해서 넣기 / 빼서 넣기', ++ 는 1 더하기",
+          "int끼리 나누면 소수점이 버려진다 (7/2 = 3)",
+          "글자 + 숫자 = 이어붙인 글자",
+          "public을 붙이면 인스펙터에서 값을 조절할 수 있다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "줄여 쓰는 계산법",
+            "code": "int score = 0;\nscore = score + 10;  // 기본\nscore += 10;         // 같은 뜻, 짧게\nscore++;             // 1 더하기",
+            "body": "<p>게임 코드에선 <code>+=</code>, <code>-=</code>, <code>++</code>를 정말 많이 써요. 코인 먹을 때, 데미지 받을 때 모두 이 모양이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "hp는 얼마가 될까요?",
+            "code": "int hp = 50;\nhp += 20;",
+            "opts": ["70", "20", "50", "2050"],
+            "a": 0,
+            "ex": "hp = hp + 20 과 같은 뜻이에요. 50 + 20 = 70."
+          },
+          {
+            "t": "q",
+            "q": "count는 얼마일까요?",
+            "code": "int count = 0;\ncount++;\ncount++;",
+            "opts": ["2", "1", "0", "++"],
+            "a": 0,
+            "ex": "++ 는 1씩 더해요. 두 번 했으니 2."
+          },
+          {
+            "t": "q",
+            "q": "함정 문제! 무엇이 출력될까요?",
+            "code": "int a = 7;\nint b = 2;\nDebug.Log(a / b);",
+            "opts": ["3", "3.5", "4", "에러"],
+            "a": 0,
+            "ex": "int끼리 나누면 소수점 아래를 버려요. 3.5가 필요하면 float로 계산해야 해요. 나중에 버그 원인이 되는 유명한 함정이에요."
+          },
+          {
+            "t": "q",
+            "q": "무엇이 출력될까요?",
+            "code": "int hp = 70;\nDebug.Log(\"HP: \" + hp);",
+            "opts": ["HP: 70", "HP: hp", "\"HP: \" + 70", "에러"],
+            "a": 0,
+            "ex": "글자에 + 로 숫자를 붙이면 이어 붙인 글자가 돼요. UI에 체력 표시할 때 이렇게 써요."
+          },
+          {
+            "t": "read",
+            "h": "public: 인스펙터에서 값 조절하기",
+            "code": "public class Player : MonoBehaviour\n{\n    public float speed = 5f;\n    int coin = 0;\n}",
+            "body": "<p>변수 앞에 <code>public</code>을 붙이면 유니티 인스펙터 창에 칸이 생겨요. 코드를 고치지 않고도 게임을 실행하면서 속도를 바꿔볼 수 있어요. 기획자에게 최고의 기능이죠.</p><p><code>coin</code>처럼 아무것도 안 붙이면 인스펙터에 안 보여요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "점프 높이를 인스펙터에서 바꿔가며 테스트하고 싶어요. 알맞은 코드는?",
+            "opts": [
+              "public float jumpPower = 7f;",
+              "float jumpPower = 7f;",
+              "public jumpPower = 7f;",
+              "float public jumpPower = 7f;"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "순서는 public → 자료형 → 이름 → 값. public만 있고 자료형이 없으면 에러, 순서가 바뀌어도 에러예요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 2,
+    "title": "조건문 — if로 판단하기",
+    "lessons": [
+      {
+        "id": "d2l1",
+        "title": "if와 비교하기",
+        "desc": "==, >, <=",
+        "recap": ["if (조건) { ... } — 조건이 참일 때만 실행", "= 는 넣기, == 는 같은지 비교", "비교 결과는 항상 bool (true / false)"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "게임은 계속 질문해요: 이 조건이 맞아?",
+            "code": "int hp = 0;\n\nif (hp <= 0)\n{\n    Debug.Log(\"게임 오버\");\n}",
+            "body": "<p><code>if</code> 뒤 괄호 안의 조건이 <b>참(true)</b>일 때만 중괄호 안 코드가 실행돼요. 거짓이면 통째로 건너뛰어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "비교 기호 여섯 개",
+            "code": "a == b   // 같다\na != b   // 다르다\na >  b   // 크다\na <  b   // 작다\na >= b   // 크거나 같다\na <= b   // 작거나 같다",
+            "body": "<p>가장 헷갈리는 건 <code>=</code>와 <code>==</code>예요. <code>=</code>는 값을 <b>넣는 것</b>, <code>==</code>는 같은지 <b>묻는 것</b>이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "coin이 10개인지 확인하는 조건은?",
+            "opts": ["if (coin == 10)", "if (coin = 10)", "if (coin => 10)", "if coin == 10"],
+            "a": 0,
+            "mono": true,
+            "ex": "비교는 ==, 그리고 조건은 반드시 괄호 ( ) 안에 넣어요."
+          },
+          {
+            "t": "q",
+            "q": "무엇이 출력될까요?",
+            "code": "int hp = 30;\nif (hp < 50)\n{\n    Debug.Log(\"위험!\");\n}\nDebug.Log(\"끝\");",
+            "opts": ["위험! 그리고 끝", "끝", "위험!", "아무것도 안 나옴"],
+            "a": 0,
+            "ex": "30 < 50 은 참이라 '위험!'이 찍히고, if 밖의 '끝'은 조건과 상관없이 항상 찍혀요."
+          },
+          {
+            "t": "q",
+            "q": "이번엔 hp가 80이면?",
+            "code": "int hp = 80;\nif (hp < 50)\n{\n    Debug.Log(\"위험!\");\n}\nDebug.Log(\"끝\");",
+            "opts": ["끝", "위험! 그리고 끝", "위험!", "에러"],
+            "a": 0,
+            "ex": "80 < 50 은 거짓이라 중괄호 안을 건너뛰고 '끝'만 찍혀요."
+          },
+          {
+            "t": "q",
+            "q": "\"체력이 0 이하면 죽음\"을 맞게 쓴 조건은?",
+            "opts": ["hp <= 0", "hp < 0", "hp == 0", "hp >= 0"],
+            "a": 0,
+            "mono": true,
+            "ex": "이하는 <=. hp < 0 이라고 쓰면 딱 0일 때 안 죽는 버그가 생겨요."
+          },
+          {
+            "t": "q",
+            "q": "isDead는 무엇이 될까요?",
+            "code": "int hp = 0;\nbool isDead = hp <= 0;",
+            "opts": ["true", "false", "0", "에러"],
+            "a": 0,
+            "ex": "비교 결과 자체가 bool이에요. 그래서 비교식을 bool 변수에 바로 담을 수 있어요."
+          }
+        ]
+      },
+      {
+        "id": "d2l2",
+        "title": "else와 else if",
+        "desc": "아니면, 그것도 아니면",
+        "recap": ["else — 위 조건이 전부 거짓일 때", "else if — 위가 거짓이면 다음 조건 검사", "위에서부터 처음 맞는 하나만 실행된다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "아니면 이렇게 해: else",
+            "code": "if (coin >= 100)\n{\n    Debug.Log(\"구매 성공\");\n}\nelse\n{\n    Debug.Log(\"코인이 부족해요\");\n}",
+            "body": "<p><code>else</code>는 if 조건이 거짓일 때 실행돼요. 둘 중 <b>하나는 반드시</b> 실행되고, 둘 다 실행되는 일은 없어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "여러 갈래: else if",
+            "code": "if (score >= 90)\n{\n    Debug.Log(\"S랭크\");\n}\nelse if (score >= 70)\n{\n    Debug.Log(\"A랭크\");\n}\nelse\n{\n    Debug.Log(\"B랭크\");\n}",
+            "body": "<p>위에서부터 차례로 검사해서 <b>처음 맞는 하나만</b> 실행하고 나머지는 건너뛰어요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "score가 75면?",
+            "code": "if (score >= 90)\n    Debug.Log(\"S\");\nelse if (score >= 70)\n    Debug.Log(\"A\");\nelse\n    Debug.Log(\"B\");",
+            "opts": ["A", "S", "B", "A 그리고 B"],
+            "a": 0,
+            "ex": "75는 90 이상이 아니고, 70 이상이니 A. 하나 실행되면 끝이라 B는 안 찍혀요. (한 줄짜리는 중괄호를 생략할 수도 있어요.)"
+          },
+          {
+            "t": "q",
+            "q": "score가 95면?",
+            "code": "if (score >= 70)\n    Debug.Log(\"A\");\nelse if (score >= 90)\n    Debug.Log(\"S\");",
+            "opts": ["A", "S", "A 그리고 S", "아무것도"],
+            "a": 0,
+            "ex": "함정! 95는 첫 조건(70 이상)에서 이미 걸려서 A가 찍히고 끝나요. 그래서 큰 조건을 먼저 써야 해요."
+          },
+          {
+            "t": "q",
+            "q": "coin이 30이면?",
+            "code": "if (coin >= 100)\n    Debug.Log(\"구매\");\nelse\n    Debug.Log(\"부족\");",
+            "opts": ["부족", "구매", "둘 다", "아무것도"],
+            "a": 0,
+            "ex": "30은 100 이상이 아니니 else 쪽 '부족'이 실행돼요."
+          },
+          {
+            "t": "q",
+            "q": "else만 단독으로 쓸 수 있을까요?",
+            "opts": ["아니요, 항상 if 뒤에 와야 해요", "네, 어디서든 쓸 수 있어요", "Update 안에서만 돼요", "Start 안에서만 돼요"],
+            "a": 0,
+            "ex": "else는 '앞의 if가 거짓이면'이라는 뜻이라 혼자서는 의미가 없어요."
+          }
+        ]
+      },
+      {
+        "id": "d2l3",
+        "title": "그리고, 또는, 아니다",
+        "desc": "&&, ||, !",
+        "recap": ["&& 둘 다 참이어야 참", "|| 하나만 참이어도 참", "! 참↔거짓 뒤집기", "bool 변수는 그대로 조건에 넣을 수 있다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "조건 여러 개 묶기",
+            "code": "// 땅에 있고 AND 스태미나가 있으면 점프\nif (isGrounded && stamina > 0) { }\n\n// 체력이 0이거나 OR 낙사했으면 사망\nif (hp <= 0 || isFallen) { }\n\n// 죽지 않았으면 (NOT)\nif (!isDead) { }",
+            "body": "<p><code>&&</code>는 그리고, <code>||</code>는 또는, <code>!</code>는 뒤집기예요. bool 변수는 <code>isDead == true</code>라고 안 쓰고 그냥 <code>isDead</code>만 써도 돼요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "결과는?",
+            "code": "bool a = true;\nbool b = false;\nDebug.Log(a && b);",
+            "opts": ["False", "True", "에러", "ab"],
+            "a": 0,
+            "ex": "&&는 둘 다 참이어야 참. b가 거짓이라 False예요. (유니티 콘솔은 True/False처럼 대문자로 찍어요.)"
+          },
+          {
+            "t": "q",
+            "q": "결과는?",
+            "code": "bool a = true;\nbool b = false;\nDebug.Log(a || b);",
+            "opts": ["True", "False", "에러", "ab"],
+            "a": 0,
+            "ex": "||는 하나만 참이어도 참이에요."
+          },
+          {
+            "t": "q",
+            "q": "!isDead 의 값은? (isDead = false)",
+            "opts": ["true", "false", "0", "null"],
+            "a": 0,
+            "mono": true,
+            "ex": "!는 뒤집기. false를 뒤집으면 true."
+          },
+          {
+            "t": "q",
+            "q": "\"열쇠가 있고 문 앞에 있으면 문 열기\" 조건은?",
+            "opts": ["if (hasKey && nearDoor)", "if (hasKey || nearDoor)", "if (!hasKey && nearDoor)", "if (hasKey & nearDoor)"],
+            "a": 0,
+            "mono": true,
+            "ex": "둘 다 만족해야 하니 &&. ||로 쓰면 열쇠 없이도 문 앞에만 가면 열려요."
+          },
+          {
+            "t": "q",
+            "q": "점프가 될까요?",
+            "code": "bool isGrounded = true;\nint stamina = 0;\nif (isGrounded && stamina > 0)\n    Debug.Log(\"점프\");",
+            "opts": ["안 됨 (아무것도 안 찍힘)", "점프가 찍힘", "에러", "점프가 두 번 찍힘"],
+            "a": 0,
+            "ex": "땅에는 있지만 stamina > 0 이 거짓이라 &&의 결과는 거짓이에요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 3,
+    "title": "반복문과 배열",
+    "lessons": [
+      {
+        "id": "d3l1",
+        "title": "for — 정해진 횟수 반복",
+        "desc": "for (int i = 0; i < n; i++)",
+        "recap": ["for (시작; 계속할 조건; 매번 할 일)", "i는 보통 0부터 시작", "i < 3 이면 0, 1, 2 — 세 번"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "같은 일을 여러 번 시키기",
+            "code": "for (int i = 0; i < 3; i++)\n{\n    Debug.Log(i);\n}",
+            "body": "<p>괄호 안은 세 칸이에요.</p>",
+            "terms": [
+              "<code>int i = 0</code> — 시작: i를 0으로",
+              "<code>i < 3</code> — 이 조건이 참인 동안 계속",
+              "<code>i++</code> — 한 바퀴 돌 때마다 i에 1 더하기"
+            ]
+          },
+          {
+            "t": "q",
+            "q": "위 코드의 출력은?",
+            "code": "for (int i = 0; i < 3; i++)\n{\n    Debug.Log(i);\n}",
+            "opts": ["0, 1, 2", "1, 2, 3", "0, 1, 2, 3", "3"],
+            "a": 0,
+            "ex": "0부터 시작해서 i < 3 이 참인 동안: 0, 1, 2. i가 3이 되면 멈춰요."
+          },
+          {
+            "t": "q",
+            "q": "\"적 생성\"이 5번 찍히게 하려면 빈칸은?",
+            "code": "for (int i = 0; i < ___; i++)\n{\n    Debug.Log(\"적 생성\");\n}",
+            "opts": ["5", "4", "6", "0"],
+            "a": 0,
+            "ex": "0부터 시작하면 i < 5 일 때 0~4, 정확히 5번이에요."
+          },
+          {
+            "t": "q",
+            "q": "total은 얼마?",
+            "code": "int total = 0;\nfor (int i = 1; i <= 3; i++)\n{\n    total += i;\n}",
+            "opts": ["6", "3", "5", "0"],
+            "a": 0,
+            "ex": "i가 1, 2, 3일 때 더해서 1+2+3 = 6."
+          },
+          {
+            "t": "q",
+            "q": "이 코드가 위험한 이유는?",
+            "code": "for (int i = 0; i < 10; i--)\n{\n    Debug.Log(i);\n}",
+            "opts": ["i가 계속 작아져 영원히 안 끝남", "10번만 돈다", "한 번도 안 돈다", "i-- 는 문법 에러"],
+            "a": 0,
+            "ex": "i가 0, -1, -2… 로 줄어서 i < 10 이 영원히 참이에요. 무한 루프는 유니티를 멈춰버려요!"
+          }
+        ]
+      },
+      {
+        "id": "d3l2",
+        "title": "배열 — 여러 값을 한 줄로",
+        "desc": "int[ ], [0], Length",
+        "recap": ["자료형[] 이름 = { 값, 값, 값 };", "번호(인덱스)는 0부터 시작", "Length = 개수, 마지막 번호는 Length - 1"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "사물함처럼 번호가 붙은 상자들",
+            "code": "int[] scores = { 10, 20, 30 };\n\nDebug.Log(scores[0]);    // 10\nDebug.Log(scores[2]);    // 30\nDebug.Log(scores.Length); // 3",
+            "body": "<p>자료형 뒤에 <code>[]</code>를 붙이면 여러 개를 담는 <b>배열</b>이 돼요. 꺼낼 땐 <code>[번호]</code>. 번호는 <b>0부터</b> 세요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "string[] items = { \"검\", \"방패\", \"포션\" };\nDebug.Log(items[1]);",
+            "opts": ["방패", "검", "포션", "에러"],
+            "a": 0,
+            "ex": "0번이 검, 1번이 방패, 2번이 포션이에요."
+          },
+          {
+            "t": "q",
+            "q": "items.Length 는? (위와 같은 배열)",
+            "opts": ["3", "2", "4", "0"],
+            "a": 0,
+            "ex": "Length는 개수라서 3. 마지막 번호는 Length - 1 = 2예요."
+          },
+          {
+            "t": "q",
+            "q": "이 코드를 실행하면?",
+            "code": "int[] arr = { 1, 2, 3 };\nDebug.Log(arr[3]);",
+            "opts": ["에러 (범위를 벗어남)", "3", "0", "1"],
+            "a": 0,
+            "ex": "번호는 0, 1, 2까지만 있어요. 유니티 콘솔에 IndexOutOfRangeException이 떠요. 정말 자주 보게 될 에러예요."
+          },
+          {
+            "t": "q",
+            "q": "배열 값 바꾸기 — 출력은?",
+            "code": "int[] hp = { 100, 80 };\nhp[1] = 50;\nDebug.Log(hp[1]);",
+            "opts": ["50", "80", "100", "130"],
+            "a": 0,
+            "ex": "hp[1]에 50을 넣었으니 50이에요. 배열 칸도 변수처럼 값을 바꿀 수 있어요."
+          },
+          {
+            "t": "q",
+            "q": "모든 칸을 출력하려면 빈칸은?",
+            "code": "for (int i = 0; i < arr.___; i++)\n{\n    Debug.Log(arr[i]);\n}",
+            "opts": ["Length", "Count", "Size", "Max"],
+            "a": 0,
+            "mono": true,
+            "ex": "배열의 개수는 Length. for와 배열은 이렇게 거의 항상 같이 다녀요."
+          }
+        ]
+      },
+      {
+        "id": "d3l3",
+        "title": "foreach와 List",
+        "desc": "하나씩 꺼내기, 늘어나는 목록",
+        "recap": ["foreach (자료형 x in 목록) — 하나씩 꺼내 반복", "List는 크기가 늘었다 줄었다 하는 배열", "Add로 추가, Remove로 삭제, Count로 개수"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "번호 없이 하나씩: foreach",
+            "code": "string[] party = { \"전사\", \"마법사\", \"궁수\" };\n\nforeach (string member in party)\n{\n    Debug.Log(member);\n}",
+            "body": "<p>번호가 필요 없을 땐 <code>foreach</code>가 더 편해요. 배열에서 하나씩 꺼내 <code>member</code>에 담아 반복해요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "출력 순서는?",
+            "code": "int[] nums = { 5, 3, 8 };\nforeach (int n in nums)\n    Debug.Log(n);",
+            "opts": ["5, 3, 8", "3, 5, 8", "8, 3, 5", "8"],
+            "a": 0,
+            "ex": "foreach는 배열에 들어 있는 순서 그대로 꺼내요."
+          },
+          {
+            "t": "read",
+            "h": "인벤토리처럼 늘어나는 목록: List",
+            "code": "using System.Collections.Generic; // 맨 위에 추가\n\nList<string> bag = new List<string>();\nbag.Add(\"포션\");\nbag.Add(\"열쇠\");\nDebug.Log(bag.Count);   // 2\nbag.Remove(\"포션\");\nDebug.Log(bag[0]);      // 열쇠",
+            "body": "<p>배열은 크기가 고정이지만 <b>List</b>는 자유롭게 넣고 뺄 수 있어요. 인벤토리, 적 목록 같은 데 써요. 개수는 Length가 아니라 <code>Count</code>예요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "bag.Count 는?",
+            "code": "List<string> bag = new List<string>();\nbag.Add(\"검\");\nbag.Add(\"방패\");\nbag.Add(\"포션\");",
+            "opts": ["3", "2", "0", "에러"],
+            "a": 0,
+            "ex": "세 번 Add 했으니 3."
+          },
+          {
+            "t": "q",
+            "q": "List에 아이템을 넣는 방법은?",
+            "opts": ["bag.Add(\"물약\");", "bag.Push(\"물약\");", "bag[] = \"물약\";", "bag + \"물약\";"],
+            "a": 0,
+            "mono": true,
+            "ex": "List에 추가는 Add, 삭제는 Remove."
+          },
+          {
+            "t": "q",
+            "q": "개수 세는 이름이 맞게 짝지어진 것은?",
+            "opts": ["배열 Length / List Count", "배열 Count / List Length", "둘 다 Length", "둘 다 Count"],
+            "a": 0,
+            "ex": "헷갈리기 쉬운 부분이에요. 배열은 Length, List는 Count."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 4,
+    "title": "함수 — 동작에 이름 붙이기",
+    "lessons": [
+      {
+        "id": "d4l1",
+        "title": "함수 만들고 부르기",
+        "desc": "void Jump() { }",
+        "recap": ["함수 = 코드 묶음에 이름 붙이기", "만들기: void 이름() { ... }", "부르기: 이름();", "Start와 Update도 사실 함수다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "자주 하는 동작에 이름을 붙여요",
+            "code": "void Start()\n{\n    SayHello();\n    SayHello();\n}\n\nvoid SayHello()\n{\n    Debug.Log(\"안녕!\");\n}",
+            "body": "<p><code>void SayHello() { }</code>로 함수를 <b>만들고</b>, <code>SayHello();</code>로 <b>불러요</b>. 위 코드는 '안녕!'을 두 번 찍어요.</p><p>사실 Start와 Update도 유니티가 알아서 불러주는 함수예요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "void Start()\n{\n    Debug.Log(\"A\");\n    Hit();\n    Debug.Log(\"C\");\n}\n\nvoid Hit()\n{\n    Debug.Log(\"B\");\n}",
+            "opts": ["A, B, C", "A, C, B", "B, A, C", "A, C"],
+            "a": 0,
+            "ex": "Hit()를 부르는 순간 Hit 안으로 들어가 B를 찍고, 다시 돌아와 C를 찍어요."
+          },
+          {
+            "t": "q",
+            "q": "함수를 만들기만 하고 부르지 않으면?",
+            "opts": ["실행되지 않는다", "자동으로 한 번 실행된다", "매 프레임 실행된다", "에러가 난다"],
+            "a": 0,
+            "ex": "만든 함수는 누군가 불러야 실행돼요. (Start/Update 같은 특별한 이름만 유니티가 대신 불러줘요.)"
+          },
+          {
+            "t": "q",
+            "q": "Jump 함수를 부르는 올바른 코드는?",
+            "opts": ["Jump();", "Jump;", "void Jump();", "call Jump();"],
+            "a": 0,
+            "mono": true,
+            "ex": "이름 뒤에 괄호와 세미콜론. void는 만들 때만 붙여요."
+          },
+          {
+            "t": "q",
+            "q": "함수를 쓰는 가장 큰 이유는?",
+            "opts": ["같은 코드를 반복해서 쓰지 않으려고", "게임을 빠르게 하려고", "변수를 없애려고", "에러를 숨기려고"],
+            "a": 0,
+            "ex": "한 번 만들어두면 여러 곳에서 부를 수 있고, 고칠 때도 한 곳만 고치면 돼요."
+          }
+        ]
+      },
+      {
+        "id": "d4l2",
+        "title": "매개변수 — 함수에 값 넘기기",
+        "desc": "TakeDamage(int amount)",
+        "recap": ["괄호 안에 받을 값을 선언: (int amount)", "부를 때 값을 넣어 보냄: TakeDamage(10);", "여러 개는 쉼표로: (int a, float b)"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "데미지는 매번 다르잖아요",
+            "code": "int hp = 100;\n\nvoid TakeDamage(int amount)\n{\n    hp -= amount;\n    Debug.Log(\"남은 체력: \" + hp);\n}\n\n// 부를 때\nTakeDamage(10);\nTakeDamage(25);",
+            "body": "<p>괄호 안 <code>int amount</code>는 함수가 <b>받을 값</b>이에요. 부를 때 넣은 10, 25가 amount에 담겨서 들어가요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "위 코드를 다 실행하면 hp는?",
+            "opts": ["65", "90", "75", "100"],
+            "a": 0,
+            "ex": "100 - 10 = 90, 다시 90 - 25 = 65."
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "void Greet(string name)\n{\n    Debug.Log(\"안녕, \" + name);\n}\n\nGreet(\"루나\");",
+            "opts": ["안녕, 루나", "안녕, name", "루나", "안녕,"],
+            "a": 0,
+            "ex": "넘긴 \"루나\"가 name에 담겨요."
+          },
+          {
+            "t": "q",
+            "q": "Heal 함수를 30으로 부르는 코드는?",
+            "code": "void Heal(int amount) { hp += amount; }",
+            "opts": ["Heal(30);", "Heal = 30;", "Heal(int 30);", "Heal[30];"],
+            "a": 0,
+            "mono": true,
+            "ex": "부를 땐 값만 넣어요. 자료형(int)은 만들 때만 써요."
+          },
+          {
+            "t": "q",
+            "q": "값 두 개를 받는 함수는?",
+            "opts": [
+              "void Move(float x, float y)",
+              "void Move(float x float y)",
+              "void Move(float x; float y)",
+              "void Move(float x + y)"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "여러 개는 쉼표로 구분해요."
+          }
+        ]
+      },
+      {
+        "id": "d4l3",
+        "title": "return — 결과 돌려받기",
+        "desc": "int, bool을 돌려주는 함수",
+        "recap": ["void = 돌려주는 값 없음", "int Add(...) { return 값; } = int를 돌려줌", "return을 만나면 함수는 바로 끝난다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "계산해서 답을 돌려주는 함수",
+            "code": "int Add(int a, int b)\n{\n    return a + b;\n}\n\nint result = Add(3, 4);\nDebug.Log(result); // 7",
+            "body": "<p>함수 이름 앞의 <code>void</code> 자리에 자료형을 쓰면, 그 자료형의 값을 <b>돌려주는</b> 함수가 돼요. <code>return</code> 뒤의 값이 함수를 부른 자리로 돌아가요.</p><p><code>void</code>는 '돌려주는 값 없음'이라는 뜻이었어요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "int Double(int x)\n{\n    return x * 2;\n}\n\nDebug.Log(Double(5));",
+            "opts": ["10", "5", "25", "x * 2"],
+            "a": 0,
+            "ex": "5 * 2 = 10이 돌아와요."
+          },
+          {
+            "t": "q",
+            "q": "\"죽었는지\"를 true/false로 돌려주는 함수의 시작은?",
+            "opts": ["bool IsDead()", "void IsDead()", "int IsDead()", "string IsDead()"],
+            "a": 0,
+            "mono": true,
+            "ex": "참/거짓을 돌려주니 bool. 이런 함수는 보통 Is나 Has로 이름을 시작해요."
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "int hp = 0;\n\nbool IsDead()\n{\n    return hp <= 0;\n}\n\nif (IsDead())\n    Debug.Log(\"게임 오버\");\nelse\n    Debug.Log(\"계속\");",
+            "opts": ["게임 오버", "계속", "true", "에러"],
+            "a": 0,
+            "ex": "hp <= 0 이 true라서 IsDead()가 true를 돌려주고, if가 실행돼요."
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "string Check(int coin)\n{\n    if (coin >= 10)\n        return \"부자\";\n    return \"가난\";\n}\n\nDebug.Log(Check(15));",
+            "opts": ["부자", "가난", "부자 그리고 가난", "15"],
+            "a": 0,
+            "ex": "return을 만나면 그 자리에서 함수가 끝나요. 그래서 '가난' 줄까지 가지 않아요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 5,
+    "title": "컴포넌트와 Transform",
+    "lessons": [
+      {
+        "id": "d5l1",
+        "title": "Transform과 Vector3",
+        "desc": "위치, 회전, 크기",
+        "recap": ["모든 게임 오브젝트에는 Transform이 있다", "transform.position = 위치 (Vector3)", "Vector3 = x, y, z 세 숫자 묶음 (y가 위쪽)"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "모든 오브젝트가 가진 컴포넌트",
+            "code": "void Start()\n{\n    Debug.Log(transform.position);\n    transform.position = new Vector3(0f, 2f, 0f);\n}",
+            "body": "<p>유니티의 모든 게임 오브젝트에는 <b>Transform</b> 컴포넌트가 붙어 있어요. 위치(position), 회전(rotation), 크기(scale)를 담당해요.</p><p>스크립트 안에서는 소문자 <code>transform</code>으로 내 오브젝트의 Transform에 바로 접근할 수 있어요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "Vector3 = 숫자 세 개 묶음",
+            "code": "Vector3 pos = new Vector3(1f, 2f, 3f);\nDebug.Log(pos.x); // 1\nDebug.Log(pos.y); // 2\n\n// 자주 쓰는 지름길\nVector3.up      // (0, 1, 0)\nVector3.right   // (1, 0, 0)\nVector3.forward // (0, 0, 1)\nVector3.zero    // (0, 0, 0)",
+            "body": "<p>x는 좌우, <b>y는 위아래</b>, z는 앞뒤예요. 새로 만들 땐 <code>new Vector3(x, y, z)</code>.</p>"
+          },
+          {
+            "t": "q",
+            "q": "오브젝트를 원점(0,0,0)으로 옮기는 코드는?",
+            "opts": [
+              "transform.position = Vector3.zero;",
+              "transform.position = 0;",
+              "position = new Vector3();",
+              "transform = Vector3.zero;"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "position에는 Vector3를 넣어야 해요. 숫자 하나(0)는 안 돼요."
+          },
+          {
+            "t": "q",
+            "q": "유니티에서 위쪽 방향의 축은?",
+            "opts": ["y", "x", "z", "w"],
+            "a": 0,
+            "ex": "유니티는 y가 위예요. 그래서 점프는 y를 키우는 것."
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "Vector3 p = new Vector3(4f, 7f, 1f);\nDebug.Log(p.y);",
+            "opts": ["7", "4", "1", "(4, 7, 1)"],
+            "a": 0,
+            "ex": "두 번째 숫자가 y예요."
+          },
+          {
+            "t": "q",
+            "q": "크기를 두 배로 키우는 코드는?",
+            "opts": [
+              "transform.localScale = new Vector3(2f, 2f, 2f);",
+              "transform.position = new Vector3(2f, 2f, 2f);",
+              "transform.scale = 2;",
+              "transform.size = 2f;"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "크기는 localScale. position을 바꾸면 크기가 아니라 위치가 바뀌어요."
+          }
+        ]
+      },
+      {
+        "id": "d5l2",
+        "title": "움직이기와 Time.deltaTime",
+        "desc": "프레임과 상관없이 같은 속도로",
+        "recap": ["Update에서 position을 조금씩 바꾸면 움직인다", "Time.deltaTime = 지난 프레임에서 흐른 시간(초)", "속도 * Time.deltaTime = 초당 속도"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "매 프레임 조금씩 옮기면 = 움직임",
+            "code": "void Update()\n{\n    transform.position += new Vector3(0.1f, 0f, 0f);\n}",
+            "body": "<p>Update는 매 프레임 실행되니까, 매번 x를 0.1씩 더하면 오른쪽으로 계속 움직여요.</p><p>그런데 문제가 있어요. 120fps 컴퓨터는 60fps 컴퓨터보다 <b>두 배 빨리</b> 움직여요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "해결책: Time.deltaTime",
+            "code": "public float speed = 5f;\n\nvoid Update()\n{\n    transform.position += Vector3.right * speed * Time.deltaTime;\n}",
+            "body": "<p><code>Time.deltaTime</code>은 지난 프레임부터 흐른 시간(초)이에요. 60fps면 약 0.016초. 여기에 곱하면 <b>'1프레임당'이 아니라 '1초당'</b> 속도가 돼서, 어떤 컴퓨터에서든 같은 속도로 움직여요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "위 코드에서 speed가 5면, 1초에 대략 얼마나 움직일까요?",
+            "opts": ["5", "300", "0.016", "1"],
+            "a": 0,
+            "ex": "speed * Time.deltaTime 을 1초 동안 모으면 정확히 speed만큼. 그래서 '초당 5칸'이 돼요."
+          },
+          {
+            "t": "q",
+            "q": "Time.deltaTime 없이 Update에서 움직이면 생기는 문제는?",
+            "opts": ["컴퓨터 성능에 따라 속도가 달라진다", "아예 안 움직인다", "에러가 난다", "한 번만 움직인다"],
+            "a": 0,
+            "ex": "프레임이 많은 컴퓨터일수록 더 자주 더해져서 빨라져요."
+          },
+          {
+            "t": "q",
+            "q": "앞쪽(z+)으로 초당 3씩 움직이는 코드는?",
+            "opts": [
+              "transform.position += Vector3.forward * 3f * Time.deltaTime;",
+              "transform.position += Vector3.up * 3f * Time.deltaTime;",
+              "transform.position = Vector3.forward * 3f;",
+              "transform.position += 3f * Time.deltaTime;"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "forward가 z축 앞쪽. position에는 Vector3를 더해야 하니 방향 * 크기 형태가 돼요."
+          },
+          {
+            "t": "q",
+            "q": "같은 동작을 하는 다른 방법은?",
+            "code": "transform.position += Vector3.right * speed * Time.deltaTime;",
+            "opts": [
+              "transform.Translate(Vector3.right * speed * Time.deltaTime);",
+              "transform.Move(speed);",
+              "transform.right = speed;",
+              "Translate(speed);"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "Translate는 '이만큼 옮겨라' 함수예요. 둘 다 자주 써요."
+          }
+        ]
+      },
+      {
+        "id": "d5l3",
+        "title": "다른 컴포넌트 가져오기",
+        "desc": "GetComponent, SerializeField",
+        "recap": [
+          "GetComponent<타입>() 으로 같은 오브젝트의 컴포넌트를 가져온다",
+          "보통 Start에서 한 번 가져와 변수에 저장",
+          "[SerializeField] private = 인스펙터엔 보이지만 다른 스크립트는 못 건드림"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "오브젝트는 컴포넌트 조립품이에요",
+            "code": "Rigidbody rb;\n\nvoid Start()\n{\n    rb = GetComponent<Rigidbody>();\n}",
+            "body": "<p>게임 오브젝트에는 Transform 말고도 Rigidbody(물리), Collider(충돌), 내가 만든 스크립트 등이 붙어요. 다른 컴포넌트를 쓰려면 <code>GetComponent&lt;타입&gt;()</code>으로 가져와요.</p><p>매 프레임 찾으면 느리니까, <b>Start에서 한 번 가져와 변수에 저장</b>해두는 게 기본 패턴이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "Animator 컴포넌트를 가져오는 코드는?",
+            "opts": [
+              "anim = GetComponent<Animator>();",
+              "anim = GetComponent(Animator);",
+              "anim = Animator.Get();",
+              "anim = <Animator>GetComponent();"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "꺾쇠 < > 안에 타입, 뒤에 빈 괄호 ()."
+          },
+          {
+            "t": "q",
+            "q": "GetComponent는 보통 어디서 부를까요?",
+            "opts": ["Start (한 번)", "Update (매 프레임)", "아무 데도 안 부름", "클래스 밖"],
+            "a": 0,
+            "ex": "한 번 찾아서 저장해두면 계속 쓸 수 있어요. Update에서 매번 찾는 건 낭비예요."
+          },
+          {
+            "t": "read",
+            "h": "public 대신 [SerializeField]",
+            "code": "public float speed = 5f;               // 인스펙터 O, 다른 스크립트 O\n[SerializeField] float jumpPower = 7f; // 인스펙터 O, 다른 스크립트 X\nfloat timer = 0f;                     // 인스펙터 X, 다른 스크립트 X",
+            "body": "<p>public은 인스펙터에 보이지만 <b>다른 스크립트가 마음대로 바꿀 수도</b> 있어요. 인스펙터 조절만 필요하면 <code>[SerializeField]</code>가 더 안전해서 실무에선 이걸 더 많이 써요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "인스펙터에서 조절은 하고 싶지만, 다른 스크립트가 못 바꾸게 하고 싶다면?",
+            "opts": ["[SerializeField] float hp;", "public float hp;", "float hp;", "static float hp;"],
+            "a": 0,
+            "mono": true,
+            "ex": "SerializeField는 '인스펙터에만 꺼내기'예요."
+          },
+          {
+            "t": "q",
+            "q": "Rigidbody가 안 붙은 오브젝트에서 GetComponent<Rigidbody>()를 하면?",
+            "opts": ["null(없음)이 돌아와서, 쓰려고 하면 에러", "자동으로 Rigidbody가 생긴다", "Transform이 대신 돌아온다", "아무 일도 없다"],
+            "a": 0,
+            "ex": "없는 걸 찾으면 null이 와요. 그걸 쓰면 NullReferenceException — 유니티에서 제일 유명한 에러예요."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 6,
+    "title": "입력 받아 캐릭터 움직이기",
+    "lessons": [
+      {
+        "id": "d6l1",
+        "title": "키 입력 받기",
+        "desc": "GetKey, GetKeyDown, GetKeyUp",
+        "recap": ["GetKeyDown — 누른 순간 한 번", "GetKey — 누르고 있는 동안 계속", "GetKeyUp — 뗀 순간 한 번", "입력 검사는 Update 안에서"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "키보드 입력 세 가지",
+            "code": "void Update()\n{\n    if (Input.GetKeyDown(KeyCode.Space))\n        Debug.Log(\"눌렀다!\");\n\n    if (Input.GetKey(KeyCode.Space))\n        Debug.Log(\"누르는 중...\");\n\n    if (Input.GetKeyUp(KeyCode.Space))\n        Debug.Log(\"뗐다!\");\n}",
+            "body": "<p>입력은 매 프레임 확인해야 하니까 <b>Update 안</b>에서 검사해요.</p><p>참고: 유니티에는 더 새로운 'Input System'도 있어요. 개념은 같으니 여기선 배우기 쉬운 기본 방식으로 익혀요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "점프처럼 '누른 순간 한 번'만 실행하려면?",
+            "opts": ["Input.GetKeyDown", "Input.GetKey", "Input.GetKeyUp", "Input.anyKey"],
+            "a": 0,
+            "mono": true,
+            "ex": "GetKey로 하면 누르고 있는 동안 매 프레임 점프해서 로켓처럼 날아가요."
+          },
+          {
+            "t": "q",
+            "q": "달리기처럼 '누르고 있는 동안 계속'은?",
+            "opts": ["Input.GetKey", "Input.GetKeyDown", "Input.GetKeyUp", "Input.KeyPress"],
+            "a": 0,
+            "mono": true,
+            "ex": "GetKey는 누르고 있는 프레임마다 true예요."
+          },
+          {
+            "t": "q",
+            "q": "E 키를 눌렀을 때를 검사하는 코드는?",
+            "opts": [
+              "Input.GetKeyDown(KeyCode.E)",
+              "Input.GetKeyDown(\"E\")",
+              "Input.GetKeyDown(E)",
+              "Input.KeyDown(KeyCode.E)"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "키 이름은 KeyCode.E 처럼 써요."
+          },
+          {
+            "t": "q",
+            "q": "입력 검사를 Start에 넣으면?",
+            "opts": ["게임 시작 순간 한 번만 검사해서 거의 작동 안 함", "잘 작동한다", "에러가 난다", "두 번 검사한다"],
+            "a": 0,
+            "ex": "Start는 한 번뿐이라 그 순간 키를 누르고 있지 않으면 끝이에요."
+          }
+        ]
+      },
+      {
+        "id": "d6l2",
+        "title": "방향키로 이동하기",
+        "desc": "Input.GetAxis",
+        "recap": [
+          "GetAxis(\"Horizontal\") — 좌우 -1 ~ 1",
+          "GetAxis(\"Vertical\") — 앞뒤 -1 ~ 1",
+          "방향 Vector3 * speed * Time.deltaTime 으로 이동"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "키 네 개를 하나씩 검사하지 않아도 돼요",
+            "code": "float h = Input.GetAxis(\"Horizontal\"); // ←: -1, →: 1\nfloat v = Input.GetAxis(\"Vertical\");   // ↓: -1, ↑: 1",
+            "body": "<p><code>GetAxis</code>는 방향키(와 WASD, 게임패드 스틱)를 <b>-1에서 1 사이 숫자</b>로 알려줘요. 아무것도 안 누르면 0이에요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "이제 캐릭터를 움직여봐요",
+            "code": "public class PlayerMove : MonoBehaviour\n{\n    [SerializeField] float speed = 5f;\n\n    void Update()\n    {\n        float h = Input.GetAxis(\"Horizontal\");\n        float v = Input.GetAxis(\"Vertical\");\n\n        Vector3 dir = new Vector3(h, 0f, v);\n        transform.position += dir * speed * Time.deltaTime;\n    }\n}",
+            "body": "<p>h는 x(좌우), v는 z(앞뒤)에 넣었어요. y는 0 — 땅 위를 걷는 거니까요. 지금까지 배운 게 전부 들어 있어요!</p>"
+          },
+          {
+            "t": "q",
+            "q": "오른쪽 화살표를 누르고 있으면 GetAxis(\"Horizontal\")은?",
+            "opts": ["1에 가까운 값", "-1에 가까운 값", "0", "10"],
+            "a": 0,
+            "ex": "오른쪽이 +, 왼쪽이 -예요."
+          },
+          {
+            "t": "q",
+            "q": "아무 키도 안 누르면 dir은?",
+            "code": "Vector3 dir = new Vector3(h, 0f, v);",
+            "opts": ["(0, 0, 0) — 안 움직임", "(1, 0, 1)", "(-1, 0, -1)", "에러"],
+            "a": 0,
+            "ex": "h, v 모두 0이라 dir도 0. 0에 뭘 곱해도 0이라 제자리예요."
+          },
+          {
+            "t": "q",
+            "q": "v(위아래 키)를 y에 넣으면 어떻게 될까요?",
+            "code": "Vector3 dir = new Vector3(h, v, 0f);",
+            "opts": ["위 키를 누르면 하늘로 날아간다", "똑같이 앞으로 걷는다", "에러가 난다", "안 움직인다"],
+            "a": 0,
+            "ex": "y는 위쪽이니까요. 2D 게임이라면 이렇게 쓰는 게 맞을 수도 있어요."
+          },
+          {
+            "t": "q",
+            "q": "Shift를 누르는 동안 두 배 빠르게 달리게 하려면?",
+            "opts": [
+              "if (Input.GetKey(KeyCode.LeftShift)) speed * 2 를 쓴다",
+              "if (Input.GetKeyDown(KeyCode.LeftShift)) 를 쓴다",
+              "Time.deltaTime 을 빼버린다",
+              "GetAxis를 두 번 부른다"
+            ],
+            "a": 0,
+            "ex": "누르고 있는 동안이니까 GetKey. 실제로는 float current = isRun ? speed * 2 : speed; 처럼 쓰기도 해요."
+          }
+        ]
+      },
+      {
+        "id": "d6l3",
+        "title": "점프: 물리에 힘 주기",
+        "desc": "Rigidbody.AddForce",
+        "recap": [
+          "Rigidbody가 있으면 중력과 물리가 적용된다",
+          "rb.AddForce(방향 * 힘, ForceMode.Impulse) — 순간적인 힘",
+          "점프 입력은 GetKeyDown + 땅에 있는지 검사"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "점프는 Rigidbody에게 맡겨요",
+            "code": "[SerializeField] float jumpPower = 6f;\nRigidbody rb;\n\nvoid Start()\n{\n    rb = GetComponent<Rigidbody>();\n}\n\nvoid Update()\n{\n    if (Input.GetKeyDown(KeyCode.Space))\n    {\n        rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);\n    }\n}",
+            "body": "<p>Rigidbody가 붙은 오브젝트는 중력으로 떨어져요. <code>AddForce</code>로 위쪽 힘을 주면 튀어 올랐다가 자연스럽게 떨어지죠.</p><p><code>ForceMode.Impulse</code>는 '한 번에 팍' 주는 힘이라 점프에 딱이에요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "Rigidbody를 Start에서 가져오는 이유는?",
+            "opts": ["매번 찾지 않고 저장해서 쓰려고", "Start에서만 물리가 작동해서", "Update에서는 GetComponent가 금지라서", "점프를 한 번만 하려고"],
+            "a": 0,
+            "ex": "Day 5에서 배운 패턴이에요. 한 번 찾아 rb에 저장!"
+          },
+          {
+            "t": "q",
+            "q": "위 코드의 문제점은? (스페이스를 연타하면…)",
+            "opts": ["공중에서도 계속 점프해서 날아간다", "점프가 안 된다", "한 번만 점프된다", "에러"],
+            "a": 0,
+            "ex": "땅에 있는지 검사가 없어서 무한 점프가 돼요. 다음 문제에서 고쳐봐요."
+          },
+          {
+            "t": "q",
+            "q": "땅에 있을 때만 점프하게 고친 조건은?",
+            "opts": [
+              "if (Input.GetKeyDown(KeyCode.Space) && isGrounded)",
+              "if (Input.GetKeyDown(KeyCode.Space) || isGrounded)",
+              "if (!isGrounded)",
+              "if (Input.GetKey(KeyCode.Space))"
+            ],
+            "a": 0,
+            "mono": true,
+            "ex": "스페이스를 눌렀고 AND 땅에 있을 때. Day 2의 &&가 여기서 나와요."
+          },
+          {
+            "t": "q",
+            "q": "점프 높이를 인스펙터에서 테스트하며 바꾸려면 무엇을 조절하나요?",
+            "opts": ["jumpPower", "rb", "ForceMode", "Vector3.up"],
+            "a": 0,
+            "ex": "[SerializeField]로 꺼내둔 jumpPower예요. 기획 수치 튜닝은 이렇게 인스펙터로!"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 7,
+    "title": "미니 프로젝트: 코인 줍기",
+    "lessons": [
+      {
+        "id": "d7l1",
+        "title": "충돌 감지: OnTriggerEnter",
+        "desc": "Is Trigger, CompareTag, Destroy",
+        "recap": [
+          "Collider의 Is Trigger를 켜면 통과하면서 감지만 한다",
+          "OnTriggerEnter(Collider other) — 닿는 순간 유니티가 불러줌",
+          "other.CompareTag(\"Coin\")로 무엇인지 확인",
+          "Destroy(other.gameObject)로 없애기"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "코인에 닿았다는 걸 어떻게 알까?",
+            "code": "void OnTriggerEnter(Collider other)\n{\n    Debug.Log(other.name + \"에 닿음\");\n}",
+            "body": "<p>코인 오브젝트의 Collider에서 <b>Is Trigger</b>를 체크하면 부딪혀 막히지 않고 통과하면서 '닿았다'는 신호만 보내요.</p><p>그때 유니티가 <code>OnTriggerEnter</code>를 불러줘요. Start, Update처럼 이름을 정확히 써야 해요. <code>other</code>는 내가 닿은 상대예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "닿은 게 코인일 때만",
+            "code": "void OnTriggerEnter(Collider other)\n{\n    if (other.CompareTag(\"Coin\"))\n    {\n        Destroy(other.gameObject);\n    }\n}",
+            "body": "<p>코인 오브젝트에 인스펙터에서 <b>Coin 태그</b>를 달아두면, <code>CompareTag</code>로 확인할 수 있어요. 확인되면 <code>Destroy</code>로 코인을 없애요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "함수 이름을 ontriggerenter 로 쓰면?",
+            "opts": ["유니티가 부르지 않아서 아무 일도 안 일어난다", "똑같이 작동한다", "에러가 난다", "두 번 불린다"],
+            "a": 0,
+            "ex": "C#은 대소문자를 구분해요. 에러도 안 나서 찾기 어려운 버그가 돼요."
+          },
+          {
+            "t": "q",
+            "q": "닿은 상대가 Enemy 태그인지 확인하는 코드는?",
+            "opts": ["other.CompareTag(\"Enemy\")", "other.tag = \"Enemy\"", "other == \"Enemy\"", "CompareTag(Enemy)"],
+            "a": 0,
+            "mono": true,
+            "ex": "CompareTag에 태그 이름을 문자열로 넣어요."
+          },
+          {
+            "t": "q",
+            "q": "코인을 없애는 코드는?",
+            "opts": ["Destroy(other.gameObject);", "Destroy(other);", "other.Delete();", "Remove(other.gameObject);"],
+            "a": 0,
+            "mono": true,
+            "ex": "other는 Collider 컴포넌트라서 Destroy(other)는 콜라이더만 지워요. 오브젝트째 없애려면 other.gameObject!"
+          },
+          {
+            "t": "q",
+            "q": "코인 위를 지나가도 아무 반응이 없어요. 가장 먼저 확인할 것은?",
+            "opts": ["코인 Collider의 Is Trigger 체크", "speed 값", "Time.deltaTime", "카메라 위치"],
+            "a": 0,
+            "ex": "Trigger 감지가 안 되면 Is Trigger, 태그, 그리고 둘 중 하나에 Rigidbody가 있는지를 확인해요."
+          }
+        ]
+      },
+      {
+        "id": "d7l2",
+        "title": "점수 세고 클리어하기",
+        "desc": "카운트, 조건, UI 문자열",
+        "recap": ["주울 때마다 coin++", "목표 개수를 [SerializeField]로 꺼내 기획 수치로", "if로 클리어 조건 검사", "\"코인: \" + coin 으로 표시용 문자열"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "주운 개수 세기",
+            "code": "int coin = 0;\n[SerializeField] int goal = 5;\n\nvoid OnTriggerEnter(Collider other)\n{\n    if (other.CompareTag(\"Coin\"))\n    {\n        Destroy(other.gameObject);\n        coin++;\n        Debug.Log(\"코인: \" + coin + \" / \" + goal);\n\n        if (coin >= goal)\n        {\n            Debug.Log(\"스테이지 클리어!\");\n        }\n    }\n}",
+            "body": "<p>변수, ++, 문자열 더하기, if, SerializeField. Day 1~2에 배운 게 그대로 쓰여요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "코인을 3개 주웠을 때 콘솔에 찍히는 마지막 줄은? (goal = 5)",
+            "opts": ["코인: 3 / 5", "스테이지 클리어!", "코인: 3", "3 / 5"],
+            "a": 0,
+            "ex": "3 >= 5 는 거짓이라 클리어는 아직이에요."
+          },
+          {
+            "t": "q",
+            "q": "클리어 조건을 coin == goal 이 아니라 coin >= goal 로 쓴 이유는?",
+            "opts": ["혹시 목표보다 더 많이 주워도 클리어되게", "속도가 빨라서", "== 는 int에 못 써서", "차이 없음, 취향"],
+            "a": 0,
+            "ex": "== 는 딱 그 숫자일 때만 참이라, 예외 상황에서 클리어를 놓칠 수 있어요. 안전한 조건이 좋아요."
+          },
+          {
+            "t": "q",
+            "q": "클리어 메시지가 코인 5개 이후에도 매번 찍혀요. 한 번만 나오게 하려면?",
+            "opts": ["bool isCleared를 두고 && !isCleared로 검사한 뒤 true로 바꾼다", "goal을 0으로 바꾼다", "Update로 옮긴다", "Destroy를 지운다"],
+            "a": 0,
+            "ex": "'이미 했는지' 기억하는 bool 깃발(flag)은 게임 코드에서 정말 자주 쓰는 패턴이에요."
+          },
+          {
+            "t": "q",
+            "q": "기획자가 스테이지마다 목표 개수를 다르게 하려면?",
+            "opts": ["인스펙터에서 goal 값을 바꾼다", "코드를 스테이지마다 복사한다", "coin을 public으로 바꾼다", "불가능하다"],
+            "a": 0,
+            "ex": "수치를 [SerializeField]로 빼두면 코드 수정 없이 오브젝트마다 다르게 설정할 수 있어요."
+          }
+        ]
+      },
+      {
+        "id": "d7l3",
+        "title": "완성 코드 읽기",
+        "desc": "일주일 배운 걸 한 스크립트로",
+        "recap": [
+          "읽을 수 있으면 고칠 수 있고, 고칠 수 있으면 만들 수 있다",
+          "변수 → Start에서 준비 → Update에서 입력·이동 → 이벤트 함수에서 반응",
+          "이 구조가 거의 모든 유니티 스크립트의 뼈대"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "일주일 동안 배운 것이 전부 들어 있어요",
+            "code": "using UnityEngine;\n\npublic class PlayerController : MonoBehaviour\n{\n    [SerializeField] float speed = 5f;\n    [SerializeField] float jumpPower = 6f;\n    [SerializeField] int goal = 5;\n\n    Rigidbody rb;\n    int coin = 0;\n    bool isGrounded = true;\n\n    void Start()\n    {\n        rb = GetComponent<Rigidbody>();\n    }\n\n    void Update()\n    {\n        float h = Input.GetAxis(\"Horizontal\");\n        float v = Input.GetAxis(\"Vertical\");\n        Vector3 dir = new Vector3(h, 0f, v);\n        transform.position += dir * speed * Time.deltaTime;\n\n        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)\n        {\n            rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);\n            isGrounded = false;\n        }\n    }\n\n    void OnCollisionEnter(Collision col)\n    {\n        if (col.gameObject.CompareTag(\"Ground\"))\n            isGrounded = true;\n    }\n\n    void OnTriggerEnter(Collider other)\n    {\n        if (other.CompareTag(\"Coin\"))\n        {\n            Destroy(other.gameObject);\n            coin++;\n            if (coin >= goal)\n                Debug.Log(\"클리어!\");\n        }\n    }\n}",
+            "body": "<p>천천히 위에서부터 읽어보세요. 모르는 줄이 거의 없을 거예요. <code>OnCollisionEnter</code>는 Trigger가 아닌 <b>진짜 부딪힘</b>을 감지하는 짝꿍 함수예요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "isGrounded가 다시 true가 되는 때는?",
+            "opts": ["Ground 태그 오브젝트에 부딪혔을 때", "스페이스를 뗐을 때", "Start에서 매번", "코인을 주웠을 때"],
+            "a": 0,
+            "ex": "점프하면 false, 땅에 착지(OnCollisionEnter)하면 true. 이걸로 무한 점프를 막아요."
+          },
+          {
+            "t": "q",
+            "q": "점프 직후 isGrounded = false; 줄을 지우면?",
+            "opts": ["공중에서 계속 점프할 수 있다", "점프가 안 된다", "코인을 못 줍는다", "이동이 안 된다"],
+            "a": 0,
+            "ex": "계속 true로 남아서 조건이 항상 통과돼요."
+          },
+          {
+            "t": "q",
+            "q": "Rigidbody가 없는 오브젝트에 이 스크립트를 붙이고 점프하면?",
+            "opts": ["rb가 null이라 NullReferenceException 에러", "그냥 점프된다", "이동도 안 된다", "자동으로 Rigidbody가 추가된다"],
+            "a": 0,
+            "ex": "GetComponent가 null을 돌려줬으니까요. 이 에러를 보면 '뭔가 안 붙어 있구나'부터 의심하세요."
+          },
+          {
+            "t": "q",
+            "q": "이동 속도를 바꾸고 싶을 때 가장 좋은 방법은?",
+            "opts": ["인스펙터에서 speed 수정", "코드의 5f를 매번 고치기", "Time.deltaTime 지우기", "h에 2를 곱하기"],
+            "a": 0,
+            "ex": "수치는 인스펙터에서. 이게 기획과 코드를 분리하는 첫걸음이에요."
+          },
+          {
+            "t": "q",
+            "q": "이 스크립트의 파일 이름은?",
+            "opts": ["PlayerController.cs", "Player.cs", "MonoBehaviour.cs", "Controller.cs"],
+            "a": 0,
+            "mono": true,
+            "ex": "Day 1 첫 레슨의 내용이에요. 클래스 이름 = 파일 이름. 일주일 완주 축하해요!"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "n": 8,
+    "title": "변수의 범위와 함수의 흐름",
+    "lessons": [
+      {
+        "id": "c3l1",
+        "title": "변수는 어디까지 살아있을까",
+        "desc": "중괄호 = 변수의 집",
+        "recap": [
+          "변수는 만들어진 { } 안에서만 산다",
+          "함수 안 변수(지역 변수)는 함수가 끝나면 사라진다",
+          "Update 안에서 만든 변수는 매 프레임 새로 태어난다",
+          "계속 기억할 값은 클래스 칸(필드)에"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "중괄호는 변수의 집이에요",
+            "code": "public class Player : MonoBehaviour\n{\n    int coin = 0;          // ① 클래스의 집: 스크립트가 살아있는 동안\n\n    void Update()\n    {\n        int temp = 5;      // ② Update의 집: 이번 프레임 동안만\n\n        if (coin > 10)\n        {\n            int bonus = 2; // ③ if의 집: 이 중괄호 안에서만\n        }\n        // 여기서 bonus는 없어요\n    }\n}",
+            "body": "<p>변수는 <b>자기가 태어난 중괄호 안에서만</b> 살아요. 중괄호가 닫히면 사라져요. 이걸 <b>범위(scope)</b>라고 해요.</p>",
+            "terms": [
+              "① <b>필드</b> — 클래스 바로 아래. 스크립트가 있는 동안 계속 기억해요.",
+              "② <b>지역 변수</b> — 함수 안. 함수가 끝나면 사라져요.",
+              "③ 블록 안 변수 — if, for의 중괄호 안. 그 블록이 끝나면 사라져요."
+            ]
+          },
+          {
+            "t": "read",
+            "h": "초보 단골 버그",
+            "code": "void Update()\n{\n    int count = 0;\n\n    if (Input.GetKeyDown(KeyCode.Space))\n    {\n        count++;\n        Debug.Log(count);   // 항상 1\n    }\n}",
+            "body": "<p>스페이스를 누를 때마다 1, 2, 3… 이 되길 원했는데 <b>항상 1</b>이 나와요. count가 Update 안에서 태어나서, <b>매 프레임 0으로 새로 태어나기</b> 때문이에요. 계속 기억해야 하는 값은 함수 밖, 클래스 칸에 둬야 해요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "스페이스를 세 번 누르면 마지막에 찍히는 값은?",
+            "code": "int count = 0;   // 클래스 칸\n\nvoid Update()\n{\n    if (Input.GetKeyDown(KeyCode.Space))\n    {\n        count++;\n        Debug.Log(count);\n    }\n}",
+            "opts": ["3", "1", "0", "매번 0"],
+            "a": 0,
+            "ex": "이번엔 클래스 칸이라 계속 기억해요."
+          },
+          {
+            "t": "q",
+            "q": "이 코드의 문제는?",
+            "code": "void Start()\n{\n    Rigidbody rb = GetComponent<Rigidbody>();\n}\n\nvoid Update()\n{\n    rb.AddForce(Vector3.up);\n}",
+            "opts": ["rb는 Start 안에서만 살아서 Update에선 없다", "GetComponent는 Update에서만 된다", "AddForce 철자", "문제 없음"],
+            "a": 0,
+            "hint": "rb가 태어난 중괄호는 어디인가요?",
+            "ex": "Start 안의 지역 변수예요. 클래스 칸에 Rigidbody rb; 를 만들고 Start에서는 rb = ... 만 해야 해요. 앞에 자료형을 다시 쓰면 같은 이름의 새 지역 변수가 생겨버려요."
+          },
+          {
+            "t": "build",
+            "q": "Start에서 클래스 칸의 rb에 Rigidbody를 담는 줄을 조립하세요",
+            "answer": ["rb", "=", "GetComponent<Rigidbody>();"],
+            "extra": ["Rigidbody", "new"],
+            "hint": "클래스 칸에 이미 Rigidbody rb; 가 있어요. 자료형을 다시 쓰면 새 변수가 생겨요.",
+            "ex": "자료형 없이 rb = ... 만 써야 클래스 칸의 rb에 담겨요."
+          }
+        ]
+      },
+      {
+        "id": "c3l2",
+        "title": "함수에 값을 넘기면 복사돼요",
+        "desc": "매개변수와 인자",
+        "recap": [
+          "매개변수 = 함수가 받는 칸, 인자 = 부를 때 넣는 실제 값",
+          "int, float, bool, Vector3 같은 값은 복사되어 넘어간다",
+          "함수 안에서 매개변수를 바꿔도 원래 변수는 그대로",
+          "바뀐 값이 필요하면 return으로 돌려받는다"
+        ],
+        "steps": [
+          {
+            "t": "read",
+            "h": "용어 정리",
+            "code": "void Heal(int amount)   // amount = 매개변수 (받는 칸)\n{\n    hp += amount;\n}\n\nHeal(30);               // 30 = 인자 (넣는 값)",
+            "body": "<p>둘을 섞어 부르는 사람도 많아서 엄격하게 구분할 필요는 없지만, '<b>받는 칸</b>'과 '<b>넣는 값</b>'이 다르다는 것만 기억하세요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "넘길 때 무슨 일이 일어날까",
+            "code": "int myHp = 50;\n\nvoid AddTen(int x)\n{\n    x += 10;\n    Debug.Log(x);    // 60\n}\n\nAddTen(myHp);\nDebug.Log(myHp);     // 50 !",
+            "body": "<p>함수 안에서 x를 60으로 바꿨는데 myHp는 50 그대로예요. 왜냐하면 <code>AddTen(myHp)</code>를 부를 때 myHp 자체가 아니라 <b>myHp의 값 50을 복사해서</b> x라는 새 상자에 넣어주기 때문이에요.</p><p>시험지를 복사해서 친구에게 주면, 친구가 복사본에 낙서해도 내 원본은 깨끗하죠. int, float, bool, Vector3 같은 값은 이렇게 복사돼요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "그럼 바뀐 값이 필요하면?",
+            "code": "int AddTen(int x)\n{\n    return x + 10;\n}\n\nmyHp = AddTen(myHp);\nDebug.Log(myHp);   // 60",
+            "body": "<p>void 대신 int를 돌려주게 하고, 돌려받은 값을 다시 myHp에 넣어요. '부른 쪽이 결과를 받아서 써야 한다'는 바로 그 경우죠.</p>"
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "float speed = 5f;\n\nvoid Boost(float s)\n{\n    s *= 2f;\n}\n\nBoost(speed);\nDebug.Log(speed);",
+            "opts": ["5", "10", "2", "에러"],
+            "a": 0,
+            "hint": "speed 자체가 넘어갔나요, 값의 복사본이 넘어갔나요?",
+            "ex": "복사본 s만 10이 되고 speed는 5 그대로예요."
+          },
+          {
+            "t": "build",
+            "q": "Boost가 2배 값을 돌려주게 바꿨어요. speed를 실제로 2배로 만드는 줄을 조립하세요",
+            "answer": ["speed", "=", "Boost(speed);"],
+            "extra": ["Boost", "return"],
+            "ex": "돌려받은 값을 다시 speed에 넣어야 바뀌어요."
+          },
+          {
+            "t": "q",
+            "q": "hp를 직접 바꾸는 더 자연스러운 방법은?",
+            "code": "int hp = 100;\nvoid Damage(int x) { x -= 10; }",
+            "opts": ["매개변수 대신 클래스 칸 hp를 직접 바꾼다: hp -= 10;", "Damage(hp)를 두 번 부른다", "x를 public으로", "매개변수를 float으로"],
+            "a": 0,
+            "ex": "같은 클래스 안이면 hp에 직접 접근할 수 있어요. 매개변수로 넘기면 복사본만 바뀌어요."
+          }
+        ]
+      },
+      {
+        "id": "c3l3",
+        "title": "return과 조기 탈출",
+        "desc": "함수의 흐름 읽기",
+        "recap": ["return을 만나면 함수는 그 자리에서 끝난다", "void 함수도 return; 으로 중간에 끝낼 수 있다", "조건이 안 맞으면 먼저 return — 들여쓰기가 얕아져 읽기 쉽다"],
+        "steps": [
+          {
+            "t": "read",
+            "h": "return은 '여기서 끝'",
+            "code": "void TryJump()\n{\n    if (!isGrounded)\n        return;          // 공중이면 여기서 끝\n\n    if (stamina < 10)\n        return;          // 스태미나 부족해도 끝\n\n    rb.AddForce(Vector3.up * 6f, ForceMode.Impulse);\n    stamina -= 10;\n}",
+            "body": "<p>void 함수에서도 <code>return;</code>을 쓰면 그 자리에서 함수가 끝나요. 돌려주는 값 없이 '그만!'만 하는 거예요.</p><p>이렇게 <b>안 되는 조건을 먼저 걸러내고 빠져나가는</b> 방식을 '조기 반환(가드)'이라고 해요. 놀이기구 입구에서 키 재고, 표 확인하고, 통과한 사람만 타는 것과 같아요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "같은 코드, 다른 모양",
+            "code": "void TryJump()\n{\n    if (isGrounded)\n    {\n        if (stamina >= 10)\n        {\n            rb.AddForce(Vector3.up * 6f, ForceMode.Impulse);\n            stamina -= 10;\n        }\n    }\n}",
+            "body": "<p>하는 일은 똑같지만 조건이 늘어날수록 중괄호가 계속 깊어져요. 조건이 다섯 개면 다섯 겹이 되죠. 그래서 실무에선 앞의 조기 반환 모양을 더 선호해요.</p>"
+          },
+          {
+            "t": "q",
+            "q": "isGrounded = true, stamina = 5 일 때 점프할까요? (조기 반환 버전)",
+            "opts": ["안 한다", "한다", "에러", "두 번 한다"],
+            "a": 0,
+            "ex": "두 번째 if에서 return으로 빠져나가요."
+          },
+          {
+            "t": "build",
+            "q": "죽었으면 아무것도 안 하고 빠져나가는 가드를 조립하세요",
+            "answer": ["if", "(isDead)", "return;"],
+            "extra": ["break;", "(!isDead)"],
+            "ex": "if (isDead) return; — 함수 맨 위에 자주 두는 한 줄이에요."
+          },
+          {
+            "t": "q",
+            "q": "출력은?",
+            "code": "int Clamp(int v)\n{\n    if (v < 0) return 0;\n    if (v > 100) return 100;\n    return v;\n}\n\nDebug.Log(Clamp(150));",
+            "opts": ["100", "150", "0", "100 그리고 150"],
+            "a": 0,
+            "ex": "두 번째 if에서 100을 돌려주며 끝나요. (참고로 유니티에는 Mathf.Clamp가 이미 있어요.)"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "basic",
+    "name": "기초",
+    "desc": "하루 20분, 처음부터 캐릭터 움직이기까지",
+    "file": "data/basic.json"
+  },
+  {
+    "id": "adv",
+    "name": "심화",
+    "desc": "스크립트끼리 협업하는 구조 만들기",
+    "file": "data/adv.json"
+  },
+  {
+    "id": "pro",
+    "name": "실전",
+    "desc": "구조를 고르고, 버그를 잡는 감각",
+    "file": "data/pro.json"
+  },
+  {
+    "id": "core",
+    "name": "다지기",
+    "desc": "원리부터 다시, 블록으로 직접 조립",
+    "file": "data/core.json"
+  },
+  {
+    "id": "sys",
+    "name": "시스템",
+    "desc": "Addressables와 외부 데이터 테이블",
+    "file": "data/sys.json"
+  }
+]
