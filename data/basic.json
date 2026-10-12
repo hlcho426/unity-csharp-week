@@ -1135,6 +1135,7 @@
           {
             "t": "q",
             "q": "Shift를 누르는 동안 두 배 빠르게 달리게 하려면?",
+            "prevCode": true,
             "opts": [
               "if (Input.GetKey(KeyCode.LeftShift)) speed * 2 를 쓴다",
               "if (Input.GetKeyDown(KeyCode.LeftShift)) 를 쓴다",
@@ -1187,6 +1188,7 @@
           {
             "t": "q",
             "q": "Rigidbody를 Start에서 가져오는 이유는?",
+            "prevCode": true,
             "opts": ["매번 찾지 않고 저장해서 쓰려고", "Start에서만 물리가 작동해서", "Update에서는 GetComponent가 금지라서", "점프를 한 번만 하려고"],
             "a": 0,
             "ex": "Day 5에서 배운 패턴이에요. 한 번 찾아 rb에 저장!"
@@ -1201,6 +1203,7 @@
           {
             "t": "q",
             "q": "땅에 있을 때만 점프하게 고친 조건은?",
+            "prevCode": true,
             "opts": [
               "if (Input.GetKeyDown(KeyCode.Space) && isGrounded)",
               "if (Input.GetKeyDown(KeyCode.Space) || isGrounded)",
@@ -1214,6 +1217,7 @@
           {
             "t": "q",
             "q": "점프 높이를 인스펙터에서 테스트하며 바꾸려면 무엇을 조절하나요?",
+            "prevCode": true,
             "opts": ["jumpPower", "rb", "ForceMode", "Vector3.up"],
             "a": 0,
             "ex": "[SerializeField]로 꺼내둔 jumpPower예요. 기획 수치 튜닝은 이렇게 인스펙터로!"
@@ -1336,6 +1340,7 @@
           {
             "t": "q",
             "q": "코인을 3개 주웠을 때 콘솔에 찍히는 마지막 줄은? (goal = 5)",
+            "prevCode": true,
             "opts": ["코인: 3 / 5", "스테이지 클리어!", "코인: 3", "3 / 5"],
             "a": 0,
             "ex": "3 >= 5 는 거짓이라 클리어는 아직이에요."
@@ -1343,6 +1348,7 @@
           {
             "t": "q",
             "q": "클리어 조건을 coin == goal 이 아니라 coin >= goal 로 쓴 이유는?",
+            "prevCode": true,
             "opts": ["혹시 목표보다 더 많이 주워도 클리어되게", "속도가 빨라서", "== 는 int에 못 써서", "차이 없음, 취향"],
             "a": 0,
             "ex": "== 는 딱 그 숫자일 때만 참이라, 예외 상황에서 클리어를 놓칠 수 있어요. 안전한 조건이 좋아요."
@@ -1350,6 +1356,7 @@
           {
             "t": "q",
             "q": "클리어 메시지가 코인 5개 이후에도 매번 찍혀요. 한 번만 나오게 하려면?",
+            "prevCode": true,
             "opts": ["bool isCleared를 두고 && !isCleared로 검사한 뒤 true로 바꾼다", "goal을 0으로 바꾼다", "Update로 옮긴다", "Destroy를 지운다"],
             "a": 0,
             "ex": "'이미 했는지' 기억하는 bool 깃발(flag)은 게임 코드에서 정말 자주 쓰는 패턴이에요."
@@ -1357,6 +1364,7 @@
           {
             "t": "q",
             "q": "기획자가 스테이지마다 목표 개수를 다르게 하려면?",
+            "prevCode": true,
             "opts": ["인스펙터에서 goal 값을 바꾼다", "코드를 스테이지마다 복사한다", "coin을 public으로 바꾼다", "불가능하다"],
             "a": 0,
             "ex": "수치를 [SerializeField]로 빼두면 코드 수정 없이 오브젝트마다 다르게 설정할 수 있어요."
@@ -1408,6 +1416,7 @@
           {
             "t": "q",
             "q": "isGrounded가 다시 true가 되는 때는?",
+            "prevCode": true,
             "opts": ["Ground 태그 오브젝트에 부딪혔을 때", "스페이스를 뗐을 때", "Start에서 매번", "코인을 주웠을 때"],
             "a": 0,
             "ex": "점프하면 false, 땅에 착지(OnCollisionEnter)하면 true. 이걸로 무한 점프를 막아요."
@@ -1415,6 +1424,7 @@
           {
             "t": "q",
             "q": "점프 직후 isGrounded = false; 줄을 지우면?",
+            "prevCode": true,
             "opts": ["공중에서 계속 점프할 수 있다", "점프가 안 된다", "코인을 못 줍는다", "이동이 안 된다"],
             "a": 0,
             "ex": "계속 true로 남아서 조건이 항상 통과돼요."
@@ -1422,6 +1432,7 @@
           {
             "t": "q",
             "q": "Rigidbody가 없는 오브젝트에 이 스크립트를 붙이고 점프하면?",
+            "prevCode": true,
             "opts": ["rb가 비어 있어서(null) 에러가 난다", "그냥 점프된다", "이동도 안 된다", "자동으로 Rigidbody가 추가된다"],
             "a": 0,
             "ex": "GetComponent가 null을 돌려줬으니까요. 에디터에서는 MissingComponentException('Rigidbody가 없다'), 빌드한 게임에서는 NullReferenceException으로 떠요. 이런 에러를 보면 '뭔가 안 붙어 있구나'부터 의심하세요."
@@ -1429,6 +1440,7 @@
           {
             "t": "q",
             "q": "이동 속도를 바꾸고 싶을 때 가장 좋은 방법은?",
+            "prevCode": true,
             "opts": ["인스펙터에서 speed 수정", "코드의 5f를 매번 고치기", "Time.deltaTime 지우기", "h에 2를 곱하기"],
             "a": 0,
             "ex": "수치는 인스펙터에서. 이게 기획과 코드를 분리하는 첫걸음이에요."
@@ -1451,6 +1463,7 @@
           {
             "t": "q",
             "q": "이 스크립트의 파일 이름은?",
+            "prevCode": true,
             "opts": ["PlayerController.cs", "Player.cs", "MonoBehaviour.cs", "Controller.cs"],
             "a": 0,
             "mono": true,
@@ -1596,6 +1609,7 @@
           {
             "t": "q",
             "q": "isGrounded = true, stamina = 5 일 때 점프할까요? (조기 반환 버전)",
+            "code": "void TryJump()\n{\n    if (!isGrounded)\n        return;          // 공중이면 여기서 끝\n\n    if (stamina < 10)\n        return;          // 스태미나 부족해도 끝\n\n    rb.AddForce(Vector3.up * 6f, ForceMode.Impulse);\n    stamina -= 10;\n}",
             "opts": ["안 한다", "한다", "에러", "두 번 한다"],
             "a": 0,
             "ex": "두 번째 if에서 return으로 빠져나가요."

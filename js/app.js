@@ -150,7 +150,8 @@ function step(){
   let body = "";
   const reads = isQ(s) ? prevReads(s) : [];
   const review = reads.length ? `<button class="review-btn" id="reviewBtn">📖 앞 설명 다시 보기</button>` : "";
-  const upCode = !s.code && isQ(s) && /^위 /.test(s.q) ? (reads.slice().reverse().find(r => r.code) || {}).code : null;
+  // 문제가 "위 ~"로 시작하거나 prevCode가 켜져 있으면, 이 레슨에서 마지막으로 본 설명 코드를 문제 위에 보여 줘요
+  const upCode = !s.code && isQ(s) && (/^위 /.test(s.q) || s.prevCode) ? (reads.slice().reverse().find(r => r.code) || {}).code : null;
   const qCode = s.code || upCode;
   const hint = s.hint ? `<button class="hint-btn" id="hintBtn">💡 힌트 보기</button><p class="hint" id="hint" hidden>${s.hint}</p>` : "";
   if(s.t === "read"){
@@ -164,7 +165,7 @@ function step(){
       <div class="opts">${s.order.map(k => `<button class="opt ${s.mono?"mono":""}" data-k="${k}">${esc(s.opts[k])}</button>`).join("")}</div>${hint}`;
   } else {
     body = `<div class="q-head"><p class="kicker">${seen.has(s.key) ? "다시 조립" : "블록 조립"}</p>${review}</div><h2>${s.q}</h2>
-      ${s.code ? `<pre class="code">${hl(s.code)}</pre>` : ""}
+      ${qCode ? `<pre class="code">${hl(qCode)}</pre>` : ""}
       <div class="slot ${s.lines?"lines":""}" id="slot" aria-label="조립 칸"></div>
       <p class="bank-cap">블록을 눌러 순서대로 넣고, 넣은 블록을 누르면 빠져요</p>
       <div class="bank ${s.lines?"lines":""}" id="bank"></div>${hint}`;

@@ -29,8 +29,8 @@ const KNOWN = {
   day: ["n", "title", "post", "lessons"],
   lesson: ["id", "title", "desc", "recap", "steps"],
   read: ["t", "h", "code", "body", "terms"],
-  q: ["t", "q", "code", "opts", "a", "mono", "hint", "ex"],
-  build: ["t", "q", "code", "answer", "alts", "extra", "lines", "join", "hint", "ex"]
+  q: ["t", "q", "code", "prevCode", "opts", "a", "mono", "hint", "ex"],
+  build: ["t", "q", "code", "prevCode", "answer", "alts", "extra", "lines", "join", "hint", "ex"]
 };
 
 const isStr = v => typeof v === "string";
@@ -99,14 +99,15 @@ function checkStep(where, s, prevReads) {
   need(where, s, "q", isStr, "글자");
   need(where, s, "ex", isStr, "글자");
 
-  // "위 ~"로 시작하는 문제는 앞 설명(read)의 마지막 코드를 자동으로 보여 줘요 (객관식만)
+  // "위 ~"로 시작하거나 prevCode: true인 문제는 앞 설명(read)의 마지막 코드를 자동으로 보여 줘요
+  optional(where, s, "prevCode", v => typeof v === "boolean", "true/false");
+  if (s.code && s.prevCode) warn(where, "code가 있으면 prevCode는 쓰이지 않아요");
   if (!s.code && isStr(s.q)) {
     const hasUpCode = prevReads.some(r => r.code);
-    if (/^위 /.test(s.q)) {
-      if (s.t === "build") warn(where, `"위 ~" 문제지만 블록 조립에는 코드 자동 표시가 없어요: ${s.q}`);
-      else if (!hasUpCode) warn(where, `"위 ~" 문제인데 앞 설명에 보여 줄 코드가 없어요: ${s.q}`);
+    if (/^위 /.test(s.q) || s.prevCode) {
+      if (!hasUpCode) warn(where, `앞 코드를 보여 줘야 하는 문제인데 앞 설명에 코드가 없어요: ${s.q}`);
     } else if (/\(위와 같은|위 코드|위의 코드/.test(s.q)) {
-      warn(where, `'위'를 가리키지만 "위 "로 시작하지 않아 코드가 자동으로 안 보여요: ${s.q}`);
+      warn(where, `'위'를 가리키지만 코드가 자동으로 안 보여요. "위 "로 시작하거나 prevCode: true를 넣어 주세요: ${s.q}`);
     }
   }
 
