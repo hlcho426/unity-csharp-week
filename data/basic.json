@@ -156,7 +156,8 @@
           "+= -= 는 '더해서 넣기 / 빼서 넣기', ++ 는 1 더하기",
           "int끼리 나누면 소수점이 버려진다 (7/2 = 3)",
           "글자 + 숫자 = 이어붙인 글자",
-          "public을 붙이면 인스펙터에서 값을 조절할 수 있다"
+          "public을 붙이면 인스펙터에서 값을 조절할 수 있다",
+          "속도·점프 힘처럼 조절할 수치는 소수점이 없어도 float로 만든다"
         ],
         "steps": [
           {
@@ -182,12 +183,24 @@
             "ex": "++ 는 1씩 더해요. 두 번 했으니 2."
           },
           {
+            "t": "read",
+            "h": "나눗셈 주의: int끼리 나누면 소수점을 버려요",
+            "code": "int a = 5;\nint b = 2;\nDebug.Log(a / b);    // 2\nDebug.Log(5f / 2f);  // 2.5",
+            "body": "<p>5 나누기 2는 2.5인데, 셋째 줄은 <b>2</b>가 찍혀요. int는 정수만 담는 상자라서 int끼리 나누면 결과도 int가 되고, 소수점 아래는 반올림하지 않고 <b>그냥 버려요</b>. 2.9가 나와도 2예요.</p><p>소수점까지 필요하면 넷째 줄처럼 float로 계산해요. 체력바 비율을 <code>hp / maxHp</code>처럼 int끼리 나누면 70 / 100 = 0이 돼서 체력바가 텅 비는 버그가 유명해요.</p>"
+          },
+          {
             "t": "q",
             "q": "함정 문제! 무엇이 출력될까요?",
             "code": "int a = 7;\nint b = 2;\nDebug.Log(a / b);",
             "opts": ["3", "3.5", "4", "에러"],
             "a": 0,
             "ex": "int끼리 나누면 소수점 아래를 버려요. 3.5가 필요하면 float로 계산해야 해요. 나중에 버그 원인이 되는 유명한 함정이에요."
+          },
+          {
+            "t": "read",
+            "h": "글자 + 숫자 = 이어 붙인 글자",
+            "code": "int coin = 30;\nDebug.Log(\"코인: \" + coin);\n// → 코인: 30\n\nDebug.Log(\"Lv.\" + 5);\n// → Lv.5",
+            "body": "<p>따옴표로 감싼 글자(string)에 <code>+</code>로 숫자를 붙이면, 더하기 계산이 아니라 <b>뒤에 이어 붙인 글자</b>가 돼요. 변수 이름은 따옴표 밖에 써야 그 안에 담긴 값이 들어가요.</p><p>UI에 점수나 체력을 보여 줄 때 늘 이렇게 써요.</p>"
           },
           {
             "t": "q",
@@ -202,6 +215,18 @@
             "h": "public: 인스펙터에서 값 조절하기",
             "code": "public class Player : MonoBehaviour\n{\n    public float speed = 5f;\n    int coin = 0;\n}",
             "body": "<p>변수 앞에 <code>public</code>을 붙이면 유니티 인스펙터 창에 칸이 생겨요. 코드를 고치지 않고도 게임을 실행하면서 속도를 바꿔볼 수 있어요. 기획자에게 최고의 기능이죠.</p><p><code>coin</code>처럼 아무것도 안 붙이면 인스펙터에 안 보여요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: 소수점이 없는데 왜 float일까?",
+            "code": "// 5인데 float, 2초인데 float\npublic float speed = 5f;\npublic float cooldown = 2f;\n\n// 하나, 둘 세는 값은 int\nint coin = 0;",
+            "body": "<p>speed는 5, cooldown은 2로 소수점이 없는데도 float로 만들었어요. 이유가 있어요.</p>",
+            "terms": [
+              "<b>기획자가 조절할 수치라서</b> — 인스펙터에서 테스트하다 보면 \"5.5가 딱 좋네\" 하는 순간이 와요. int로 만들면 5.5를 아예 못 넣어요. 속도, 점프 힘, 쿨타임처럼 미세하게 맞출 수치는 처음부터 float로 만들어요.",
+              "<b>유니티의 위치·속도·힘이 전부 float라서</b> — 위치를 담는 Vector3(Day 5)도, 시간을 재는 Time.deltaTime도 float예요. 함께 계산할 값이라 float로 맞춰 둬요.",
+              "<b>5f는 'float로 된 5'</b> — 사실 정수는 f 없이 <code>float speed = 5;</code>로 써도 돼요. 하지만 <code>5.5</code>처럼 소수점이 있으면 f가 꼭 필요하니, float에는 늘 f를 붙이는 습관이 편해요.",
+              "반대로 코인 개수처럼 <b>하나, 둘 세는 값</b>은 int예요. 코인 2.5개는 없으니까요."
+            ]
           },
           {
             "t": "q",
@@ -282,6 +307,12 @@
             "a": 0,
             "mono": true,
             "ex": "이하는 <=. hp < 0 이라고 쓰면 딱 0일 때 안 죽는 버그가 생겨요."
+          },
+          {
+            "t": "read",
+            "h": "비교의 결과는 true 아니면 false",
+            "code": "int coin = 15;\nbool isRich = coin >= 10;  // true\nbool isPoor = coin < 5;    // false",
+            "body": "<p><code>coin >= 10</code> 같은 비교는 계산처럼 <b>결과 값</b>이 나와요. 그 값은 언제나 true 아니면 false, 즉 <b>bool</b>이에요.</p><p>그래서 비교식은 if 괄호 안에 넣을 수도 있고, <code>=</code>로 bool 변수에 바로 담을 수도 있어요. 오른쪽 비교를 먼저 계산해서, 그 결과를 왼쪽 상자에 넣는 거예요.</p>"
           },
           {
             "t": "q",
@@ -506,7 +537,12 @@
         "id": "d3l2",
         "title": "배열 — 여러 값을 한 줄로",
         "desc": "int[ ], [0], Length",
-        "recap": ["자료형[] 이름 = { 값, 값, 값 };", "번호(인덱스)는 0부터 시작", "Length = 개수, 마지막 번호는 Length - 1"],
+        "recap": [
+          "자료형[] 이름 = { 값, 값, 값 };",
+          "번호(인덱스)는 0부터 시작",
+          "Length = 개수, 마지막 번호는 Length - 1",
+          "없는 번호를 꺼내면 에러 (IndexOutOfRangeException)"
+        ],
         "steps": [
           {
             "t": "read",
@@ -531,12 +567,24 @@
             "ex": "Length는 개수라서 3. 마지막 번호는 Length - 1 = 2예요."
           },
           {
+            "t": "read",
+            "h": "없는 번호를 꺼내면 에러",
+            "code": "// 칸이 2개 → 번호는 0, 1뿐\nstring[] items = { \"검\", \"방패\" };\n\nDebug.Log(items[1]);  // 방패\nDebug.Log(items[2]);  // 에러!",
+            "body": "<p>칸이 2개면 번호는 0과 1뿐이에요. 없는 번호를 꺼내면 빈 값이 나오는 게 아니라 <b>에러</b>가 나요. 유니티 콘솔에 빨간 글씨로 <code>IndexOutOfRangeException</code>(번호가 범위를 벗어남)이 떠요.</p>"
+          },
+          {
             "t": "q",
             "q": "이 코드를 실행하면?",
             "code": "int[] arr = { 1, 2, 3 };\nDebug.Log(arr[3]);",
             "opts": ["에러 (범위를 벗어남)", "3", "0", "1"],
             "a": 0,
             "ex": "번호는 0, 1, 2까지만 있어요. 유니티 콘솔에 IndexOutOfRangeException이 떠요. 정말 자주 보게 될 에러예요."
+          },
+          {
+            "t": "read",
+            "h": "배열 칸도 변수처럼 바꿀 수 있어요",
+            "code": "int[] scores = { 10, 20, 30 };\nscores[0] = 99;\nDebug.Log(scores[0]);  // 99",
+            "body": "<p><code>배열[번호] = 값;</code>으로 그 칸의 값을 바꿔요. 칸 하나하나가 이름 대신 번호가 붙은 변수 상자라고 생각하면 돼요.</p>"
           },
           {
             "t": "q",
@@ -726,6 +774,12 @@
             "ex": "부를 땐 값만 넣어요. 자료형(int)은 만들 때만 써요."
           },
           {
+            "t": "read",
+            "h": "값을 여러 개 받을 땐 쉼표로",
+            "code": "void Attack(string who, int damage)\n{\n    Debug.Log(who + \"에게 \" + damage);\n}\n\nAttack(\"슬라임\", 15);\n// → 슬라임에게 15",
+            "body": "<p>받을 값이 여러 개면 괄호 안에 <b>쉼표(,)</b>로 나눠 써요. 하나하나 '자료형 이름'을 따로 써야 해요.</p><p>부를 때도 쉼표로 나눠서, <b>만든 순서 그대로</b> 넣어요. 첫 번째 값 \"슬라임\"은 who에, 두 번째 값 15는 damage에 들어가요.</p>"
+          },
+          {
             "t": "q",
             "q": "값 두 개를 받는 함수는?",
             "opts": [
@@ -786,6 +840,12 @@
             "ex": "hp <= 0 이 true라서 IsDead()가 true를 돌려주고, if가 실행돼요."
           },
           {
+            "t": "read",
+            "h": "return을 만나면 함수는 바로 끝나요",
+            "code": "int GetBonus(int level)\n{\n    if (level >= 5)\n        return 100;\n    return 10;\n}\n\nDebug.Log(GetBonus(7));  // 100\nDebug.Log(GetBonus(2));  // 10",
+            "body": "<p><code>return</code>은 값을 돌려주는 동시에 <b>함수를 그 자리에서 끝내요</b>. level이 7이면 100을 돌려주고 끝나서, 아래 <code>return 10;</code>까지 가지 않아요. level이 2면 if를 건너뛰고 <code>return 10;</code>을 만나요.</p>"
+          },
+          {
             "t": "q",
             "q": "출력은?",
             "code": "string Check(int coin)\n{\n    if (coin >= 10)\n        return \"부자\";\n    return \"가난\";\n}\n\nDebug.Log(Check(15));",
@@ -815,7 +875,13 @@
         "id": "d5l1",
         "title": "Transform과 Vector3",
         "desc": "위치, 회전, 크기",
-        "recap": ["모든 게임 오브젝트에는 Transform이 있다", "transform.position = 위치 (Vector3)", "Vector3 = x, y, z 세 숫자 묶음 (y가 위쪽)"],
+        "recap": [
+          "모든 게임 오브젝트에는 Transform이 있다",
+          "transform.position = 위치 (Vector3)",
+          "Vector3 = x, y, z 세 숫자 묶음 (y가 위쪽)",
+          "크기는 transform.localScale",
+          "Vector3의 x, y, z는 전부 float, 유니티의 1은 1미터"
+        ],
         "steps": [
           {
             "t": "read",
@@ -858,6 +924,12 @@
             "ex": "두 번째 숫자가 y예요."
           },
           {
+            "t": "read",
+            "h": "크기는 localScale",
+            "code": "// 위치\ntransform.position = new Vector3(0f, 1f, 0f);\n\n// 크기: 가로만 3배\ntransform.localScale = new Vector3(3f, 1f, 1f);",
+            "body": "<p>크기는 <code>scale</code>이 아니라 <code>localScale</code>이라는 이름이에요. 위치처럼 Vector3로 넣고, x·y·z는 그 방향으로 몇 배인지예요. 원래 크기가 (1, 1, 1)이에요.</p><p>앞의 local은 '부모 오브젝트 기준'이라는 뜻인데, 지금은 '크기 = localScale'로만 기억해도 충분해요.</p>"
+          },
+          {
             "t": "q",
             "q": "크기를 두 배로 키우는 코드는?",
             "opts": [
@@ -869,6 +941,12 @@
             "a": 0,
             "mono": true,
             "ex": "크기는 localScale. position을 바꾸면 크기가 아니라 위치가 바뀌어요."
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: Vector3의 숫자는 전부 float",
+            "code": "// x, y, z 모두 float\nVector3 pos = new Vector3(1f, 3f, 0f);\nVector3 p2 = new Vector3(0.5f, 1f, 0f);",
+            "body": "<p>Vector3의 x, y, z는 모두 <b>float</b>예요. 그래서 3처럼 소수점이 없는 숫자도 <code>3f</code>로 쓰는 습관이 있어요. 위치·회전·크기·속도·힘처럼 유니티가 공간을 다루는 숫자는 거의 다 float라서, speed나 jumpPower 같은 수치도 float로 만들어요.</p><p>하나 더: 유니티의 <b>1은 1미터</b>로 생각해요. 기본 큐브는 한 변이 1, 기본 캡슐(사람 모양)은 키가 2예요. 수치를 정할 때 감이 잡혀요.</p>"
           },
           {
             "t": "build",
@@ -884,7 +962,13 @@
         "id": "d5l2",
         "title": "움직이기와 Time.deltaTime",
         "desc": "프레임과 상관없이 같은 속도로",
-        "recap": ["Update에서 position을 조금씩 바꾸면 움직인다", "Time.deltaTime = 지난 프레임에서 흐른 시간(초)", "속도 * Time.deltaTime = 초당 속도"],
+        "recap": [
+          "Update에서 position을 조금씩 바꾸면 움직인다",
+          "Time.deltaTime = 지난 프레임에서 흐른 시간(초)",
+          "속도 * Time.deltaTime = 초당 속도",
+          "움직임 = 방향 × 속도 × Time.deltaTime",
+          "transform.Translate(옮길 양)도 같은 일 (단, 오브젝트가 바라보는 방향 기준)"
+        ],
         "steps": [
           {
             "t": "read",
@@ -913,6 +997,12 @@
             "ex": "프레임이 많은 컴퓨터일수록 더 자주 더해져서 빨라져요."
           },
           {
+            "t": "read",
+            "h": "💡 꿀팁: 방향 × 크기",
+            "code": "Vector3.right       // (1, 0, 0)\nVector3.right * 5f  // (5, 0, 0)\nVector3.up * 2f     // (0, 2, 0)",
+            "body": "<p><code>Vector3.right</code>, <code>Vector3.up</code> 같은 지름길은 길이가 1인 <b>방향</b>이에요. 여기에 숫자를 곱하면 방향은 그대로, 길이만 그만큼 늘어나요. 오른쪽으로 1이 오른쪽으로 5가 되는 식이에요.</p><p>그래서 움직이는 코드는 거의 늘 <b>방향 × 속도 × Time.deltaTime</b> 모양이에요. speed가 5f면 초당 5미터, 사람이 달리는 속도쯤이에요. Day 6에서 배울 점프 <code>Vector3.up * jumpPower</code>도 같은 모양이에요.</p>"
+          },
+          {
             "t": "q",
             "q": "앞쪽(z+)으로 초당 3씩 움직이는 코드는?",
             "opts": [
@@ -924,6 +1014,12 @@
             "a": 0,
             "mono": true,
             "ex": "forward가 z축 앞쪽. position에는 Vector3를 더해야 하니 방향 * 크기 형태가 돼요."
+          },
+          {
+            "t": "read",
+            "h": "또 다른 방법: transform.Translate",
+            "code": "// 방법 1: 위치에 직접 더하기\ntransform.position += Vector3.up * 2f * Time.deltaTime;\n\n// 방법 2: Translate(옮길 양)\ntransform.Translate(Vector3.up * 2f * Time.deltaTime);",
+            "body": "<p><code>Translate</code>는 '지금 자리에서 이만큼 옮겨라'라는 함수예요. 괄호 안에 옮길 양(Vector3)을 넣어요. 회전하지 않은 오브젝트라면 두 방법의 결과가 같아요.</p><p>차이 하나: Translate는 기본으로 <b>오브젝트가 바라보는 방향</b>을 기준으로 옮겨요. 오브젝트가 돌아가 있으면 '위'나 '오른쪽'도 같이 돌아가서 결과가 달라져요.</p>"
           },
           {
             "t": "q",
@@ -960,7 +1056,8 @@
         "recap": [
           "GetComponent<타입>() 으로 같은 오브젝트의 컴포넌트를 가져온다",
           "보통 Start에서 한 번 가져와 변수에 저장",
-          "[SerializeField] private = 인스펙터엔 보이지만 다른 스크립트는 못 건드림"
+          "[SerializeField] private = 인스펙터엔 보이지만 다른 스크립트는 못 건드림",
+          "없는 컴포넌트를 찾으면 null, 그대로 쓰면 에러"
         ],
         "steps": [
           {
@@ -1002,6 +1099,12 @@
             "a": 0,
             "mono": true,
             "ex": "SerializeField는 '인스펙터에만 꺼내기'예요."
+          },
+          {
+            "t": "read",
+            "h": "찾는 컴포넌트가 없으면: null",
+            "code": "AudioSource sound;\n\nvoid Start()\n{\n    sound = GetComponent<AudioSource>();\n    // 없으면 sound는 null(빈 칸)\n    sound.Play();  // 에러!\n}",
+            "body": "<p>GetComponent는 오브젝트에 <b>이미 붙어 있는 것</b>을 찾아올 뿐, 없다고 새로 만들어 주지 않아요. 못 찾으면 '비어 있음'을 뜻하는 <code>null</code>을 돌려줘요.</p><p>null이 담긴 변수를 쓰려고 하면 에러가 나요. 이런 에러를 보면 '인스펙터에 그 컴포넌트가 붙어 있나?'부터 확인해요.</p>"
           },
           {
             "t": "q",
@@ -1094,7 +1197,8 @@
         "recap": [
           "GetAxis(\"Horizontal\") — 좌우 -1 ~ 1",
           "GetAxis(\"Vertical\") — 앞뒤 -1 ~ 1",
-          "방향 Vector3 * speed * Time.deltaTime 으로 이동"
+          "방향 Vector3 * speed * Time.deltaTime 으로 이동",
+          "GetAxis는 부드럽게 변하는 float, 딱딱 끊기게 하려면 GetAxisRaw"
         ],
         "steps": [
           {
@@ -1144,6 +1248,12 @@
             ],
             "a": 0,
             "ex": "누르고 있는 동안이니까 GetKey. 실제로는 float current = isRun ? speed * 2 : speed; 처럼 쓰기도 해요."
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: GetAxis가 float인 이유",
+            "code": "// 0 → 0.3 → 0.7 → 1 부드럽게\nfloat x = Input.GetAxis(\"Horizontal\");\n\n// -1, 0, 1 중 하나만\nfloat r = Input.GetAxisRaw(\"Horizontal\");",
+            "body": "<p><code>GetAxis</code>는 키를 누르면 0에서 1로 <b>짧은 시간 동안 부드럽게</b> 올라가요. 게임패드 스틱을 반만 기울이면 0.5쯤이 나오고요. 그래서 h, v는 int가 아니라 float예요.</p><p>미끄러지듯 출발하고 멈추는 느낌이 싫고 딱딱 끊기는 조작을 원하면 <code>GetAxisRaw</code>를 써요. 정확한 조작이 중요한 플랫포머에서 자주 써요.</p>"
           },
           {
             "t": "build",
@@ -1263,7 +1373,8 @@
           "Collider의 Is Trigger를 켜면 통과하면서 감지만 한다",
           "OnTriggerEnter(Collider other) — 닿는 순간 유니티가 불러줌",
           "other.CompareTag(\"Coin\")로 무엇인지 확인",
-          "Destroy(other.gameObject)로 없애기"
+          "Destroy(other.gameObject)로 없애기",
+          "태그 확인은 tag == 보다 CompareTag"
         ],
         "steps": [
           {
@@ -1292,6 +1403,12 @@
             "a": 0,
             "mono": true,
             "ex": "CompareTag에 태그 이름을 문자열로 넣어요."
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: tag == 대신 CompareTag를 쓰는 이유",
+            "code": "// 동작은 해요\nif (other.tag == \"Coin\") { }\n\n// 실무에선 이쪽\nif (other.CompareTag(\"Coin\")) { }",
+            "body": "<p>두 줄 모두 '태그가 Coin인가?'를 물어요. 그런데 CompareTag가 <b>더 빠르고, 실수도 잡아 줘요</b>. 태그 이름을 \"Coni\"처럼 잘못 쓰면 == 쪽은 조용히 false만 돌려주지만, CompareTag는 '그런 태그는 없다'고 콘솔에 에러를 띄워 줘요.</p><p>충돌 검사는 게임 내내 아주 자주 일어나서, 작은 차이도 쌓이면 커요.</p>"
           },
           {
             "t": "q",
