@@ -26,7 +26,7 @@ const warn = (where, msg) => warnings.push(`${where}: ${msg}`);
 
 const KNOWN = {
   course: ["id", "name", "desc", "file"],
-  day: ["n", "title", "lessons"],
+  day: ["n", "title", "post", "lessons"],
   lesson: ["id", "title", "desc", "recap", "steps"],
   read: ["t", "h", "code", "body", "terms"],
   q: ["t", "q", "code", "opts", "a", "mono", "hint", "ex"],
@@ -178,6 +178,7 @@ function main() {
       checkKeys(dw, d, KNOWN.day);
       if (need(dw, d, "n", Number.isInteger, "정수") && d.n !== di + 1) warn(dw, `Day 번호가 ${di + 1}이어야 자연스러워요 (지금: ${d.n})`);
       need(dw, d, "title", isStr, "글자");
+      optional(dw, d, "post", v => isStr(v) && /^https:\/\//.test(v), "https://로 시작하는 블로그 글 주소");
       if (!need(dw, d, "lessons", Array.isArray, "배열")) return;
 
       d.lessons.forEach((l, li) => {

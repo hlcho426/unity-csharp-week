@@ -68,6 +68,7 @@ node scripts/validate.js
   {
     "n": 1,
     "title": "스크립트와 변수",
+    "post": "https://hlcho426.github.io/posts/csharp-week-basic-day1/",
     "lessons": [
       {
         "id": "d1l1",
@@ -80,6 +81,8 @@ node scripts/validate.js
   }
 ]
 ```
+
+`post`는 없어도 돼요. 넣으면 목록의 Day 제목 옆과 레슨 완료 화면에 "📘 블로그 강의" 버튼이 생겨서 그 주소로 가요.
 
 `steps`에는 아래 세 가지 단계를 순서대로 넣어요. `?`가 붙은 필드는 없어도 돼요.
 

@@ -84,7 +84,7 @@ function home(){
     ${T.days.map(d => {
       const locked = d.lessons.length === 0;
       return `<section class="day ${locked?"locked":""}">
-        <div class="day-head"><span class="day-n">Day ${d.n}</span><span class="day-t">${d.title}</span></div>
+        <div class="day-head"><span class="day-n">Day ${d.n}</span><span class="day-t">${d.title}</span>${d.post ? `<a class="day-post" href="${d.post}" target="_blank" rel="noopener">📘 블로그 강의</a>` : ""}</div>
         ${locked ? `<p class="day-soon">아직 준비 중이에요</p>` :
           `<ul class="lessons">${d.lessons.map(l => `
             <li><button class="lesson-btn ${store.done[l.id]?"done":""}" data-id="${l.id}">
@@ -249,6 +249,7 @@ function finish(){
   const qCount = L.steps.filter(isQ).length;
   const tl = trackLessons(TRACKS.find(t => trackLessons(t).includes(L)));
   const nxt = tl[tl.indexOf(L)+1];
+  const day = TRACKS.flatMap(t => t.days).find(d => d.lessons.includes(L));
   app.innerHTML = `
   <div class="wrap done">
     <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="18" fill="var(--sun)"/><circle cx="32" cy="32" r="29" fill="var(--sun)" opacity=".2"/></svg>
@@ -259,6 +260,7 @@ function finish(){
     </div>
     <p><b>오늘 가져갈 것</b></p>
     <ul class="recap">${L.recap.map(r=>`<li>${r}</li>`).join("")}</ul>
+    ${day && day.post ? `<a class="post-link" href="${day.post}" target="_blank" rel="noopener">📘 Day ${day.n} 블로그 강의에서 자세히 보기</a>` : ""}
     ${nxt ? `<button class="main" id="nx">다음 레슨: ${nxt.title}</button>` : ""}
     <div class="foot"><button class="link" id="hm">목록으로</button></div>
   </div>`;
