@@ -5,7 +5,7 @@
  * - js/app.js나 css처럼 앱 자체를 크게 고쳤다면 아래 VERSION을 올려 주세요.
  *   옛 저장본을 지우고 처음부터 새로 받아요.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = "csharp-week-" + VERSION;
 const APP_FILES = [
   "./",

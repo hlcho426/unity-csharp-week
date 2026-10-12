@@ -75,6 +75,13 @@ button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 .chip.line{background:transparent;border:0;border-radius:4px;color:var(--code-ink);white-space:pre;padding:3px 6px;font-size:13.5px;overflow-x:auto}
 .chip.line:not(:disabled):active{background:rgba(255,255,255,.08)}
 .chip:disabled{cursor:default}
+/* 틀린 조립: 정답과 다른 블록(줄)은 빨갛게, 피드백의 정답 코드에서 고쳐야 할 줄은 초록으로 */
+.chip.in.bad{border-color:var(--bad);background:var(--bad-soft)}
+.chip.line.bad{background:rgba(240,122,96,.22);box-shadow:inset 3px 0 0 var(--bad)}
+.ln.fix{background:rgba(91,201,143,.2);box-shadow:inset 3px 0 0 var(--ok)}
+.fb .diff{margin:6px 0 4px;padding-left:18px;font-size:14.5px}
+.fb .diff li{margin:2px 0}
+.fb code{font-family:"JetBrains Mono",monospace;font-size:.88em;background:var(--surface);padding:1px 6px;border-radius:4px;white-space:pre-wrap}
 .fbcode{margin:8px 0 10px!important;font-size:13px!important}
 .fb{max-height:46vh;overflow-y:auto}
 

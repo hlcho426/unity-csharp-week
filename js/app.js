@@ -102,7 +102,7 @@ function home(){
 }
 
 /* ---------- 레슨 진행 ---------- */
-let L, queue, pos, picked, checked, firstTry, seen, built;
+let L, queue, pos, picked, checked, firstTry, seen, built, wrongAt;
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 const isQ = s => s.t === "q" || s.t === "build";
 function tokensOf(s){ return s.answer.concat(s.extra || []); }
@@ -144,7 +144,7 @@ function openReview(s){
 }
 
 function step(){
-  picked = null; checked = false; built = [];
+  picked = null; checked = false; built = []; wrongAt = new Set();
   const s = queue[pos];
   const pct = Math.round(pos / queue.length * 100);
   let body = "";
@@ -200,7 +200,7 @@ function renderBuild(s){
   const toks = tokensOf(s);
   const slot = document.getElementById("slot"), bank = document.getElementById("bank");
   slot.innerHTML = built.length ? built.map((k,i) =>
-    `<button class="chip in ${s.lines?"line":""}" data-i="${i}" ${checked?"disabled":""}>${s.lines ? hl(toks[k]) : esc(toks[k].trim())}</button>`).join("")
+    `<button class="chip in ${s.lines?"line":""} ${wrongAt.has(i)?"bad":""}" data-i="${i}" ${checked?"disabled":""}>${s.lines ? hl(toks[k]) : esc(toks[k].trim())}</button>`).join("")
     : `<span class="slot-empty">여기에 조립돼요</span>`;
   // 줄 조립은 들여쓰기까지 보여 줘요. "{"와 "    {"처럼 들여쓰기만 다른 블록을 구분할 수 있게
   bank.innerHTML = s.order.map(k =>
@@ -210,9 +210,37 @@ function renderBuild(s){
   document.getElementById("go").disabled = built.length === 0 && !checked;
 }
 
+// 틀린 조립을 정답과 한 칸씩 비교해요. 정답이 여러 개(alts)면 같은 자리에 같은 블록이 가장 많은 정답과 비교해요
+function diffBuild(s){
+  const toks = tokensOf(s), mine = built.map(k => toks[k]);
+  let best = s.answer, bestSame = -1;
+  [s.answer].concat(s.alts || []).forEach(a => {
+    const same = a.filter((t, i) => mine[i] === t).length;
+    if(same > bestSame){ best = a; bestSame = same; }
+  });
+  const wrong = mine.map((t, i) => t !== best[i] ? i : -1).filter(i => i >= 0);
+  return { mine, best, wrong, missing: Math.max(best.length - mine.length, 0) };
+}
+
+// 피드백에 보여 줄 '어디가 달라요' 목록 (최대 3개)
+function diffNote(s, d){
+  const unit = s.lines ? "줄" : "번째 블록";
+  const show = t => `<code>${esc(t.trim())}</code>`;
+  const items = d.wrong.slice(0, 3).map(i => {
+    const n = s.lines ? `${i+1}번째 줄` : `${i+1}${unit}`;
+    const want = d.best[i];
+    if(want === undefined) return `<li>${n} ${show(d.mine[i])}: 필요 없는 ${s.lines?"줄":"블록"}이에요</li>`;
+    if(want.trim() === d.mine[i].trim()) return `<li>${n} ${show(d.mine[i])}: 들여쓰기가 달라요</li>`;
+    return `<li>${n} ${show(d.mine[i])} → ${show(want)}</li>`;
+  });
+  if(d.wrong.length > 3) items.push(`<li>그 밖에 ${d.wrong.length - 3}곳 더 달라요</li>`);
+  if(d.missing) items.push(`<li>정답보다 ${s.lines?"줄":"블록"}이 ${d.missing}개 모자라요</li>`);
+  return items.length ? `<ul class="diff">${items.join("")}</ul>` : "";
+}
+
 function check(s){
   checked = true;
-  let ok, answerText;
+  let ok, answerText, diff = null;
   if(s.t === "q"){
     ok = picked === s.a;
     answerText = esc(s.opts[s.a]);
@@ -226,6 +254,7 @@ function check(s){
     const toks = tokensOf(s), sep = sepOf(s);
     const mine = built.map(k => toks[k]).join(sep);
     ok = [s.answer].concat(s.alts || []).some(a => a.join(sep) === mine);
+    if(!ok){ diff = diffBuild(s); wrongAt = new Set(diff.wrong); }
     renderBuild(s);
     document.getElementById("slot").classList.add(ok ? "right" : "wrong");
   }
@@ -234,7 +263,14 @@ function check(s){
   seen.add(s.key);
   const dock = document.getElementById("dock");
   dock.classList.add(ok?"ok":"bad","in");
-  const correctCode = s.t === "build" && !ok ? `<pre class="code fbcode">${hl(s.answer.join(sepOf(s)))}</pre>` : "";
+  // 틀린 조립: 빨간 줄이 어떻게 달라야 하는지 알려 주고, 정답 코드에서 고쳐야 할 줄을 초록으로 표시해요
+  let correctCode = "";
+  if(diff){
+    const fix = new Set(diff.wrong.concat(diff.best.map((_, i) => i).filter(i => i >= diff.mine.length)));
+    const code = s.lines ? diff.best.map((line, i) => hl(line).replace('class="ln"', fix.has(i) ? 'class="ln fix"' : 'class="ln"')).join("")
+                         : hl(diff.best.join(sepOf(s)));
+    correctCode = diffNote(s, diff) + `<pre class="code fbcode">${code}</pre>`;
+  }
   document.getElementById("fb").innerHTML = `<div class="fb"><strong>${ok ? "정답" : (s.t==="q" ? "정답은 "+answerText : "정답은 이렇게 조립해요")}</strong>${correctCode}${s.ex}
     ${ok?"":`<span class="again">이 문제는 레슨 끝에 한 번 더 나와요.</span>`}</div>`;
   document.getElementById("go").textContent = "계속";
