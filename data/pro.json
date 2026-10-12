@@ -608,7 +608,8 @@
           "싱글톤 = 게임에 딱 하나만 존재하는 객체 + static Instance로 어디서나 접근",
           "Awake에서 Instance = this",
           "이미 있으면 새로 생긴 쪽을 Destroy",
-          "DontDestroyOnLoad로 씬이 바뀌어도 유지"
+          "DontDestroyOnLoad로 씬이 바뀌어도 유지",
+          "자기 준비는 Awake, 다른 오브젝트 쓰기는 Start (Awake가 먼저)"
         ],
         "steps": [
           {
@@ -632,6 +633,12 @@
             "t": "read",
             "h": "왜 static이 필요했는지 보이죠?",
             "body": "<p>코인 스크립트에서 <code>GameManager.Instance</code>라고만 쓰면, static 칸에 적혀 있는 관리자를 바로 꺼낼 수 있어요. 인스펙터 연결이 필요 없어요. 지난 레슨의 static 칠판을 '관리자 연락처'로 쓰는 거예요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: Start가 아니라 Awake인 이유",
+            "code": "void Awake()  // 1. 생기자마자\n{\n    Instance = this;\n}\n\nvoid Start()  // 2. 그다음\n{\n    // 다른 Instance를 써도 안전\n}",
+            "body": "<p>Awake는 Start보다 <b>먼저</b> 불려요. 씬에 있는 모든 오브젝트의 Awake가 끝난 다음에 Start들이 불려요.</p><p>그래서 '나를 등록하기', '내 컴포넌트 가져오기'처럼 자기 준비는 Awake에서 하고, '다른 오브젝트 쓰기'는 Start에서 하면 순서 때문에 null이 나는 일을 줄일 수 있어요. 다지기 Day 4 '유니티 실행 순서'에서 자세히 다뤄요.</p>"
           },
           {
             "t": "q",
@@ -1132,7 +1139,8 @@
         "recap": [
           "증상 → 의심 목록 → 하나씩 확인",
           "Debug.Log로 '여기까지 왔나?', '값이 뭐지?' 찍어보기",
-          "조용한 버그: 이름 오타(이벤트 함수, 태그, 파라미터), int 나눗셈, StartCoroutine 누락"
+          "조용한 버그: 이름 오타(이벤트 함수, 태그, 파라미터), int 나눗셈, StartCoroutine 누락",
+          "Debug.Log(메시지, this) — 로그를 누르면 그 오브젝트가 표시된다"
         ],
         "steps": [
           {
@@ -1145,6 +1153,12 @@
             "h": "Debug.Log 활용법",
             "code": "void OnTriggerEnter(Collider other)\n{\n    Debug.Log(\"트리거 들어옴: \" + other.name);   // 불리긴 하나?\n\n    if (other.CompareTag(\"Coin\"))\n    {\n        Debug.Log(\"코인 맞음\");                  // 조건 통과했나?\n        coin++;\n        Debug.Log(\"현재 코인: \" + coin);          // 값이 맞나?\n    }\n}",
             "body": "<p>첫 줄이 안 찍히면 → 함수 자체가 안 불림 (Is Trigger, Rigidbody, 함수 이름 확인). 첫 줄은 찍히는데 두 번째가 안 찍히면 → 태그 문제. 이렇게 <b>어디까지 왔는지</b>로 범위를 좁혀요.</p>"
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: 로그를 누르면 그 오브젝트로",
+            "code": "Debug.Log(\"코인 맞음\", this);\nDebug.LogWarning(\"코인이 너무 많아요\");\nDebug.LogError(\"코인 데이터가 없어요\");",
+            "body": "<p>Debug.Log에 두 번째 값으로 <code>this</code>(또는 gameObject)를 넣으면, 콘솔에서 그 로그를 클릭할 때 <b>하이어라키에서 그 오브젝트가 반짝</b> 표시돼요. 코인이 100개일 때 '어느 코인이지?'를 바로 찾을 수 있어요.</p><p>LogWarning은 노란색, LogError는 빨간색으로 찍혀서 눈에 잘 띄어요. 콘솔 위의 <b>Error Pause</b>를 켜 두면 에러가 나는 순간 플레이가 멈춰서, 그때의 상태를 살펴볼 수 있어요.</p>"
           },
           {
             "t": "q",
