@@ -235,7 +235,8 @@
           "Dictionary<키, 값> — 키(이름표)로 값을 찾는 상자",
           "dict[키] = 값 으로 넣기·바꾸기, dict[키] 로 꺼내기",
           "없는 키를 꺼내면 KeyNotFoundException",
-          "List는 번호로, Dictionary는 이름표로"
+          "List는 번호로, Dictionary는 이름표로",
+          "같은 키에 다시 넣으면 나중 값으로 덮어써진다"
         ],
         "steps": [
           {
@@ -262,6 +263,12 @@
             "opts": ["키: string, 값: float", "키: float, 값: string", "둘 다 string", "둘 다 float"],
             "a": 0,
             "ex": "앞이 키, 뒤가 값."
+          },
+          {
+            "t": "read",
+            "h": "[ ]로 넣기는 너그럽고, 꺼내기는 엄격해요",
+            "code": "// 넣기: 없으면 추가, 있으면 바꿈\nstock[\"검\"] = 1;\nstock[\"검\"] = 2;   // 이제 2\n\n// 꺼내기: 없는 키는 에러\nint a = stock[\"검\"];   // 2\nint b = stock[\"활\"];   // 에러!",
+            "body": "<p><code>stock[키] = 값</code>으로 <b>넣을 때</b>는 너그러워요. 없는 키면 새로 만들고, 있는 키면 값을 바꿔요. 키는 하나뿐이라 같은 키에 두 번 넣으면 나중 값으로 덮어써져요.</p><p>그런데 <code>stock[키]</code>로 <b>꺼낼 때</b>는 엄격해요. 없는 키를 꺼내면 0이나 null이 나오는 게 아니라 <code>KeyNotFoundException</code> 에러가 나요. 안전하게 꺼내는 법은 다음 레슨에서 배워요.</p>"
           },
           {
             "t": "q",
@@ -470,7 +477,8 @@
           "2. GetComponent로 찾았는데 없음",
           "3. FirstOrDefault, TryGet 실패 등 '못 찾음'",
           "4. new를 안 함",
-          "5. Destroy된 오브젝트"
+          "5. Destroy된 오브젝트",
+          "자식에 붙은 컴포넌트는 GetComponentInChildren으로 찾는다"
         ],
         "steps": [
           {
@@ -495,6 +503,12 @@
             "ex": "GetComponent가 못 찾으면 null을 돌려줘요. 그걸 쓰면 빌드한 게임에서는 NullReferenceException, 에디터에서는 MissingComponentException('Animator가 없다')으로 떠요. (트리거 이름 오타는 에러 없이 조용히 실패하는 쪽이에요.)"
           },
           {
+            "t": "read",
+            "h": "자식 오브젝트에서 찾기",
+            "code": "// 하이어라키\n// Player      ← 이 스크립트\n//   └ Model   ← Renderer는 여기\n\n// 나 자신에서만 찾아서 null\nRenderer r1 = GetComponent<Renderer>();\n\n// 나와 자식들까지 찾아서 OK\nRenderer r2 = GetComponentInChildren<Renderer>();",
+            "body": "<p>하이어라키에서 어떤 오브젝트 아래에 들여 쓰인 오브젝트를 <b>자식</b>이라고 해요. 캐릭터는 보통 빈 부모 오브젝트에 스크립트를 붙이고, 실제 모델은 자식으로 넣어요. 그래서 Renderer나 Animator가 자식 쪽에 붙어 있는 경우가 많아요.</p><p>GetComponent는 <b>나 자신</b>에서만 찾아서, 자식에 붙은 건 못 찾고 null을 돌려줘요. <code>GetComponentInChildren</code>은 나와 자식들까지, <code>GetComponentInParent</code>는 나와 부모 쪽까지 찾아요.</p>"
+          },
+          {
             "t": "q",
             "q": "Animator가 자식 오브젝트(캐릭터 모델)에 붙어 있다면 무엇을 쓸까요?",
             "opts": ["GetComponentInChildren<Animator>()", "GetComponent<Animator>()", "new Animator()", "FindAnimator()"],
@@ -512,7 +526,8 @@
           "if (x == null) return; — 가드로 막기",
           "if (x != null) { ... } — 있을 때만 실행",
           "유니티 오브젝트는 ?. 대신 == null 비교가 안전",
-          "방어만 하지 말고 '왜 null인지'도 고치기"
+          "방어만 하지 말고 '왜 null인지'도 고치기",
+          "꼭 필요한 컴포넌트는 [RequireComponent]로 빠질 수 없게"
         ],
         "steps": [
           {
@@ -546,6 +561,12 @@
             "a": 0,
             "mono": true,
             "ex": "유니티 오브젝트는 == / != null 비교가 유니티의 특별 처리를 거쳐서 안전해요."
+          },
+          {
+            "t": "read",
+            "h": "💡 꿀팁: 꼭 필요한 컴포넌트는 RequireComponent로",
+            "code": "[RequireComponent(typeof(Rigidbody))]\npublic class PlayerJump : MonoBehaviour\n{\n    Rigidbody rb;\n\n    void Awake()\n    {\n        rb = GetComponent<Rigidbody>();\n    }\n}",
+            "body": "<p>클래스 위에 <code>[RequireComponent(typeof(Rigidbody))]</code>를 붙이면, 이 스크립트를 오브젝트에 붙일 때 Rigidbody가 <b>자동으로 같이 붙어요</b>. Rigidbody만 따로 지우려고 하면 유니티가 막아 주고요. (이미 스크립트가 붙어 있던 오브젝트에는 자동으로 추가되지 않으니 한 번 확인해요.)</p><p>그래서 '반드시 있어야 하는 컴포넌트'는 null 확인으로 덮는 대신, 이렇게 처음부터 빠질 수 없게 만들어요. 실무에서 정말 자주 쓰는 한 줄이에요.</p>"
           },
           {
             "t": "q",
