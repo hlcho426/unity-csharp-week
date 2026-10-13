@@ -1252,13 +1252,13 @@
             "q": "Shift를 누르는 동안 두 배 빠르게 달리게 하려면?",
             "prevCode": true,
             "opts": [
-              "if (Input.GetKey(KeyCode.LeftShift)) speed * 2 를 쓴다",
+              "GetKey(KeyCode.LeftShift)일 때만 이동에 speed * 2를 쓴다",
               "if (Input.GetKeyDown(KeyCode.LeftShift)) 를 쓴다",
               "Time.deltaTime 을 빼버린다",
               "GetAxis를 두 번 부른다"
             ],
             "a": 0,
-            "ex": "누르고 있는 동안이니까 GetKey. 실제로는 float current = isRun ? speed * 2 : speed; 처럼 쓰기도 해요."
+            "ex": "누르고 있는 동안이니까 GetKey예요. 그리고 speed * 2는 두 배 값을 계산만 해서 speed는 그대로예요. speed *= 2처럼 speed 자체를 바꾸면 Update가 매 프레임 돌면서 2배, 4배, 8배로 불어나요. 그래서 float currentSpeed = speed;로 이번 프레임에 쓸 속도를 따로 담고, Shift를 누를 때만 currentSpeed = speed * 2f;로 바꿔서 이동에 써요."
           },
           {
             "t": "read",
