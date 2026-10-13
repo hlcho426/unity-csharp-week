@@ -210,32 +210,61 @@ function renderBuild(s){
   document.getElementById("go").disabled = built.length === 0 && !checked;
 }
 
-// 틀린 조립을 정답과 한 칸씩 비교해요. 정답이 여러 개(alts)면 같은 자리에 같은 블록이 가장 많은 정답과 비교해요
+// 틀린 조립을 정답과 비교해요. 줄(블록)을 하나 빼먹거나 더 넣어도 나머지는 맞게 보이도록,
+// 순서가 같은 부분(가장 긴 공통 부분)을 먼저 맞춘 뒤 남는 것만 "다르다"고 해요.
+// 정답이 여러 개(alts)면 가장 많이 맞는 정답과 비교해요
+function alignOps(mine, want){
+  const m = mine.length, n = want.length;
+  const L = Array.from({length: m + 1}, () => new Array(n + 1).fill(0));
+  for(let i = m - 1; i >= 0; i--) for(let j = n - 1; j >= 0; j--)
+    L[i][j] = mine[i] === want[j] ? L[i+1][j+1] + 1 : Math.max(L[i+1][j], L[i][j+1]);
+  const ops = []; let i = 0, j = 0;
+  while(i < m || j < n){
+    if(i < m && j < n && mine[i] === want[j]){ ops.push({t: "same", i, j}); i++; j++; }
+    else if(i < m && (j >= n || L[i+1][j] >= L[i][j+1])){ ops.push({t: "extra", i}); i++; }
+    else { ops.push({t: "miss", j}); j++; }
+  }
+  return ops;
+}
+
 function diffBuild(s){
   const toks = tokensOf(s), mine = built.map(k => toks[k]);
-  let best = s.answer, bestSame = -1;
+  let best = null;
   [s.answer].concat(s.alts || []).forEach(a => {
-    const same = a.filter((t, i) => mine[i] === t).length;
-    if(same > bestSame){ best = a; bestSame = same; }
+    const ops = alignOps(mine, a), same = ops.filter(o => o.t === "same").length;
+    if(!best || same > best.same) best = { want: a, ops, same };
   });
-  const wrong = mine.map((t, i) => t !== best[i] ? i : -1).filter(i => i >= 0);
-  return { mine, best, wrong, missing: Math.max(best.length - mine.length, 0) };
+  // 연달아 다른 부분에서 '내 것'과 '정답'을 짝지어: 바꿔야 할 것 / 필요 없는 것 / 빠진 것
+  const items = [], wrong = [], fix = [];
+  let ex = [], ms = [];
+  const flush = () => {
+    const k = Math.min(ex.length, ms.length);
+    for(let n = 0; n < k; n++) items.push({ kind: "swap", i: ex[n], j: ms[n] });
+    ex.slice(k).forEach(i => items.push({ kind: "extra", i }));
+    ms.slice(k).forEach(j => items.push({ kind: "miss", j }));
+    ex = []; ms = [];
+  };
+  best.ops.forEach(o => {
+    if(o.t === "same") return flush();
+    if(o.t === "extra"){ ex.push(o.i); wrong.push(o.i); } else { ms.push(o.j); fix.push(o.j); }
+  });
+  flush();
+  return { mine, best: best.want, items, wrong, fix };
 }
 
 // 피드백에 보여 줄 '어디가 달라요' 목록 (최대 3개)
 function diffNote(s, d){
-  const unit = s.lines ? "줄" : "번째 블록";
+  const unit = s.lines ? "줄" : "블록";
+  const at = i => s.lines ? `${i+1}번째 줄` : `${i+1}번째 블록`;
   const show = t => `<code>${esc(t.trim())}</code>`;
-  const items = d.wrong.slice(0, 3).map(i => {
-    const n = s.lines ? `${i+1}번째 줄` : `${i+1}${unit}`;
-    const want = d.best[i];
-    if(want === undefined) return `<li>${n} ${show(d.mine[i])}: 필요 없는 ${s.lines?"줄":"블록"}이에요</li>`;
-    if(want.trim() === d.mine[i].trim()) return `<li>${n} ${show(d.mine[i])}: 들여쓰기가 달라요</li>`;
-    return `<li>${n} ${show(d.mine[i])} → ${show(want)}</li>`;
+  const lines = d.items.slice(0, 3).map(it => {
+    if(it.kind === "extra") return `<li>${at(it.i)} ${show(d.mine[it.i])}: 필요 없는 ${unit}이에요</li>`;
+    if(it.kind === "miss") return `<li>빠진 ${unit}: ${show(d.best[it.j])}</li>`;
+    if(d.mine[it.i].trim() === d.best[it.j].trim()) return `<li>${at(it.i)} ${show(d.mine[it.i])}: 들여쓰기가 달라요</li>`;
+    return `<li>${at(it.i)} ${show(d.mine[it.i])} → ${show(d.best[it.j])}</li>`;
   });
-  if(d.wrong.length > 3) items.push(`<li>그 밖에 ${d.wrong.length - 3}곳 더 달라요</li>`);
-  if(d.missing) items.push(`<li>정답보다 ${s.lines?"줄":"블록"}이 ${d.missing}개 모자라요</li>`);
-  return items.length ? `<ul class="diff">${items.join("")}</ul>` : "";
+  if(d.items.length > 3) lines.push(`<li>그 밖에 ${d.items.length - 3}곳 더 달라요</li>`);
+  return lines.length ? `<ul class="diff">${lines.join("")}</ul>` : "";
 }
 
 function check(s){
@@ -266,7 +295,7 @@ function check(s){
   // 틀린 조립: 빨간 줄이 어떻게 달라야 하는지 알려 주고, 정답 코드에서 고쳐야 할 줄을 초록으로 표시해요
   let correctCode = "";
   if(diff){
-    const fix = new Set(diff.wrong.concat(diff.best.map((_, i) => i).filter(i => i >= diff.mine.length)));
+    const fix = new Set(diff.fix);
     const code = s.lines ? diff.best.map((line, i) => hl(line).replace('class="ln"', fix.has(i) ? 'class="ln fix"' : 'class="ln"')).join("")
                          : hl(diff.best.join(sepOf(s)));
     correctCode = diffNote(s, diff) + `<pre class="code fbcode">${code}</pre>`;

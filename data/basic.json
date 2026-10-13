@@ -1297,7 +1297,8 @@
         "recap": [
           "Rigidbody가 있으면 중력과 물리가 적용된다",
           "rb.AddForce(방향 * 힘, ForceMode.Impulse) — 순간적인 힘",
-          "점프 입력은 GetKeyDown + 땅에 있는지 검사"
+          "점프 입력은 GetKeyDown + 땅에 있는지 검사",
+          "isGrounded: 처음 true → 점프하는 순간 false → 착지(OnCollisionEnter)하면 true. Update에서 매 프레임 true로 만들면 안 된다"
         ],
         "steps": [
           {
@@ -1344,6 +1345,12 @@
             "ex": "[SerializeField]로 꺼내둔 jumpPower예요. 기획 수치 튜닝은 이렇게 인스펙터로!"
           },
           {
+            "t": "read",
+            "h": "isGrounded는 언제 바뀔까?",
+            "code": "bool isGrounded = true;  // ① 클래스 칸: 처음 한 번, 땅에서 시작\n\n// ② 점프하는 순간 → false (공중)\n\n// ③ 무언가에 부딪히면(착지) → true\nvoid OnCollisionEnter(Collision collision)\n{\n    isGrounded = true;\n}",
+            "body": "<p><code>isGrounded</code>는 '지금 땅에 있나?'를 기억하는 깃발이에요. <b>딱 세 순간에만</b> 바뀌어요. 처음 시작할 때 true, 점프하는 순간 false, 착지하는 순간 다시 true. 착지는 <code>OnCollisionEnter</code>가 알려 줘요. 무언가에 부딪힌 순간 유니티가 불러 주는 함수예요(Day 7에서 자세히).</p><p>주의: 맨 위의 <code>bool isGrounded = true;</code>는 처음 값을 정하는 줄이라 한 번만 실행돼요. 이걸 Update 안에 <code>isGrounded = true;</code>로 넣으면 <b>매 프레임</b> '땅에 있음'이 돼서, 공중에서도 계속 점프할 수 있어요. true는 착지할 때만 넣어요.</p>"
+          },
+          {
             "t": "build",
             "q": "땅에 있을 때만 점프하고, 점프하면 공중 상태로 바꾸는 코드를 조립하세요",
             "lines": true,
@@ -1365,7 +1372,7 @@
             ],
             "extra": ["if (Input.GetKeyDown(KeyCode.Space) || isGrounded)", "    isGrounded = true;"],
             "hint": "스페이스를 눌렀고 '그리고' 땅에 있을 때. 점프한 뒤에는 공중(false).",
-            "ex": "||로 쓰면 땅에만 있어도 점프 조건이 맞고, true로 두면 공중에서 계속 점프해요. 안쪽 두 줄은 순서를 바꿔도 돼요."
+            "ex": "||로 쓰면 땅에만 있어도 점프 조건이 맞아요. isGrounded = true;는 착지할 때만 넣는 줄이라, Update 안에 넣으면 매 프레임 '땅에 있음'이 돼서 공중에서도 계속 점프해요. 안쪽 두 줄은 순서를 바꿔도 돼요."
           }
         ]
       }
