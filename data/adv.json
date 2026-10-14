@@ -2,6 +2,7 @@
   {
     "n": 1,
     "title": "클래스와 객체",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day1/",
     "lessons": [
       {
         "id": "a1l1",
@@ -151,6 +152,7 @@
   {
     "n": 2,
     "title": "코루틴 — 시간차 동작",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day2/",
     "lessons": [
       {
         "id": "a2l1",
@@ -313,6 +315,7 @@
   {
     "n": 3,
     "title": "프리팹과 생성",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day3/",
     "lessons": [
       {
         "id": "a3l1",
@@ -494,6 +497,7 @@
   {
     "n": 4,
     "title": "상태 머신",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day4/",
     "lessons": [
       {
         "id": "a4l1",
@@ -642,6 +646,7 @@
   {
     "n": 5,
     "title": "이벤트 — 알아서 반응하게",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day5/",
     "lessons": [
       {
         "id": "a5l1",
@@ -784,6 +789,7 @@
   {
     "n": 6,
     "title": "ScriptableObject — 데이터 에셋",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day6/",
     "lessons": [
       {
         "id": "a6l1",
@@ -930,6 +936,7 @@
   {
     "n": 7,
     "title": "세이브와 로드",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day7/",
     "lessons": [
       {
         "id": "a7l1",
@@ -1099,6 +1106,7 @@
   {
     "n": 8,
     "title": "값 형식과 참조 형식",
+    "post": "https://hlcho426.github.io/posts/csharp-week-adv-day8/",
     "lessons": [
       {
         "id": "c4l1",
